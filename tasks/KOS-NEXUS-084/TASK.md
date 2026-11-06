@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | Milestone | NX-M1 |
-| Status | NOT_STARTED (proposed; Nexus is outside the V2 plan and is not registered in kritva-program) |
+| Status | IN_PROGRESS (started by Dinesh on 2026-11-06; proposed, not baselined; Nexus is outside the V2 plan and is not registered in kritva-program) |
 | Weight | none (no baseline; Nexus is planned for the V3 plan) |
 | Depends on | KOS-NEXUS-006 (input) |
 | Workstream | ARCH |
