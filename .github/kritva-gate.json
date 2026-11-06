@@ -1,0 +1,33 @@
+{
+  "code": "NEXUS",
+  "commit_standard": {
+    "adopted": true,
+    "basis": "Kritva commit format (ACCEPTANCE_STANDARD section 4); new repo"
+  },
+  "depends_on": [],
+  "github_repo": "KritvaOS/kritva-nexus",
+  "kind": "capability",
+  "protected_paths": [
+    ".github/",
+    "SECURITY.md",
+    "LICENSE",
+    "ACCEPTANCE_CRITERIA.md",
+    "Makefile",
+    "scripts/pipeline/",
+    "scripts/security/"
+  ],
+  "repo_id": "kritva-nexus",
+  "required_approvals": [
+    "REPO_CODE_OWNER"
+  ],
+  "required_github_checks": [
+    "secret-scan",
+    "commit-message-check",
+    "pr-acceptance-gate"
+  ],
+  "task_prefix": "KOS-NEXUS",
+  "task_registry": {
+    "path": "planning/TASKS.md",
+    "type": "repo-tasks-md"
+  }
+}
