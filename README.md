@@ -98,8 +98,8 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | `.github/` | CODEOWNERS, gate configuration, PR template, workflows | INPUT, DRAFT | Yes, by owner only |
 | `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate) and their tests | INPUT, DRAFT | Yes, by owner only |
 | `architecture/` | SoC architecture, address maps, clock, reset, CDC, security | AUTHORITATIVE for architecture, PLANNED | Yes |
-| `requirements/` | Traceable requirements register | AUTHORITATIVE for requirements, PLANNED | Yes |
-| `decisions/` | Decision records with alternatives and rationale | EVIDENCE, PLANNED | Append only |
+| [requirements/REQUIREMENTS.md](requirements/REQUIREMENTS.md) | Traceable requirements register | AUTHORITATIVE for requirements, PROPOSED | Yes |
+| [decisions/DECISIONS.md](decisions/DECISIONS.md) | Decision index and records `NX-DEC-NNN.md` with alternatives and rationale | EVIDENCE, PROPOSED | Append only |
 | `rtl/` | Synthesizable, technology-independent RTL | AUTHORITATIVE for implementation, NOT YET IMPLEMENTED | Yes |
 | `technology/` | Generic, FPGA and ASIC mapping wrappers | AUTHORITATIVE for technology mapping, NOT YET IMPLEMENTED | Yes |
 | `verification/` | Test plans, testbenches, assertions, CDC and RDC plans | AUTHORITATIVE for verification, NOT YET IMPLEMENTED | Yes |

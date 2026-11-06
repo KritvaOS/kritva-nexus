@@ -25,3 +25,5 @@ Inputs: Owner decisions, the A0 draft, KOS-NEXUS-006.
 Verification method: Review of traceability.
 
 Note: This ID is new: the earlier proposed catalogue had no task that produced the requirements register. It is proposed here and needs owner and cross-reviewer agreement.
+
+Progress note: the first batch is added in [requirements/REQUIREMENTS.md](../../requirements/REQUIREMENTS.md) (31 requirements, of which four are the open architecture gaps) and [decisions/DECISIONS.md](../../decisions/DECISIONS.md) (18 records). The status stays IN_PROGRESS: the NPU, ISP, clock, interrupt, power-domain and secure-boot requirements are not yet covered, and the A0 draft is not yet in the repository.
