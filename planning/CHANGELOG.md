@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-084 accepted by the owner (Dinesh, interim, not independent) and set to ACCEPTED in TASKS.md and the task record, with the merge commits of pull requests 3 to 7 recorded as evidence (type software, review of traceability). This is a repository status only: no weight, credit or kritva-program record changes, NX-M1 stays IN_PROGRESS (KOS-NEXUS-006, 007 and 008 not started; six requirements remain OPEN) and no completion record exists. Tasks: KOS-NEXUS-084
+
 - KOS-NEXUS-084 moved to IN_REVIEW in TASKS.md and the task record: the requirements register (66 requirements) and decision records (20) are submitted for owner review after ChatGPT confirmed no further requirements are needed. The task is not ACCEPTED, NX-M1 stays IN_PROGRESS and no evidence record exists. The six OPEN requirements remain open. Tasks: KOS-NEXUS-084
 
 - KOS-NEXUS-084 second batch: `requirements/REQUIREMENTS.md` extended with NX-REQ-032 to 066 (66 requirements in total: 26 SELECTED, 34 PROPOSED, 6 OPEN) and decision records NX-DEC-019 (separate secure AXI interconnect) and NX-DEC-020 (peripheral instance counts), both SELECTED from relayed owner wording; `decisions/DECISIONS.md` index and the A0 draft addendum updated. The new requirements cover the secure domain, Ethernet and EtherCAT, camera, ISP and NPU, display compositor, fabrics and address maps, interrupts, clocks, power and reset domains, and memory controller targets; all are PROPOSED except NX-REQ-032, and the interrupt architecture is OPEN. No numeric performance, timing, power or area value is SELECTED. The task stays IN_PROGRESS. Tasks: KOS-NEXUS-084
