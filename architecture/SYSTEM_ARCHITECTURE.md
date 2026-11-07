@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.3.0-draft |
+| Version | 0.4.0-draft |
 | Last Updated | 2026-11-07 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -20,7 +20,7 @@ This document is the top-level system architecture of the Nexus SoC, owned by th
 
 ## 1. Scope and status
 
-This document so far covers the document rules, the system context, the domain map and the application CPU, application interconnect, external memory, AI and vision, and multimedia and connectivity sections. The remaining domain sections (security; always-on, clock, reset, power and interrupt), the interface register and the open-issues register (AC-012) are added in later pull requests of KOS-NEXUS-006; until a topic has a section here, the A0 draft section named in the domain map is the only description of it, and it is PROPOSED.
+This document so far covers the document rules, the system context, the domain map and a section for every domain in section 4. The interface register and the open-issues register (AC-012) are added in later pull requests of KOS-NEXUS-006; until a topic has a section here, the A0 draft section named in the domain map is the only description of it, and it is PROPOSED.
 
 Detailed interconnect, memory and address-map content belongs to KOS-NEXUS-007 and 008. Subsystem microarchitecture and RTL are out of scope.
 
@@ -118,7 +118,43 @@ On the application interconnect the ISP, NPU and camera DMA are proposed on AXI-
 
 The display, Ethernet and storage DMA masters are proposed on AXI-2, and the peripheral and I2S DMA masters on AXI-3 (NX-REQ-051). The peripheral features (PWM resolution, GPIO interrupt behaviour, timer width, FIFO depths, speed modes, I2S rates and clocking), the pinmux and the package pin assignment are not selected; dedicated pins were assumed only for the initial counting. The pixel clock and timing totals, and the display and Ethernet traffic figures in the A0 draft, are PROPOSED derived calculations and not requirements. DRM/KMS integration, display DMA coherency and Ethernet DMA buffer coherency are OPEN.
 
-## 10. Open architecture gaps
+## 10. Security
+
+| Item | Statement | Label | Records |
+|---|---|---|---|
+| Security core | A dedicated, isolated 32-bit RISC-V security core. | SELECTED | NX-REQ-009, NX-DEC-008 |
+| Local memory | 64 KiB of ROM and 64 KiB of SRAM for the security core. | SELECTED | NX-REQ-010, NX-REQ-011, NX-DEC-009, NX-DEC-010 |
+| eFuse | A dedicated security eFuse resource; programming and access control are not defined. | SELECTED | NX-REQ-012, NX-DEC-011 |
+| Cryptography | AES-128 and AES-256, and SHA-256. | SELECTED | NX-REQ-013, NX-REQ-014, NX-DEC-012, NX-DEC-013 |
+| Asymmetric accelerator | An asymmetric cryptography accelerator; its algorithms, signature and hash formats are not defined. | PROPOSED | NX-REQ-035 |
+| Secure interconnect | A dedicated, separate secure AXI interconnect. Its 32-bit data and address widths and 2 outstanding reads and writes are proposals. | SELECTED concept; PROPOSED parameters | NX-REQ-032, NX-DEC-019; NX-REQ-033 |
+| Application exclusion | The application AXI interconnect gives no access to the security ROM, security SRAM, eFuse, key management or security interrupt controller. | PROPOSED | NX-REQ-034 |
+| Secure boot | The security core starts first, authenticates the boot image from OSPI NOR using the immutable ROM and authorises C910 reset release before the application subsystems are initialised; an authorised NOR access path is usable before the application fabrics and the C910 are active. | PROPOSED | NX-REQ-036, NX-REQ-038 |
+| Reset control | C910 reset release is hardware-controlled by the security domain, and a C910 warm reset does not reset the security domain. | PROPOSED | NX-REQ-037 |
+| Secret exposure | Raw secrets are not exposed through ordinary application interfaces. | PROPOSED | NX-REQ-039 |
+| Secure address map | A separate secure address space with the proposed map of A0 draft section 7.4. | PROPOSED | NX-REQ-054 |
+| Address-space separation | The secure and application address spaces are separate, with independent decode and access control; the isolation boundary, the permitted access paths and the treatment of overlapping numerical ranges are not yet defined. | OPEN | NX-REQ-028, NX-ARCH-GAP-002 |
+
+The security domain is described here as an architecture direction. Root-key provisioning, anti-rollback policy, recovery behaviour, debug lifecycle and authorisation, eFuse programming and access control, secure boot failure handling and the security interrupt and fault-response details are OPEN. No security claim is made from this document: it contains no threat model, no verification result and no hardware validation.
+
+## 11. Always-on, clock, reset, power and interrupts
+
+| Item | Statement | Label | Records |
+|---|---|---|---|
+| DVFS | DVFS is supported for the C910 subsystem and for the NPU. Operating points and voltage sequencing are OPEN. | SELECTED | NX-REQ-017, NX-REQ-018, NX-DEC-016, NX-DEC-017 |
+| Always-on domain | The responsibilities of the always-on domain and its interfaces to reset, wake-up, security and power control are not defined. | OPEN | NX-REQ-031 |
+| Interrupt controllers | An application controller with 128 external sources, a security controller with 32 sources and an always-on controller with 8 to 16 wake sources; the PLIC versus AIA choice is undecided. | OPEN | NX-REQ-057 |
+| PLLs | Four integer PLLs and two fractional PLLs; allocation and feasibility are not verified. | PROPOSED | NX-REQ-058 |
+| Frequency targets | C910 1.0 to 1.2 GHz, NPU 800 MHz, ISP 600 MHz, security core 200 to 400 MHz, AXI fabrics 400 to 600 MHz, APB 200 to 250 MHz, PSRAM controller 200 to 400 MHz and DPI pixel clock 74.25 MHz. These are targets, not timing results. | PROPOSED | NX-REQ-059 |
+| Power domains | Seven logical domains: AON, SEC, CPU, MEM, AI, MEDIA and IO; the implementation is not defined. | PROPOSED | NX-REQ-060 |
+| Reset domains | Eight domains: AON, SEC, CPU, MEM, AI, ISP, DISP and IO, with asynchronous assertion and synchronous deassertion. Reset sources and sequencing are OPEN. | PROPOSED | NX-REQ-061 |
+| CDC and RDC | Every clock-domain and reset-domain crossing uses a suitable synchroniser, asynchronous FIFO or reset synchroniser and is covered by CDC and RDC checks with documented waivers. | PROPOSED | NX-REQ-062 |
+| Critical faults | Critical thermal, power and tamper faults have a hardware response independent of application CPU execution; the response is not defined. | PROPOSED | NX-REQ-063 |
+| SoC power | A total power target of 10 to 20 W. This is a target, not an estimate or a measurement. | PROPOSED | NX-REQ-066 |
+
+The clock source and clock-tree architecture, jitter requirements, PMIC and rail selection, the clock-domain and reset-domain matrices and the CDC and RDC waiver policy are OPEN.
+
+## 12. Open architecture gaps
 
 The four gaps below are open and are kept under their canonical identifiers. They are not resolved by this document. The wider open-issues register with owners follows in a later pull request.
 
