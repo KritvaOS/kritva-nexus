@@ -74,7 +74,7 @@ A document that is planned but not written has no link here. Open items that mus
 | [CONTRIBUTING.md](CONTRIBUTING.md) | REFERENCE, DRAFT | How to contribute |
 | [SECURITY.md](SECURITY.md) | AUTHORITATIVE for reporting, DRAFT | How to report a vulnerability |
 
-The A0 integration draft is in [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) as a PROPOSED import. The consolidated system architecture is being written in [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, first part only).
+The A0 integration draft is in [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) as a PROPOSED import. The consolidated system architecture is being written in [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, partial).
 
 ## 5. Repository Structure and File Responsibilities
 
@@ -99,7 +99,7 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate) and their tests | INPUT, DRAFT | Yes, by owner only |
 | `architecture/` | SoC architecture, address maps, clock, reset, CDC, security | AUTHORITATIVE for architecture, PLANNED | Yes |
 | [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion (a reconstruction, not an original document) | INPUT, PROPOSED | Addenda only |
-| [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture (KOS-NEXUS-006), first part | INPUT, DRAFT | Hand-maintained |
+| [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture (KOS-NEXUS-006), partial | INPUT, DRAFT | Hand-maintained |
 | [requirements/REQUIREMENTS.md](requirements/REQUIREMENTS.md) | Traceable requirements register | AUTHORITATIVE for requirements, PROPOSED | Yes |
 | [decisions/DECISIONS.md](decisions/DECISIONS.md) | Decision index and records `NX-DEC-NNN.md` with alternatives and rationale | EVIDENCE, PROPOSED | Append only |
 | `rtl/` | Synthesizable, technology-independent RTL | AUTHORITATIVE for implementation, NOT YET IMPLEMENTED | Yes |
