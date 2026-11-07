@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.2.0-draft |
+| Version | 0.3.0-draft |
 | Last Updated | 2026-11-07 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -20,7 +20,7 @@ This document is the top-level system architecture of the Nexus SoC, owned by th
 
 ## 1. Scope and status
 
-This document so far covers the document rules, the system context, the domain map and the application CPU, application interconnect and external memory sections. The remaining domain sections (AI and vision, multimedia and connectivity, security, always-on, clock, reset, power and interrupt), the interface register and the open-issues register (AC-012) are added in later pull requests of KOS-NEXUS-006; until a topic has a section here, the A0 draft section named in the domain map is the only description of it, and it is PROPOSED.
+This document so far covers the document rules, the system context, the domain map and the application CPU, application interconnect, external memory, AI and vision, and multimedia and connectivity sections. The remaining domain sections (security; always-on, clock, reset, power and interrupt), the interface register and the open-issues register (AC-012) are added in later pull requests of KOS-NEXUS-006; until a topic has a section here, the A0 draft section named in the domain map is the only description of it, and it is PROPOSED.
 
 Detailed interconnect, memory and address-map content belongs to KOS-NEXUS-007 and 008. Subsystem microarchitecture and RTL are out of scope.
 
@@ -89,7 +89,36 @@ The path from the C910 to the APB peripherals (C910, AXI-0, routing or bridge, A
 
 The NOR and the PSRAM are separate devices with separate controllers. The operating targets are PROPOSED: DDR4-3200 (NX-REQ-064) and a PSRAM controller at 200 to 400 MHz (NX-REQ-065). DDR4 data width and capacity, the PSRAM protocol, mode and capacity, and the NOR device are not selected. The 200 MHz OSPI x8 figure in the A0 draft is an example calculation, not a requirement. The secure boot path must reach the NOR before the application fabrics and the C910 are active (PROPOSED, NX-REQ-038). The DDR4 ingress topology and port count are OPEN (NX-REQ-030, NX-ARCH-GAP-004), and memory arbitration and bandwidth allocation are not defined.
 
-## 8. Open architecture gaps
+## 8. AI and vision
+
+| Item | Statement | Label | Records |
+|---|---|---|---|
+| Camera inputs | Four simultaneous cameras at up to 640x640 and 10 FPS each, Bayer RAW10 and RAW12 input; the electrical interface and capture details are not defined. | PROPOSED | NX-REQ-042 |
+| Frame pool | The camera frame pool provides 6 MiB of usable capacity. The bank count, width, port organisation and ECC implementation are not defined. | SELECTED capacity | NX-REQ-005, NX-DEC-004 |
+| Frame drop | When no frame buffer is available, the complete frame is dropped; a partially captured frame is never exposed as valid. | PROPOSED | NX-REQ-043 |
+| Frame release | A source frame is released after source consumption, independently of inference completion; the release-latency bound and buffer-borrowing policy are OPEN. | PROPOSED | NX-REQ-044 |
+| ISP | Bayer input through unpacking, black-level, defect-pixel, lens-shading, demosaic, white-balance, colour-correction and gamma stages, RGB output by default; stage ordering, halo requirements and tile size are not specified. | PROPOSED | NX-REQ-045 |
+| NPU | Four homogeneous clusters, INT8 inputs and weights, INT32 accumulators, a peak target of 8 TOPS INT8. The target is not a measured result; the NPU microarchitecture and model and tensor-format requirements are not defined. | PROPOSED | NX-REQ-046 |
+| Local memories | The path uses a camera frame pool, an ISP local SRAM and an NPU local SRAM, and its normal path does not need DDR intermediate storage. ISP and NPU SRAM sizes and organisation are not selected. | PROPOSED | NX-REQ-047 |
+| NPU DVFS | The clock and power subsystem supports DVFS for the NPU. | SELECTED | NX-REQ-018, NX-DEC-017 |
+
+On the application interconnect the ISP, NPU and camera DMA are proposed on AXI-1 (NX-REQ-051). Frame-pool, ISP and NPU local-memory transfers are not forced through DDR4, and DDR4 stays available for models, large activations and optional intermediates (the use of DDR for optional intermediates and recording is OPEN). Workload and power figures in the A0 draft are PROPOSED derived calculations, and no performance, power or area result exists for the AI and vision path. The SoC power target is PROPOSED (NX-REQ-066) and is held in the clock, power and reset section.
+
+## 9. Multimedia and connectivity
+
+| Item | Statement | Label | Records |
+|---|---|---|---|
+| Display mode | 720p60: 1280x720 at 60 Hz over a parallel DPI interface. DPI electrical and pin configuration and the pixel format are not defined. | SELECTED | NX-REQ-006, NX-DEC-005 |
+| Composition | Three composition layers. | SELECTED | NX-REQ-007, NX-DEC-006 |
+| Compositor | Three independent framebuffers in DDR4 with alpha composition, z-order control, atomic update at Vsync and underflow detection; underflow recovery is OPEN. | PROPOSED | NX-REQ-048 |
+| Ethernet MACs | Two independent Ethernet MACs. | SELECTED | NX-REQ-008, NX-DEC-007 |
+| Ethernet interface | 10/100/1000 Mbps over RGMII with external PHYs; PHY selection and RGMII delay configuration are OPEN. | PROPOSED | NX-REQ-040 |
+| EtherCAT | Both MACs support EtherCAT MainDevice operation using raw Ethernet frames, and receive filtering does not reject EtherType 0x88A4. Hardware timestamping, redundancy and the stack are OPEN. | PROPOSED | NX-REQ-041 |
+| Peripherals | 16 PWM channels, 32 GPIO, four general-purpose timers, four UARTs, four I2C masters, one SPI master, one SPI slave and two I2S masters. Only the counts are selected. | SELECTED counts | NX-REQ-019 to NX-REQ-026, NX-DEC-020 |
+
+The display, Ethernet and storage DMA masters are proposed on AXI-2, and the peripheral and I2S DMA masters on AXI-3 (NX-REQ-051). The peripheral features (PWM resolution, GPIO interrupt behaviour, timer width, FIFO depths, speed modes, I2S rates and clocking), the pinmux and the package pin assignment are not selected; dedicated pins were assumed only for the initial counting. The pixel clock and timing totals, and the display and Ethernet traffic figures in the A0 draft, are PROPOSED derived calculations and not requirements. DRM/KMS integration, display DMA coherency and Ethernet DMA buffer coherency are OPEN.
+
+## 10. Open architecture gaps
 
 The four gaps below are open and are kept under their canonical identifiers. They are not resolved by this document. The wider open-issues register with owners follows in a later pull request.
 
