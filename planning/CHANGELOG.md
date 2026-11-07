@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-006 started by the owner (Dinesh): status IN_PROGRESS in TASKS.md and the task record, whose Inputs now link the imported A0 draft, the decision records and the requirements register. NX-M1 stays IN_PROGRESS. The architecture document itself follows in its own pull request; no decision or requirement changes here. Tasks: None (status change; implementation follows in its own pull request)
+
 - KOS-NEXUS-084 accepted by the owner (Dinesh, interim, not independent) and set to ACCEPTED in TASKS.md and the task record, with the merge commits of pull requests 3 to 7 recorded as evidence (type software, review of traceability). This is a repository status only: no weight, credit or kritva-program record changes, NX-M1 stays IN_PROGRESS (KOS-NEXUS-006, 007 and 008 not started; six requirements remain OPEN) and no completion record exists. Tasks: KOS-NEXUS-084
 
 - KOS-NEXUS-084 moved to IN_REVIEW in TASKS.md and the task record: the requirements register (66 requirements) and decision records (20) are submitted for owner review after ChatGPT confirmed no further requirements are needed. The task is not ACCEPTED, NX-M1 stays IN_PROGRESS and no evidence record exists. The six OPEN requirements remain open. Tasks: KOS-NEXUS-084
