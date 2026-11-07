@@ -527,7 +527,8 @@ selected.
 
 ### 7.1 Security processor and local resources
 
-Label: SELECTED
+Label: SELECTED for the items in the first list; PROPOSED for the asymmetric
+cryptography accelerator
 
 The owner-selected security architecture includes:
 
@@ -537,11 +538,12 @@ The owner-selected security architecture includes:
 - A dedicated eFuse resource.
 - AES-128 and AES-256 support.
 - SHA-256 support, mandatory.
-- An asymmetric cryptography accelerator in the security domain.
 - A dedicated separate secure AXI interconnect.
 
-The asymmetric cryptography accelerator is part of the discussed security
-architecture. Its algorithms and exact implementation remain open.
+An asymmetric cryptography accelerator in the security domain was also
+discussed. No explicit owner wording selecting it is available, so it is
+PROPOSED (see the addendum). Its algorithms and exact implementation
+remain open.
 
 ### 7.2 Secure interconnect
 
@@ -1285,3 +1287,33 @@ All Nexus owner and reviewer roles are Dinesh.
 
 This draft is PROPOSED and is not an approved or frozen architecture
 baseline.
+
+## Addendum 2026-11-06: import review notes
+
+Recorded when this file was imported for KOS-NEXUS-084. These notes correct
+or qualify the text above without rewriting it.
+
+- The asymmetric cryptography accelerator (section 7.1) is PROPOSED. An
+  earlier version of the import labelled it SELECTED; no owner wording
+  supports that.
+- The separate secure AXI interconnect (sections 7.1 and 7.2) is
+  SELECTED as a concept, in the recorded wording "A dedicated separate
+  secure AXI interconnect." The 32-bit data width, 32-bit address width and
+  2 outstanding reads and writes are PROPOSED, not owner-selected. The
+  merged requirements and decisions do not yet contain this item; it is
+  added in the next batch of KOS-NEXUS-084.
+- EtherCAT MainDevice capability, RGMII, external PHYs and the
+  10/100/1000 Mbps modes (section 6) are PROPOSED. The owner wording
+  selects only "Two independent Ethernet MACs".
+- The display pixel clock of 74.25 MHz, the 1650 x 750 totals and all
+  traffic tables (sections 5.2 and 5.4) are PROPOSED derived calculations.
+  The owner selected 720p60, 1280x720, parallel DPI and three layers.
+- The peripheral counts (section 8.1) have requirements NX-REQ-019 to 026
+  but no decision records yet.
+
+## Addendum 2026-11-07: follow-up after the second batch of KOS-NEXUS-084
+
+- The separate secure AXI interconnect is now requirement NX-REQ-032 and decision record NX-DEC-019 (SELECTED as a concept; the 32-bit widths and 2 outstanding transactions remain PROPOSED in NX-REQ-033).
+- The peripheral counts of section 8.1 are now decision record NX-DEC-020 (counts only).
+- The EtherCAT, RGMII, PHY, crypto accelerator, NPU, ISP, clock, interrupt, power-domain and secure-boot items are requirements with label PROPOSED or OPEN; none is SELECTED.
+

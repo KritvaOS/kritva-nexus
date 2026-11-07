@@ -29,3 +29,5 @@ Rules:
 | [NX-DEC-016](NX-DEC-016.md) | C910 DVFS support | SELECTED | NX-REQ-017 |
 | [NX-DEC-017](NX-DEC-017.md) | NPU DVFS support | SELECTED | NX-REQ-018 |
 | [NX-DEC-018](NX-DEC-018.md) | Xuantie C910 application CPU direction | PROPOSED | NX-REQ-001, NX-REQ-029 |
+| [NX-DEC-019](NX-DEC-019.md) | Separate secure AXI interconnect | SELECTED | NX-REQ-032 |
+| [NX-DEC-020](NX-DEC-020.md) | Peripheral instance counts | SELECTED | NX-REQ-019 to NX-REQ-026 |
