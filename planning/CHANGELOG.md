@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-006 second part: `architecture/SYSTEM_ARCHITECTURE.md` (version 0.2.0-draft) gains the application CPU, application interconnect and external memory sections, each statement labelled and traced to requirements and decision records; the open-gaps section is renumbered 8. No label, requirement or decision changed and no numeric value was added; the address map is left to KOS-NEXUS-008. The AI and vision, multimedia, security, always-on, clock, reset, power and interrupt sections remain; the task stays IN_PROGRESS. Tasks: KOS-NEXUS-006
+
 - KOS-NEXUS-006 first part: `architecture/SYSTEM_ARCHITECTURE.md` (DRAFT, Kritva document header, KOS-NEXUS-ARCH-001) with the document rules, system context, a domain map tracing each domain to requirements, decision records and A0 draft sections, and the four open gaps. No label, requirement or decision changed and no numeric value was added. Domain sections, the interface register and the open-issues register follow; the task stays IN_PROGRESS. README links the document. Tasks: KOS-NEXUS-006
 
 - KOS-NEXUS-006 started by the owner (Dinesh): status IN_PROGRESS in TASKS.md and the task record, whose Inputs now link the imported A0 draft, the decision records and the requirements register. NX-M1 stays IN_PROGRESS. The architecture document itself follows in its own pull request; no decision or requirement changes here. Tasks: None (status change; implementation follows in its own pull request)
