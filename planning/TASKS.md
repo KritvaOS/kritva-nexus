@@ -10,7 +10,7 @@ Stage 1 is the smallest set needed for the Nexus planning-baseline proposal. Fur
 | KOS-NEXUS-006 | Consolidate top-level system architecture | NOT_STARTED (proposed) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-006/TASK.md) |
 | KOS-NEXUS-007 | Define application AXI and memory access architecture | NOT_STARTED (proposed) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-007/TASK.md) |
 | KOS-NEXUS-008 | Define memory and address-map architecture | NOT_STARTED (proposed) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-008/TASK.md) |
-| KOS-NEXUS-084 | Establish requirements register and architecture decision records | IN_REVIEW (submitted for owner review 2026-11-07; proposed, not baselined; new task) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-084/TASK.md) |
+| KOS-NEXUS-084 | Establish requirements register and architecture decision records | ACCEPTED (accepted by the owner on 2026-11-07 as a repository task only; no weight or credit; proposed, not baselined; new task) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-084/TASK.md) |
 | KOS-NEXUS-018 | Establish external and internal IP inventory | NOT_STARTED (proposed) | NX-M2 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-018/TASK.md) |
 | KOS-NEXUS-019 | Define IP integration and licensing status | NOT_STARTED (proposed) | NX-M2 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-019/TASK.md) |
 
