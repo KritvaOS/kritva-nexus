@@ -23,3 +23,5 @@ Out of scope: Detailed interconnect, memory and address-map content (KOS-NEXUS-0
 Inputs: The A0 integration draft ([architecture/A0_INTEGRATION_DRAFT.md](../../architecture/A0_INTEGRATION_DRAFT.md), a reconstruction of a working discussion, not an original document), the owner decisions in [decisions/](../../decisions/DECISIONS.md) and the requirements in [requirements/REQUIREMENTS.md](../../requirements/REQUIREMENTS.md) (KOS-NEXUS-084, accepted).
 
 Verification method: Architecture review; the owner records any decision promoted to SELECTED.
+
+Progress note: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, version 0.5.0) has the rules, system context, domain map, a section for every domain, the interface register and the open-issues register. Not yet covered: RTL partitioning and the simulator and FPGA-prototype architecture, and the architecture index. The status stays IN_PROGRESS.
