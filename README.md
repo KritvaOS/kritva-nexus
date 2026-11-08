@@ -98,6 +98,7 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | `.github/` | CODEOWNERS, gate configuration, PR template, workflows | INPUT, DRAFT | Yes, by owner only |
 | `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate) and their tests | INPUT, DRAFT | Yes, by owner only |
 | `architecture/` | SoC architecture, address maps, clock, reset, CDC, security | AUTHORITATIVE for architecture, PLANNED | Yes |
+| [architecture/README.md](architecture/README.md) | Index of the architecture documents | REFERENCE, DRAFT | Hand-maintained |
 | [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion (a reconstruction, not an original document) | INPUT, PROPOSED | Addenda only |
 | [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture (KOS-NEXUS-006), partial | INPUT, DRAFT | Hand-maintained |
 | [requirements/REQUIREMENTS.md](requirements/REQUIREMENTS.md) | Traceable requirements register | AUTHORITATIVE for requirements, PROPOSED | Yes |

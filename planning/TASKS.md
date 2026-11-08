@@ -7,7 +7,7 @@ Stage 1 is the smallest set needed for the Nexus planning-baseline proposal. Fur
 | Task | Title | Status | Milestone | Acceptance |
 |---|---|---|---|---|
 | KOS-NEXUS-001 | Establish repository structure and engineering conventions | NOT_STARTED (proposed) | NX-M0 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-001/TASK.md) |
-| KOS-NEXUS-006 | Consolidate top-level system architecture | IN_PROGRESS (started by the owner; proposed, not baselined) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-006/TASK.md) |
+| KOS-NEXUS-006 | Consolidate top-level system architecture | IN_REVIEW (submitted for owner review 2026-11-08; proposed, not baselined) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-006/TASK.md) |
 | KOS-NEXUS-007 | Define application AXI and memory access architecture | NOT_STARTED (proposed) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-007/TASK.md) |
 | KOS-NEXUS-008 | Define memory and address-map architecture | NOT_STARTED (proposed) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-008/TASK.md) |
 | KOS-NEXUS-084 | Establish requirements register and architecture decision records | ACCEPTED (accepted by the owner on 2026-11-07 as a repository task only; no weight or credit; proposed, not baselined; new task) | NX-M1 | [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md); [task](../tasks/KOS-NEXUS-084/TASK.md) |
