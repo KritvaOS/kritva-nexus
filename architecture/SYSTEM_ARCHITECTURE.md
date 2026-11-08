@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.5.0-draft |
+| Version | 0.6.0-draft |
 | Last Updated | 2026-11-07 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -20,7 +20,7 @@ This document is the top-level system architecture of the Nexus SoC, owned by th
 
 ## 1. Scope and status
 
-This document covers the document rules, the system context, the domain map and a section for every domain in section 4. The interface register (section 12) and the open-issues register (section 13) are the artefacts for AC-012; whether they meet it is for the owner's review. The sections name the A0 draft section for each topic; where this document is silent on a detail, the A0 draft is the only description of it and that detail is PROPOSED or OPEN.
+This document covers the document rules, the system context, the domain map and a section for every domain in section 4. The interface register (section 13) and the open-issues register (section 14) are the artefacts for AC-012; whether they meet it is for the owner's review. The sections name the A0 draft section for each topic; where this document is silent on a detail, the A0 draft is the only description of it and that detail is PROPOSED or OPEN.
 
 Detailed interconnect, memory and address-map content belongs to KOS-NEXUS-007 and 008. Subsystem microarchitecture and RTL are out of scope.
 
@@ -154,7 +154,23 @@ The security domain is described here as an architecture direction. Root-key pro
 
 The clock source and clock-tree architecture, jitter requirements, PMIC and rail selection, the clock-domain and reset-domain matrices and the CDC and RDC waiver policy are OPEN.
 
-## 12. Interface register
+## 12. RTL partitioning, simulator and prototype architecture
+
+All statements in this section are PROPOSED. No requirement or decision record covers them: tool choices and their repository implementation belong to KOS-NEXUS-002, and none of the tools is installed, qualified or selected for every block by this document. Source: A0 draft section 11.
+
+| Item | Statement | Label |
+|---|---|---|
+| RTL partitioning | RTL is partitioned along the domains of section 4: application CPU, application interconnect, memory, AI and vision, multimedia and connectivity, security, and always-on, clock, reset and power. Each block has a module specification giving its ID, subsystem, purpose, requirements, ports, clock and reset domains, CDC and reset behaviour, register and data interfaces, parameters, technology dependencies, verification requirements and synthesis and physical-design concerns. | PROPOSED |
+| Module size | A module of 300 to 800 lines is the target, more than 1000 lines is reviewed and more than 1500 lines is considered for decomposition. These are review guidelines, not limits. | PROPOSED |
+| Technology wrappers | The same functional RTL is intended for simulation, FPGA and ASIC. Memory, clock, reset, scan and MBIST are mapped through wrappers in `technology/generic`, `technology/fpga` and `technology/asic`: generic memory models, FPGA block RAM mapping and ASIC SRAM macro mapping. The wrapper interfaces are not defined. | PROPOSED |
+| Kritva Nexus Simulator | The platform simulation is Renode, a virtual-platform simulator that is not a cycle-accurate C910 model. Verilator co-simulation can connect selected RTL blocks to it. A Renode CPU model is not C910 validation until ISA, privilege, MMU and other compatibility are confirmed, and it is never evidence of C910 timing, cache behaviour or performance. Results state whether they come from Renode or from Verilator co-simulation. | PROPOSED |
+| FPGA prototype | FPGA prototyping is planned. The board is not selected; C910 RTL and DDR PHY suitability for the chosen FPGA are unverified. A substitute RISC-V CPU on FPGA can validate platform interfaces and is labelled a substitute, never C910 validation. FPGA synthesis and place-and-route results are distinct from tests on a programmed board. | PROPOSED (board selection OPEN) |
+| Block-level physical design | OpenLane 2 and OpenROAD are intended for block-level work where the technology collateral, memory macros, constraints and tool support exist. The complete SoC is not established as implementable through OpenLane, and open-source flow results are implementation evidence, not production signoff. | PROPOSED |
+| Evidence classification | Lint, Yosys, FPGA synthesis and place-and-route and OpenLane runs (including DRC, LVS and STA) are `software` evidence; Icarus, Verilator, Renode and co-simulation results are `simulation` evidence; `physical` is reserved for programmed-board results. An evidence record states the target (RTL, FPGA or ASIC), the tool and version, the configuration revision, the source commit and the run ID. | PROPOSED (the repository evidence rule in AGENTS.md section 2; the A0 draft left the OpenLane classification to owner confirmation) |
+
+The open items for this section (FPGA board, tool versions, wrapper interfaces, technology collateral, OpenLane scope, co-simulation boundary and evidence metadata policy) are in the open-issues register.
+
+## 13. Interface register
 
 This register lists the interfaces between subsystems that the architecture depends on (AC-012). It records that an interface exists and its label; it does not define signals, protocols or register maps. Those are written in KOS-NEXUS-007 and 008 and the later IP and subsystem specifications. An interface is SELECTED only where the owner's decision covers it.
 
@@ -191,7 +207,7 @@ Assumptions that the interfaces and sections above rest on:
 | NX-ASM-005 | Dedicated pins were assumed only to count the peripherals; pinmux and package pin assignment are not decided. | NX-REQ-019 to NX-REQ-026 |
 | NX-ASM-006 | The frequency, bandwidth and power figures are targets or interface arithmetic, with no timing, bandwidth or power result behind them. | NX-REQ-059; NX-REQ-066 |
 
-## 13. Open-issues register
+## 14. Open-issues register
 
 Every unresolved item is listed here with an owner and a status. The owner of every item is Dinesh (interim, not independent). The status is OPEN until the item is resolved by a requirement or decision change; this document does not resolve any of them. The four gaps keep their canonical identifiers and are not renumbered; the other items take NX-ARCH-OI identifiers, which are stable and never reused.
 
