@@ -24,4 +24,4 @@ Inputs: The A0 integration draft ([architecture/A0_INTEGRATION_DRAFT.md](../../a
 
 Verification method: Architecture review; the owner records any decision promoted to SELECTED.
 
-Progress note: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, version 0.6.0) has the rules, system context, domain map, a section for every domain, RTL partitioning, simulator and prototype architecture, the interface register and the open-issues register. Not yet covered: the architecture index. The status stays IN_PROGRESS until the owner moves it to review.
+Progress note: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, version 0.7.0, after an external review by ChatGPT that found no label stronger than the register supports) has the rules, system context, domain map, a section for every domain, RTL partitioning, simulator and prototype architecture, the interface register and the open-issues register. Not yet covered: the architecture index. The status stays IN_PROGRESS until the owner moves it to review.
