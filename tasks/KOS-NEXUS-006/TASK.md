@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | Milestone | NX-M1 |
-| Status | IN_PROGRESS (started by Dinesh on 2026-11-07; proposed, not baselined; Nexus is outside the V2 plan and is not registered in kritva-program) |
+| Status | IN_REVIEW (started by Dinesh on 2026-11-07; submitted for owner review on 2026-11-08; proposed, not baselined; Nexus is outside the V2 plan and is not registered in kritva-program) |
 | Weight | none (no baseline; Nexus is planned for the V3 plan) |
 | Depends on | none (input: KOS-NEXUS-084) |
 | Workstream | ARCH |
@@ -24,4 +24,4 @@ Inputs: The A0 integration draft ([architecture/A0_INTEGRATION_DRAFT.md](../../a
 
 Verification method: Architecture review; the owner records any decision promoted to SELECTED.
 
-Progress note: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, version 0.7.0, after an external review by ChatGPT that found no label stronger than the register supports) has the rules, system context, domain map, a section for every domain, RTL partitioning, simulator and prototype architecture, the interface register and the open-issues register. Not yet covered: the architecture index. The status stays IN_PROGRESS until the owner moves it to review.
+Progress note: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, version 0.7.0, after an external review by ChatGPT that found no label stronger than the register supports) has the rules, system context, domain map, a section for every domain, RTL partitioning, simulator and prototype architecture, the interface register and the open-issues register, and [architecture/README.md](../../architecture/README.md) is the index. The task is IN_REVIEW; acceptance is the owner's decision. The NX-M1 architecture outcome is not complete: AC-013 to AC-016 still need their questions resolved or kept as owner-approved open dispositions.
