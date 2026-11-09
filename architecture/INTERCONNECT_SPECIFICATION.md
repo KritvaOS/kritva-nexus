@@ -5,7 +5,7 @@
 | Document ID | KOS-NEXUS-ARCH-002 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Specification |
-| Status | DRAFT (first part: proposals for NX-ARCH-GAP-001 and NX-ARCH-GAP-004; not reviewed or approved) |
+| Status | DRAFT (first part: the route for NX-ARCH-GAP-001 is selected by the owner; proposal for NX-ARCH-GAP-004; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
 | Version | 0.1.0-draft |
@@ -20,7 +20,7 @@ This document specifies the application AXI and memory-access architecture of th
 
 ## 1. Status of this part
 
-Everything here is a PROPOSAL (label PROPOSED). Neither gap is closed by this document: NX-REQ-027 and NX-REQ-030 stay OPEN in the requirements register, and the gaps stay OPEN in the system architecture, until the owner states a decision for each. After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
+With one exception, everything here is a PROPOSAL (label PROPOSED). The exception is the route in section 3: on 2026-11-09 the owner chose Option A for NX-ARCH-GAP-001, recorded as NX-DEC-021 and NX-REQ-067 (SELECTED). That choice does not close the gap: the behaviour of the path in 3.1 stays PROPOSED or OPEN, so NX-REQ-027 stays OPEN. NX-ARCH-GAP-004 and NX-REQ-030 stay OPEN until the owner states a decision. After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
 
 Later parts of KOS-NEXUS-007 add the secure fabric, the APB bridge details, QoS and protection at the memory-access layer and the connectivity matrix.
 
@@ -64,17 +64,20 @@ The path from a C910 load or store to an APB register, and back, carries registe
 | B | C910, AXI-0, the APB-0 and APB-1 bridges as direct slaves of AXI-0 | Shortest route for the CPU; no conversion bridge | Peripheral registers sit on the CPU and memory fabric; the bridges' clock and width conversion load AXI-0; other masters needing register access would need a path to AXI-0 |
 | C | A separate peripheral or uncached port of the C910 cluster to the bridges | Isolates register traffic from the memory port | Depends on the selected C910 configuration offering such a port; UNVERIFIED and tied to NX-ARCH-OI-001 |
 
-### 3.3 Recommendation (PROPOSED)
+### 3.3 Selected route and proposed behaviour
 
-Option A, subject to the C910 configuration check. Register accesses are routed from AXI-0 to AXI-3 by the AXI-0 decode and an AXI fabric bridge (a bridge between the named fabrics, not an AXI4 to AXI3 protocol conversion; the protocol version on each side is assumed AXI4 and is OPEN for AXI-3 and the APB bridges); AXI-3 decodes the APB-0 and APB-1 windows. The accesses are device-type and strongly ordered, with one outstanding transaction per APB target unless a later analysis shows otherwise. An access to an unmapped address returns DECERR; a denied access returns SLVERR; an APB PSLVERR is returned as SLVERR; each reaches the C910 as a bus error. A bridge timeout for a hung slave returns SLVERR; the timeout value is OPEN. The bridge enforces a trusted address-window policy with default-deny: an access is issued to APB only if its window and its AxPROT attributes are explicitly allowed, and the check is made before the APB access is issued. AxPROT alone is not the security boundary. The application domain cannot change the policy for secure resources, which are never reachable on this path (NX-REQ-034). Whether Option C is available is confirmed after the C910 configuration check, and the recommendation is revisited if it is.
+The owner chose Option A (SELECTED, NX-DEC-021, NX-REQ-067), subject to the C910 configuration check. The behaviour below is the recommendation made with the option and is PROPOSED until the owner confirms it; it is not selected by the choice of the route.
 
-### 3.4 Decisions requested from the owner
+Option A. Register accesses are routed from AXI-0 to AXI-3 by the AXI-0 decode and an AXI fabric bridge (a bridge between the named fabrics, not an AXI4 to AXI3 protocol conversion; the protocol version on each side is assumed AXI4 and is OPEN for AXI-3 and the APB bridges); AXI-3 decodes the APB-0 and APB-1 windows. The accesses are device-type and strongly ordered, with one outstanding transaction per APB target unless a later analysis shows otherwise. An access to an unmapped address returns DECERR; a denied access returns SLVERR; an APB PSLVERR is returned as SLVERR; each reaches the C910 as a bus error. A bridge timeout for a hung slave returns SLVERR; the timeout value is OPEN. The bridge enforces a trusted address-window policy with default-deny: an access is issued to APB only if its window and its AxPROT attributes are explicitly allowed, and the check is made before the APB access is issued. AxPROT alone is not the security boundary. The application domain cannot change the policy for secure resources, which are never reachable on this path (NX-REQ-034). Whether Option C is available is confirmed after the C910 configuration check, and the recommendation is revisited if it is.
 
-1. Choose the route: A, B or C. Until then NX-REQ-027 stays OPEN.
-2. Confirm the error-response mapping in 3.3, or state another.
-3. State the timeout policy or leave it OPEN with an owner.
-4. Confirm that an access from a master other than the C910 to the APB windows is out of scope for this path, or state which masters need it.
-5. State whether width conversion and the clock crossing are one bridge or separate blocks, and the protocol version of AXI-3 and the APB bridges, or leave both OPEN with an owner.
+### 3.4 Decisions still requested from the owner
+
+Decided: the route is Option A (NX-DEC-021). Still requested, and until they are stated NX-REQ-027 stays OPEN:
+
+1. Confirm the error-response mapping in 3.3, or state another.
+2. State the timeout policy or leave it OPEN with an owner.
+3. Confirm that an access from a master other than the C910 to the APB windows is out of scope for this path, or state which masters need it.
+4. State whether width conversion and the clock crossing are one bridge or separate blocks, and the protocol version of AXI-3 and the APB bridges, or leave both OPEN with an owner.
 
 ## 4. DDR4 controller ingress (NX-ARCH-GAP-004, AC-016)
 
@@ -128,7 +131,7 @@ Keep the MAX (Option A or B) and fix the controller port count from the rule in 
 
 | Gap | Requirement | State after this part |
 |---|---|---|
-| NX-ARCH-GAP-001 | NX-REQ-027 | OPEN; proposal in section 3; four decisions requested |
+| NX-ARCH-GAP-001 | NX-REQ-027 | Route SELECTED (NX-DEC-021, NX-REQ-067); behaviour PROPOSED; gap narrowed and still OPEN; four decisions still requested |
 | NX-ARCH-GAP-004 | NX-REQ-030 | OPEN; method and options in section 4 |
 
 AC-016 is not met by this part. It requires the number and width of the memory-access ports to be derived from documented bandwidth requirements. The missing inputs are the DDR4 data width and controller efficiency assumption, the CPU read and write demand and peak, the NPU model, activation and weight traffic, the concurrent display, Ethernet and camera traffic, and the headroom and QoS or latency constraints. The closure method is the rule in 4.2 once those inputs are documented. Until then the issue stays OPEN with Dinesh as owner; leaving it OPEN is a disposition of the gap, not a pass of the criterion.
