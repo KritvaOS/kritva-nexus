@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-006 accepted by the owner (Dinesh, interim, not independent) and set to ACCEPTED in TASKS.md and the task record, with the merge commits of pull requests 9 to 17 recorded as evidence (type software, architecture review). This is a repository status only: no weight, credit or kritva-program record changes, NX-M1 stays IN_PROGRESS (KOS-NEXUS-007 and 008 not started; the four architecture gaps and two further OPEN requirements remain open, so AC-013 to AC-016 are unresolved) and no completion record exists. Tasks: KOS-NEXUS-006
+
 - KOS-NEXUS-006 moved to IN_REVIEW in TASKS.md and the task record, and `architecture/README.md` added as the index of the architecture documents (linked from README.md). The system architecture (version 0.7.0-draft) is submitted for owner review after the external ChatGPT review and its correction pass. The task is not ACCEPTED, NX-M1 stays IN_PROGRESS and no evidence record exists; AC-013 to AC-016 remain unresolved. Tasks: KOS-NEXUS-006
 
 - KOS-NEXUS-006 correction pass after the external ChatGPT review: `architecture/SYSTEM_ARCHITECTURE.md` (version 0.7.0-draft) adds three external memory interfaces (NX-INT-020 to 022, DDR4, PSRAM and NOR controller to device), an Owner and an Open issue column in the interface register and an Open issue column in the assumptions table, so every OPEN interface and assumption points to an open-issue record owned by Dinesh with status OPEN, and splits the security address-space row into the separation statement (PROPOSED) and the isolation boundary and access paths (OPEN). The review found no label stronger than the register supports; no requirement, decision or label changed. Tasks: KOS-NEXUS-006
