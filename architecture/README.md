@@ -23,8 +23,9 @@ This is the index of the architecture documents in this repository. It lists eac
 | Document | Content | Authority | Status |
 |---|---|---|---|
 | [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture: domains, interface register and open-issues register | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
+| [INTERCONNECT_SPECIFICATION.md](INTERCONNECT_SPECIFICATION.md) | Application AXI and memory-access architecture (KOS-NEXUS-007): proposals for NX-ARCH-GAP-001 and NX-ARCH-GAP-004 | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [A0_INTEGRATION_DRAFT.md](A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion; a reconstruction, not an original document; changed by dated addenda only | INPUT | PROPOSED |
 
 ## Reading order and rules
 
-Read the system architecture first; use the A0 draft only for detail the system architecture leaves out, and treat that detail as PROPOSED or OPEN. Where a document differs from the [requirements register](../requirements/REQUIREMENTS.md) or a [decision record](../decisions/DECISIONS.md), the register or record wins. Interconnect, memory and address-map documents (KOS-NEXUS-007 and 008) are added to this index when they exist.
+Read the system architecture first; use the A0 draft only for detail the system architecture leaves out, and treat that detail as PROPOSED or OPEN. Where a document differs from the [requirements register](../requirements/REQUIREMENTS.md) or a [decision record](../decisions/DECISIONS.md), the register or record wins. Memory and address-map documents (KOS-NEXUS-008) are added to this index when they exist.
