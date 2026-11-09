@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | Milestone | NX-M1 |
-| Status | NOT_STARTED (proposed; Nexus is outside the V2 plan and is not registered in kritva-program) |
+| Status | IN_PROGRESS (started by Dinesh on 2026-11-09; proposed, not baselined; Nexus is outside the V2 plan and is not registered in kritva-program) |
 | Weight | none (no baseline; Nexus is planned for the V3 plan) |
 | Depends on | KOS-NEXUS-006, KOS-NEXUS-084 |
 | Workstream | ARCH |
@@ -20,6 +20,6 @@ Scope: Master and slave connectivity, widths and clock assumptions, the path fro
 
 Out of scope: Interconnect RTL; DDR4 controller IP selection (IP workstream).
 
-Inputs: KOS-NEXUS-006, KOS-NEXUS-084, bandwidth and DMA requirements.
+Inputs: the accepted system architecture ([architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md), KOS-NEXUS-006), the accepted requirements and decisions (KOS-NEXUS-084), the open items NX-ARCH-GAP-001 and NX-ARCH-GAP-004, bandwidth and DMA requirements.
 
 Verification method: Architecture review; bandwidth analysis recorded in the document.
