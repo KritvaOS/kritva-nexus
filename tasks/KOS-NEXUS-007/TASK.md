@@ -23,3 +23,5 @@ Out of scope: Interconnect RTL; DDR4 controller IP selection (IP workstream).
 Inputs: the accepted system architecture ([architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md), KOS-NEXUS-006), the accepted requirements and decisions (KOS-NEXUS-084), the open items NX-ARCH-GAP-001 and NX-ARCH-GAP-004, bandwidth and DMA requirements.
 
 Verification method: Architecture review; bandwidth analysis recorded in the document.
+
+Progress note: the owner chose Option A for NX-ARCH-GAP-001 (NX-DEC-021, NX-REQ-067); the path behaviour is still PROPOSED and NX-REQ-027 stays OPEN. NX-ARCH-GAP-004 is OPEN pending the DDR4 width and the CPU and NPU bandwidth demand. Proposals and the decisions still requested are in [architecture/INTERCONNECT_SPECIFICATION.md](../../architecture/INTERCONNECT_SPECIFICATION.md).

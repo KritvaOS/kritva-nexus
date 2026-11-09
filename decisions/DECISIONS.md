@@ -31,3 +31,4 @@ Rules:
 | [NX-DEC-018](NX-DEC-018.md) | Xuantie C910 application CPU direction | PROPOSED | NX-REQ-001, NX-REQ-029 |
 | [NX-DEC-019](NX-DEC-019.md) | Separate secure AXI interconnect | SELECTED | NX-REQ-032 |
 | [NX-DEC-020](NX-DEC-020.md) | Peripheral instance counts | SELECTED | NX-REQ-019 to NX-REQ-026 |
+| [NX-DEC-021](NX-DEC-021.md) | C910 access to APB peripherals through AXI-0 and AXI-3 | SELECTED | NX-REQ-067, NX-REQ-027 |
