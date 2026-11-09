@@ -22,3 +22,4 @@ Consequences: The route is selected. The following are not decided by this recor
 | Date | Change |
 |---|---|
 | 2026-11-09 | Record created for KOS-NEXUS-007 with label SELECTED. |
+| 2026-11-09 | Addendum: the behaviour of the path is decided in NX-DEC-022; NX-ARCH-GAP-001 is closed by NX-DEC-021 and NX-DEC-022 together. The text above is unchanged. |
