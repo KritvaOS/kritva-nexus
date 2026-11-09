@@ -5,7 +5,7 @@ As of 2026-11-09. Nexus is outside the Kritva Program V2 plan (planned for the V
 | Milestone | Status | Evidence |
 |---|---|---|
 | NX-M0 | NOT_STARTED (KOS-NEXUS-001 not started by the owner) | None |
-| NX-M1 | IN_PROGRESS (KOS-NEXUS-084 ACCEPTED (repository task only); KOS-NEXUS-006 ACCEPTED (repository task only); KOS-NEXUS-007 started by the owner; KOS-NEXUS-008 not started; four A0 architecture gaps open) | None; no exit condition is met |
+| NX-M1 | IN_PROGRESS (KOS-NEXUS-084 ACCEPTED (repository task only); KOS-NEXUS-006 ACCEPTED (repository task only); KOS-NEXUS-007 started by the owner; KOS-NEXUS-008 not started; three A0 architecture gaps open (NX-ARCH-GAP-001 closed)) | None; no exit condition is met |
 | NX-M2 | NOT_STARTED (KOS-NEXUS-018 and 019 not started; external IP availability unverified; FPGA board not selected) | None |
 | NX-M3 | NOT_STARTED (no registered task) | None |
 | NX-M4 | NOT_STARTED (no registered task; IP availability and board decision pending) | None |

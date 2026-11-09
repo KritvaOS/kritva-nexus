@@ -23,7 +23,7 @@ This is the index of the architecture documents in this repository. It lists eac
 | Document | Content | Authority | Status |
 |---|---|---|---|
 | [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture: domains, interface register and open-issues register | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
-| [INTERCONNECT_SPECIFICATION.md](INTERCONNECT_SPECIFICATION.md) | Application AXI and memory-access architecture (KOS-NEXUS-007): proposals for NX-ARCH-GAP-001 and NX-ARCH-GAP-004 | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
+| [INTERCONNECT_SPECIFICATION.md](INTERCONNECT_SPECIFICATION.md) | Application AXI and memory-access architecture (KOS-NEXUS-007): decisions for NX-ARCH-GAP-001 and proposals for NX-ARCH-GAP-004 | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [A0_INTEGRATION_DRAFT.md](A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion; a reconstruction, not an original document; changed by dated addenda only | INPUT | PROPOSED |
 
 ## Reading order and rules
