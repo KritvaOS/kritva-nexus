@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-007 started by the owner (Dinesh): status IN_PROGRESS in TASKS.md and the task record, whose Inputs now link the accepted system architecture and name NX-ARCH-GAP-001 and NX-ARCH-GAP-004 as its open items. NX-M1 stays IN_PROGRESS. The interconnect specification follows in its own pull requests, and the gap closures are proposals until the owner states a decision; no requirement or decision changes here. Tasks: None (status change; implementation follows in its own pull request)
+
 - KOS-NEXUS-006 accepted by the owner (Dinesh, interim, not independent) and set to ACCEPTED in TASKS.md and the task record, with the merge commits of pull requests 9 to 17 recorded as evidence (type software, architecture review). This is a repository status only: no weight, credit or kritva-program record changes, NX-M1 stays IN_PROGRESS (KOS-NEXUS-007 and 008 not started; the four architecture gaps and two further OPEN requirements remain open, so AC-013 to AC-016 are unresolved) and no completion record exists. Tasks: KOS-NEXUS-006
 
 - KOS-NEXUS-006 moved to IN_REVIEW in TASKS.md and the task record, and `architecture/README.md` added as the index of the architecture documents (linked from README.md). The system architecture (version 0.7.0-draft) is submitted for owner review after the external ChatGPT review and its correction pass. The task is not ACCEPTED, NX-M1 stays IN_PROGRESS and no evidence record exists; AC-013 to AC-016 remain unresolved. Tasks: KOS-NEXUS-006
