@@ -4,7 +4,7 @@ Entries in this catalogue are planning candidates. They are not registered tasks
 
 Candidate milestone assignments are provisional. They do not establish any mapping to kritva-program milestones, and Nexus is outside the V2 plan (planned for V3) and not registered in kritva-program. The catalogue uses no task states: the registered task lifecycle belongs to `planning/TASKS.md`. Every entry here has the same descriptive metadata, candidate stage `PLANNING_ONLY`.
 
-Candidate IDs are the identifiers used in the planning discussion and are kept unchanged when a candidate is promoted. They are not renumbered to close gaps. Six identifiers (KOS-NEXUS-001, 006, 007, 008, 018 and 019) were promoted to `planning/TASKS.md` as Stage 1 candidates and are not repeated here; Stage 1 also holds the new KOS-NEXUS-084.
+Candidate IDs are the identifiers used in the planning discussion and are kept unchanged when a candidate is promoted. They are not renumbered to close gaps. Seven identifiers (KOS-NEXUS-001, 006, 007, 008, 018, 019 and 020) were promoted to `planning/TASKS.md` as Stage 1 candidates and are not repeated here; Stage 1 also holds the new KOS-NEXUS-084.
 
 Each candidate has one primary milestone. A candidate that spans two milestones says so in the notes. Candidate titles and deliverables are L1 and L2 outlines; they are decomposed further after the simulator platform and the FPGA board are chosen.
 
@@ -52,7 +52,6 @@ Each candidate has one primary milestone. A candidate that spans two milestones 
 
 | Candidate ID | Title | Workstream | Milestone | Deliverable | Notes |
 |---|---|---|---|---|---|
-| KOS-NEXUS-020 | Define RTL coding and module conventions | RTL | NX-M1 | RTL guidelines | Part of the architecture and engineering specification |
 | KOS-NEXUS-021 | Implement common RTL infrastructure | RTL | NX-M3 | Common RTL library | - |
 | KOS-NEXUS-022 | Implement application AXI/APB infrastructure | RTL | NX-M3 | Interconnect RTL | - |
 | KOS-NEXUS-023 | Implement system control and interrupt infrastructure | RTL | NX-M3 | System control RTL | - |
