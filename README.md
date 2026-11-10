@@ -103,7 +103,7 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture (KOS-NEXUS-006), partial | INPUT, DRAFT | Hand-maintained |
 | [requirements/REQUIREMENTS.md](requirements/REQUIREMENTS.md) | Traceable requirements register | AUTHORITATIVE for requirements, PROPOSED | Yes |
 | [decisions/DECISIONS.md](decisions/DECISIONS.md) | Decision index and records `NX-DEC-NNN.md` with alternatives and rationale | EVIDENCE, PROPOSED | Append only |
-| [standards/RTL_DESIGN_STANDARD.md](standards/RTL_DESIGN_STANDARD.md) | Kritva Nexus RTL design standard (KOS-NEXUS-020), rules with stable IDs and the planned compliance checks | INPUT, DRAFT | Yes |
+| [standards/RTL_DESIGN_STANDARD.md](standards/RTL_DESIGN_STANDARD.md) | Kritva Nexus RTL design standard (KOS-NEXUS-020), rules with stable IDs and the planned compliance checks | AUTHORITATIVE for RTL design rules, SELECTED (NX-DEC-023) | Yes, by change request |
 | `rtl/` | Synthesizable, technology-independent RTL | AUTHORITATIVE for implementation, NOT YET IMPLEMENTED | Yes |
 | `technology/` | Generic, FPGA and ASIC mapping wrappers | AUTHORITATIVE for technology mapping, NOT YET IMPLEMENTED | Yes |
 | `verification/` | Test plans, testbenches, assertions, CDC and RDC plans | AUTHORITATIVE for verification, NOT YET IMPLEMENTED | Yes |

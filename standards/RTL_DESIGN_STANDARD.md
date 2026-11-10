@@ -5,14 +5,14 @@
 | Document ID | KNX-RTL-STD-001 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Engineering Standard |
-| Status | DRAFT (rules PROPOSED until the owner approves the standard by a decision record) |
+| Status | APPROVED (SELECTED by NX-DEC-023; the section 19 check plan and the section 20 defaults stay PROPOSED) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 1.0.1-draft |
+| Version | 1.0.1 |
 | Last Updated | 2026-11-10 |
-| Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
+| Authority | AUTHORITATIVE for Kritva Nexus RTL design rules |
 | Related Tasks / Milestones | KOS-NEXUS-020; NX-M1 |
-| Related Documents | [system architecture](../architecture/SYSTEM_ARCHITECTURE.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [acceptance criteria](../ACCEPTANCE_CRITERIA.md) (AC-030 to AC-033) |
+| Related Documents | [NX-DEC-023](../decisions/NX-DEC-023.md) (approval); [NX-REQ-082 to 091](../requirements/REQUIREMENTS.md); [system architecture](../architecture/SYSTEM_ARCHITECTURE.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [acceptance criteria](../ACCEPTANCE_CRITERIA.md) (AC-030 to AC-033) |
 
 ## Purpose
 
@@ -26,6 +26,7 @@ It is a design-control document. A passing check does not establish functional c
 |---|---|---|
 | 1.0.0-draft | 2026-11-09 | Imported from the draft KNX-RTL-STD-001 v1.0.0 and corrected: sections renumbered and cross-references fixed; stable rule IDs and an enforcement column added; the weight and credit model moved to an informative annex that does not apply to Nexus; roles set to the interim all-owner arrangement; one file-length policy; copyright holder and licence fixed in the source header; the open methodology decisions each given a proposed default or a deciding procedure; automated compliance checks defined (section 19). |
 | 1.0.1-draft | 2026-11-10 | Correction pass after an external ChatGPT review of the merged draft: waiver cross-reference fixed; permanent rule IDs added for the specification (SPC) and low-power (LPW) rules; every A-rule mapped to a check, phase or review-only disposition (section 19.1); result states reconciled for the manifest (19.2, 19.4); clock-source classification, clock muxes, dividers and generated clocks, reset identification and polarity, and array counting defined (19.3, MEM-002); the provisional status of the clock-gating figures stated in full; negative fixtures required (19.6); library wording made future tense; a waiver cannot replace an owner decision record (18.3). |
+| 1.0.1 | 2026-11-10 | Approved by the owner as NX-DEC-023 (SELECTED), all rules, with the section 19 check plan and the section 20 defaults left PROPOSED and the clock-gating figures provisional. The rule text is the reviewed 1.0.1-draft text; only the status, authority, label wording and approval table changed. |
 
 ## 1. Scope and applicability
 
@@ -48,7 +49,7 @@ Nothing here creates RTL, a directory or a tool. Directories such as `rtl/` and 
 
 **Enforcement column.** A automated: a check can decide it from source or tool output, so it is a candidate for CI (section 19). T tool-assisted: a tool produces a report that a reviewer judges. R review only. CI cannot establish that a design is functionally correct or safe: for example, finding a reset synchroniser instance does not prove that every reset release is synchronised correctly.
 
-**Labels.** The standard follows the repository labels. Every rule and default in this document is PROPOSED until the owner approves the standard and records the decision; a PROPOSED item changes by change request (section 18.4). SELECTED needs a recorded decision. OPEN means no default exists yet.
+**Labels.** The standard follows the repository labels. The rules of this document were approved by the owner as NX-DEC-023 and are SELECTED, so they are mandatory for design RTL. The automated compliance checks of section 19 and the methodology defaults of section 20 are PROPOSED, and the clock-gating figures are provisional until section 20 selects them. A PROPOSED item changes by change request; a SELECTED item changes by change request and a new decision record (section 18.4). OPEN means no default exists yet.
 
 A requirement is not satisfied because a design document mentions it; evidence must show implementation and review.
 
@@ -458,7 +459,7 @@ A numeric target used before its decision is selected is reported as provisional
 
 | Role | Name | Decision | Date | Evidence / Record |
 |---|---|---|---|---|
-| Owner and approver of the standard | Dinesh (interim, not independent) | PENDING_OWNER_APPROVAL | | None yet |
+| Owner and approver of the standard | Dinesh (interim, not independent) | SELECTED (all rules; section 19 and section 20 items PROPOSED) | 2026-11-10 | [NX-DEC-023](../decisions/NX-DEC-023.md) |
 
 The other reviewer roles of the imported draft are held by the same person (section 17); no separate entry is made for them, so the table does not suggest independent approval.
 

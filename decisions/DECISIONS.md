@@ -33,3 +33,4 @@ Rules:
 | [NX-DEC-020](NX-DEC-020.md) | Peripheral instance counts | SELECTED | NX-REQ-019 to NX-REQ-026 |
 | [NX-DEC-021](NX-DEC-021.md) | C910 access to APB peripherals through AXI-0 and AXI-3 | SELECTED | NX-REQ-067, NX-REQ-027 |
 | [NX-DEC-022](NX-DEC-022.md) | Behaviour of the C910-to-APB path | SELECTED | NX-REQ-068 to NX-REQ-075 |
+| [NX-DEC-023](NX-DEC-023.md) | Approval of the RTL Design Standard KNX-RTL-STD-001 | SELECTED | NX-REQ-082 to NX-REQ-089 |
