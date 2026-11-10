@@ -8,8 +8,8 @@
 | Status | DRAFT (rules PROPOSED until the owner approves the standard by a decision record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 1.0.0-draft |
-| Last Updated | 2026-11-09 |
+| Version | 1.0.1-draft |
+| Last Updated | 2026-11-10 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-020; NX-M1 |
 | Related Documents | [system architecture](../architecture/SYSTEM_ARCHITECTURE.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [acceptance criteria](../ACCEPTANCE_CRITERIA.md) (AC-030 to AC-033) |
@@ -25,6 +25,7 @@ It is a design-control document. A passing check does not establish functional c
 | Version | Date | Change |
 |---|---|---|
 | 1.0.0-draft | 2026-11-09 | Imported from the draft KNX-RTL-STD-001 v1.0.0 and corrected: sections renumbered and cross-references fixed; stable rule IDs and an enforcement column added; the weight and credit model moved to an informative annex that does not apply to Nexus; roles set to the interim all-owner arrangement; one file-length policy; copyright holder and licence fixed in the source header; the open methodology decisions each given a proposed default or a deciding procedure; automated compliance checks defined (section 19). |
+| 1.0.1-draft | 2026-11-10 | Correction pass after an external ChatGPT review of the merged draft: waiver cross-reference fixed; permanent rule IDs added for the specification (SPC) and low-power (LPW) rules; every A-rule mapped to a check, phase or review-only disposition (section 19.1); result states reconciled for the manifest (19.2, 19.4); clock-source classification, clock muxes, dividers and generated clocks, reset identification and polarity, and array counting defined (19.3, MEM-002); the provisional status of the clock-gating figures stated in full; negative fixtures required (19.6); library wording made future tense; a waiver cannot replace an owner decision record (18.3). |
 
 ## 1. Scope and applicability
 
@@ -43,7 +44,7 @@ Nothing here creates RTL, a directory or a tool. Directories such as `rtl/` and 
 | SHOULD | Expected practice; a deviation needs a recorded reason and review |
 | MAY | Optional |
 
-**Rule identifiers.** Every rule has a permanent identifier `KNX-RTL-<CAT>-NNN`. Checker output, waivers, reviews and requirement rows cite these identifiers. A removed rule is marked RETIRED and its identifier is never reused. Categories: NAM naming, FIL file and module organisation, DOC source header, COD coding, RST reset, CLK clock and clock gating, LIB common library and technology abstraction, CDC clock-domain crossings, LAT latches, MEM memory, VER lint and verification, INT integration, GOV review, exceptions and change control.
+**Rule identifiers.** Every rule has a permanent identifier `KNX-RTL-<CAT>-NNN`. Checker output, waivers, reviews and requirement rows cite these identifiers. A removed rule is marked RETIRED and its identifier is never reused. Categories: SPC specification entry, NAM naming, FIL file and module organisation, DOC source header, COD coding, RST reset, CLK clock and clock gating, LPW low-power RTL, LIB common library and technology abstraction, CDC clock-domain crossings, LAT latches, MEM memory, VER lint and verification, INT integration, GOV review, exceptions and change control.
 
 **Enforcement column.** A automated: a check can decide it from source or tool output, so it is a candidate for CI (section 19). T tool-assisted: a tool produces a report that a reviewer judges. R review only. CI cannot establish that a design is functionally correct or safe: for example, finding a reset synchroniser instance does not prove that every reset release is synchronised correctly.
 
@@ -65,7 +66,11 @@ A requirement is not satisfied because a design document mentions it; evidence m
 
 ## 4. Specification and design entry
 
-Every SoC feature and reusable IP SHALL have a specification before implementation is reported as complete. The specification includes, at least: purpose, scope and non-goals; architecture and submodule split; port list and interface protocols; register map where applicable; clock and reset domains; power domains and modes where applicable; CDC and RDC inventories; common-library dependencies and versions; low-power and clock-gating plan; file and module plan; verification plan and acceptance criteria; lint, CDC, DFT and coverage targets; integration dependencies, risks and open issues. Requirements carry unique identifiers and a verification method, and a TBD value is never presented as an approved design target.
+| ID | Rule | Enf. |
+|---|---|---|
+| KNX-RTL-SPC-001 | Every SoC feature and reusable IP SHALL have a specification before its implementation is reported as complete. | R |
+| KNX-RTL-SPC-002 | The specification SHALL include, at least: purpose, scope and non-goals; architecture and submodule split; port list and interface protocols; register map where applicable; clock and reset domains; power domains and modes where applicable; CDC and RDC inventories; common-library dependencies and versions; low-power and clock-gating plan; file and module plan; verification plan and acceptance criteria; lint, CDC, DFT and coverage targets; integration dependencies, risks and open issues. | R |
+| KNX-RTL-SPC-003 | Requirements SHALL carry unique identifiers and a verification method, and a TBD value SHALL NOT be presented as an approved design target. | R |
 
 ## 5. Naming and interface rules
 
@@ -190,14 +195,15 @@ State encoding is chosen for implementation and verification reasons; no encodin
 | KNX-RTL-CLK-007 | Generated clocks and clock-gating checks SHALL be correct in timing constraints and reports. | T |
 | KNX-RTL-CLK-008 | Gating fanout, granularity, enable source and exceptions SHALL be documented (register in Appendix C). | R |
 | KNX-RTL-CLK-009 | Clock-gating metrics SHALL report numerator, denominator, percentage, exclusions and evidence per metric, SHALL NOT be added together, and are provisional until section 20 decisions STD-D-001 and STD-D-002 are selected. | T |
+| KNX-RTL-CLK-010 | Clock multiplexers, clock dividers and other generated-clock structures SHALL come from approved library modules; any other logic that produces a clock SHALL carry a waiver. | A |
 
-The imported draft listed proposed targets of 99% (single), 80% (dual) and above 60% (quad) clock gating. They stay planning figures only: the classes are not defined (STD-D-001), so none of them is an auditable sign-off metric, and compliance is not claimed from RTL intent but from mapped synthesis reports.
+The imported draft listed proposed targets of 99% (single), 80% (dual) and above 60% (quad) clock gating. They stay provisional planning figures until the classes (STD-D-001), the eligible denominator and the exclusions (STD-D-002) are approved; none of them is an auditable sign-off metric before then, and compliance is not claimed from RTL intent but from mapped synthesis reports.
 
 ## 9. Common RTL library and technology abstraction
 
 ### 9.1 Library as the technology boundary
 
-Kritva Nexus keeps one approved common RTL library of reviewed abstractions for shared infrastructure: single-bit level synchronisers, pulse and event synchronisers, request and acknowledge CDC handshakes, asynchronous FIFOs and multi-bit CDC structures, reset synchronisers, clock-gating wrappers, memory wrappers, tie-high and tie-low cells, isolation, retention and level-shifter abstractions, and DFT and scan wrappers, as the SoC needs them. No module of that library exists yet; the tasks that create them are KOS-NEXUS-021 and KOS-NEXUS-073 to KOS-NEXUS-078 in the [task catalogue](../planning/TASK_CATALOGUE.md).
+Kritva Nexus is to have one approved common RTL library of reviewed abstractions for shared infrastructure: single-bit level synchronisers, pulse and event synchronisers, request and acknowledge CDC handshakes, asynchronous FIFOs and multi-bit CDC structures, reset synchronisers, clock-gating wrappers, memory wrappers, tie-high and tie-low cells, isolation, retention and level-shifter abstractions, and DFT and scan wrappers, as the SoC needs them. No module of that library exists yet; the tasks that create them are KOS-NEXUS-021 and KOS-NEXUS-073 to KOS-NEXUS-078 in the [task catalogue](../planning/TASK_CATALOGUE.md).
 
 ### 9.2 Rules
 
@@ -233,7 +239,10 @@ The crossing is reviewed even when the source contains a two-flop synchroniser: 
 
 ## 11. Low-power RTL
 
-Each IP SHALL identify idle and inactive conditions, clock-gating opportunities and enable conditions, operand-isolation opportunities, always-on logic and wake-up paths, retention and isolation needs, test-mode clock behaviour, and power modes and transitions. Required evidence, where applicable: clock-gating inference and mapped-cell report, gating simulation or assertion results, test-mode override verification, generated-clock and timing checks, activity-based power analysis, power-intent (UPF) checks for isolation and retention, and wake-up and state-restoration verification. This evidence is reported under the evidence rules in the introduction.
+| ID | Rule | Enf. |
+|---|---|---|
+| KNX-RTL-LPW-001 | Each IP SHALL identify idle and inactive conditions, clock-gating opportunities and enable conditions, operand-isolation opportunities, always-on logic and wake-up paths, retention and isolation needs, test-mode clock behaviour, and power modes and transitions. | R |
+| KNX-RTL-LPW-002 | Where applicable, the IP SHALL provide the low-power evidence: clock-gating inference and mapped-cell report, gating simulation or assertion results, test-mode override verification, generated-clock and timing checks, activity-based power analysis, power-intent (UPF) checks for isolation and retention, and wake-up and state-restoration verification. This evidence is reported under the evidence rules in the introduction. | T |
 
 ## 12. Lint and quality gate
 
@@ -262,7 +271,7 @@ A checker treats three cases differently: an intentional latch inside an approve
 | ID | Rule | Enf. |
 |---|---|---|
 | KNX-RTL-MEM-001 | An RTL array larger than the threshold SHALL be implemented through an approved common memory wrapper and SHALL NOT be coded as an ordinary array with the intent of inferring a large flip-flop bank. | A |
-| KNX-RTL-MEM-002 | The threshold applies to each array and is exceeded when its depth is greater than 1,024 words or its capacity (depth multiplied by width, in bits) is greater than 32 Kib. This threshold is PROPOSED (STD-D-013): the imported draft defined 1K entries as 1,024 addressable words independent of width and asked the owner to confirm it, and the added capacity limit is a proposal. A review rule covers collections of arrays that each stay under the threshold. | A |
+| KNX-RTL-MEM-002 | The threshold applies to each array and is exceeded when its depth is greater than 1,024 words or its capacity (depth multiplied by width, in bits) is greater than 32 Kib. This threshold is PROPOSED (STD-D-013): the imported draft defined 1K entries as 1,024 addressable words independent of width and asked the owner to confirm it, and the added capacity limit is a proposal. A review rule covers collections of arrays that each stay under the threshold. Counting (all evaluated after elaboration): a word is one addressable entry; depth is the product of all unpacked dimension sizes of the array; width is the packed bit width of one entry; capacity is depth multiplied by width in bits. A parameterised array is evaluated for every parameter value actually instantiated; an array inside a generate construct is counted per elaborated instance and not summed across instances; a multidimensional array counts as one array. | A |
 | KNX-RTL-MEM-003 | A smaller array MAY use inferred storage, subject to synthesis, area, power, timing and design review, and MAY still be required to use a wrapper where the method requires it. | R |
 | KNX-RTL-MEM-004 | A fallback flip-flop implementation of a large array, or an array outside a wrapper, requires a waiver with area, power, timing, verification and DFT impact. | A (waiver) |
 
@@ -332,11 +341,11 @@ KNX-RTL-GOV-001: the review record shows which responsibilities were reviewed (a
 
 ### 18.2 No silent waiver
 
-KNX-RTL-GOV-002: no team or IP may waive a rule silently; every deviation is a waiver under 17.3.
+KNX-RTL-GOV-002: no team or IP may waive a rule silently; every deviation is a waiver under section 18.3.
 
 ### 18.3 Waivers
 
-An exception to a rule is a waiver entry in `rtl/waivers.yml`, created by the task that adds RTL (the file is not created before real RTL exists). Each entry has: rule identifier; exact file and module or instance scope; technical justification; alternatives considered; functional, verification, timing, power, CDC and RDC, DFT and portability impact; compensating controls; risk and mitigation; approver; approval or decision reference; expiry or review condition. A waiver for one IP does not apply to another, a waiver is never global, and an entry that lacks an approver, a reference or a scope fails the check (KNX-RTL-GOV-003). Interim approval by Dinesh is recorded as not independent.
+An exception to a rule is a waiver entry in `rtl/waivers.yml`, created by the task that adds RTL (the file is not created before real RTL exists). Each entry has: rule identifier; exact file and module or instance scope; technical justification; alternatives considered; functional, verification, timing, power, CDC and RDC, DFT and portability impact; compensating controls; risk and mitigation; approver; approval or decision reference; expiry or review condition. A waiver for one IP does not apply to another, a waiver is never global, and an entry that lacks an approver, a reference or a scope fails the check (KNX-RTL-GOV-003). Interim approval by Dinesh is recorded as not independent. A waiver cannot replace an owner decision record: it cannot change a SELECTED decision, and approving a waiver is not approval of this standard.
 
 ### 18.4 Change control
 
@@ -346,39 +355,65 @@ KNX-RTL-GOV-004: this standard changes by change request: a pull request that ed
 
 This section describes how the A-rules are checked in CI. It is a proposal: no checker, workflow or toolchain exists yet, and tool choice and pinning belong to KOS-NEXUS-002 and KOS-NEXUS-003. A passing check is software evidence only when it records target, tool and version, configuration revision, source commit and run ID.
 
-### 19.1 Checks and phases
+### 19.1 Checks, rule mapping and phases
 
-| Check | Rules | Method | Phase |
+Every A-rule (including A with warn, waiver, name, lint, flag or instance) is mapped to a check below. An A-rule that appears in no row is a defect in this standard. T and R rules are not automated: their tool output or review record is judged by the reviewer and is reported as review-only, never as a CI pass.
+
+| Check | A-rules covered | Method | Phase |
 |---|---|---|---|
 | Port naming | NAM-001, 002, 005 | Parse module ports with a SystemVerilog parser (proposed: slang) and check every port | 1 |
-| Clock and reset naming | NAM-006 to 011, RST-001, 002, CLK-001 | Same parse, with sensitivity lists for edge use | 1 |
-| Source header and licence | DOC-001 to 004 | Check field presence, format, holder and licence identifier | 1 |
+| Clock and reset naming | NAM-006 to 011, RST-002, name part of RST-001 | Same parse; clock and reset identification as in 19.3 | 1 |
+| Identifier conventions | NAM-003, 012, 013, 015, 016, 017, FIL-007, FIL-008 | Same parse: case, module and file names, parameters, packages, interfaces, one primary module per file | 1 |
+| Source header and licence | DOC-001 to 004 | Check field presence, format, holder and licence identifier (Appendix A.3) | 1 |
 | Maximum file lines | FIL-003 to 005 | Physical line count; warn above 1,000 and 1,500, fail above 2,000 | 1 |
+| Clock edge and procedural constructs | CLK-001, COD-001, 002, 008 | Parse: no negedge or dual-edge sequential block, `always_ff` and `always_comb` use, no `force`, `release` or delay in design RTL | 1 |
+| Waiver validity | GOV-003; RST-003, CLK-002, LAT-004, MEM-004, CDC-009 and the waiver clause of every LIB rule | Check required fields, scope, approver, reference and expiry (section 18.3) | 1 |
+| Lint gate | VER-001 to 003, COD-003, 004, 005 | Lint and elaboration (proposed: Verilator, slang): complete assignment, multiple drivers, undriven signals, width and signedness, report tied to the commit | 2 |
 | Unresolved module and black box | LIB-001, 002 | Elaboration reports unresolved modules and unapproved black boxes | 2 |
-| Multiple drivers, undriven, width | COD-004, 005 | Lint and elaboration (proposed: Verilator, slang) | 2 |
 | Latch inference | LAT-001 to 003, 005 | Lint latch warnings plus a synthesised latch count (proposed: Verilator and Yosys); allow-list only the exact approved clock-gate instance | 2 |
-| Common-library dependency | LIB-001 to 003, 006, RST-006, CLK-003, 004, CDC-002 | Instantiated modules resolve to manifest entries; flag foundry cells, assign-based clock gates and local FIFOs | 2, after the manifest has entries |
-| Memory-wrapper usage | MEM-001, 002, 007 | Source-level array analysis is authoritative; a Yosys memory-inference report is supporting evidence | 2, after the manifest has entries |
-| Waiver validity | GOV-003 and every waiver rule | Check required fields, scope, approver, reference and expiry | 1 |
-| CDC, RDC and reset analysis | CDC and RST review rules | Dedicated tool when one is available; structure detection alone is not a compliance claim | 3 |
+| Common-library dependency | LIB-001 to 004, 006, RST-006, CLK-003, 004, 010, CDC-002 | Instantiated modules resolve to manifest entries; flag foundry cells, technology `ifdef` outside the technology layer, assign-based clock gates, unapproved clock structures and local FIFOs | 2 |
+| Memory-wrapper usage | MEM-001, 002, 007 | Source-level array analysis is authoritative; a Yosys memory-inference report is supporting evidence | 2 |
+| Use-based reset polarity, CDC and RDC analysis | use part of RST-001; CDC and reset review rules | Dedicated tool when one is available; structure detection alone is not a compliance claim | 3 |
 
-Phase 1 needs no manifest. Phases 2 and 3 are enabled only when their toolchain and catalogue exist.
+Phase 1 needs no manifest. Phases 2 and 3 are enabled only when their toolchain exists and, for the library and memory checks, the owner has enabled the check.
 
 ### 19.2 Result states
 
-A check reports PASS, WARN, FAIL, NOT_APPLICABLE or BLOCKED. When no RTL file exists, the result is NOT_APPLICABLE (reason `NO_RTL_PRESENT`) and no compliance claim is made; it is never reported as a pass. An absent toolchain, an empty manifest where a manifest-based check is enabled, or an unavailable tool reports BLOCKED, not PASS. Each finding names the rule ID, file, line and message, and each run writes a report with tool versions, source commit and run ID.
+A check reports PASS, WARN, FAIL, NOT_APPLICABLE or BLOCKED.
 
-### 19.3 Identifying clocks and resets
+| Condition | Result |
+|---|---|
+| No RTL file exists | NOT_APPLICABLE (reason `NO_RTL_PRESENT`); no compliance claim is made, and it is never a pass |
+| An enabled check cannot run: tool absent or not pinned, manifest file missing or failing its schema | BLOCKED, never PASS |
+| RTL exists, the manifest is valid but has no entry for a library-class structure the RTL instantiates | FAIL of the library rule (the RTL uses an unapproved module), not BLOCKED |
+| RTL exists, the manifest is valid and empty, and the RTL instantiates no library-class structure | PASS for the library rules only |
+| A rule finding with a valid waiver | WARN, reported with the waiver ID |
 
-A checker recognises a clock by its name pattern and by use as a clock in an edge-sensitive block or as an input of an approved clock-gate instance, and a reset by its name pattern and use in reset logic. Naming checks use the names; semantics (clock architecture, reset strategy) stay review items.
+Each finding names the rule ID, file, line and message, and each run writes a report with tool versions, source commit and run ID.
+
+### 19.3 Identifying clocks, resets and clock structures
+
+A checker classifies every net before applying a rule, and never decides clock or reset semantics from a name alone.
+
+- **Clock.** A net is a clock if it is a module input port matching NAM-006, appears in an edge-sensitive event control, or is connected to the clock port or output of an approved library clock structure.
+- **Clock sources.** (1) A primary clock port. (2) An approved generated clock: the output of a manifest module of category clock gate, divider or multiplexer. (3) An unapproved generated clock: any other logic output used as a clock, which fails CLK-010 unless it carries a waiver.
+- **Clock as data.** A clock net used as an operand of a logic expression or assignment outside an approved library module fails CLK-004. The bodies of manifest modules are not scanned by this rule.
+- **Clock muxes, dividers and generated clocks.** They must be approved library modules (CLK-010). The matching generated-clock constraints are a review item (CLK-007).
+- **Approved clock-gate exception.** The latch exception of LAT-002 names the exact manifest module and the exact instance (hierarchical path); it covers no other logic in the same module.
+- **Reset.** A net is a reset if it matches the reset name pattern, or appears as an asynchronous term in the event control of an `always_ff`, or is the condition of a top-level reset branch of an `always_ff` (an `if` whose branch assigns constants to the block's registers).
+- **Polarity.** For a net identified as a reset: a `posedge` asynchronous term, a positive-sense reset condition, or a name without `_n` fails RST-001 or RST-002. A synchronous reset that does not match the top-level pattern is identified by name only, and its polarity in use is review-only.
 
 ### 19.4 Approved-module manifest
 
-The approved library is listed in a versioned, machine-readable manifest. It begins as a schema with an empty module list; real module names are added only when the module exists and has been reviewed (no module name is invented here). Each entry has: module name; library category (CDC, reset synchroniser, clock gate, FIFO, memory wrapper, isolation or level shifter, DFT); interface version; approval status; source location or commit; applicable parameters; clock and reset assumptions; verification status; permitted use. A manifest-based check fails only when real RTL violates the policy, not because the manifest is not yet populated.
+The approved library is listed in a versioned, machine-readable manifest. It begins as a schema with an empty module list; real module names are added only when the module exists and has been reviewed (no module name is invented here). Each entry has: module name; library category (CDC, reset synchroniser, clock gate, clock divider, clock multiplexer, FIFO, memory wrapper, isolation or level shifter, DFT); interface version; approval status; source location or commit; applicable parameters; clock and reset assumptions; verification status; permitted use. An empty valid manifest is valid; the results in 19.2 apply. A manifest-based check fails only when real RTL violates the policy, and is BLOCKED only when the manifest cannot be read or fails its schema.
 
 ### 19.5 Mandatory gate
 
 Creating a workflow does not make it a mandatory gate. After the workflow is added (it lives in the protected `.github/workflows/` path and is added by the owner in its own pull request), the owner confirms in branch protection that the check is a required status check.
+
+### 19.6 Checker fixtures
+
+Each check is built with positive and negative fixtures, and the checker tests run in CI. Minimum negative fixtures: a clock port without `clk`; a clock output without `_o`; a negative-edge flop; an assign-based clock gate; a clock used as a data operand; a clock multiplexer, divider or generated clock not from a library module; an active-high reset port; a `posedge` asynchronous reset term; a reset condition in positive sense; a reset port without `_n`; an inferred latch and an approved clock-gate latch with the wrong instance; an array above the threshold outside a wrapper (including a parameterised and a generate case); a file of 1,001, 1,501 and 2,001 lines; a header with a wrong holder or licence; a waiver with no approver, no scope or an expired review condition; and the result-state cases of 19.2 (no RTL, missing manifest, valid empty manifest with and without a library-class instance).
 
 ## 20. Open methodology decisions and proposed defaults
 
