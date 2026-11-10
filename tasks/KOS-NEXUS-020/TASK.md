@@ -24,4 +24,4 @@ Inputs: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITEC
 
 Verification method: Review of the standard against AC-033; each A-rule is checked later by the check that implements it, with positive and negative fixtures.
 
-Progress note: the standard is DRAFT and every rule is PROPOSED. The standard becomes mandatory only when the owner approves it by a decision record and the matching requirement rows; until then the checks in the standard are a plan and no compliance claim is made.
+Progress note: the standard (version 1.0.1) is approved as NX-DEC-023 (SELECTED, all rules) with requirements NX-REQ-082 to NX-REQ-089 (SELECTED) and NX-REQ-090 and NX-REQ-091 (PROPOSED: methodology defaults and the compliance-check plan). The rules are mandatory for design RTL; no RTL, checker, workflow or library manifest exists, so nothing is enforced or evidenced yet. AC-033 is the owner's review; the task stays IN_PROGRESS until the owner moves it to review.
