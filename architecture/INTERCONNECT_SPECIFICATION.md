@@ -5,7 +5,7 @@
 | Document ID | KOS-NEXUS-ARCH-002 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Specification |
-| Status | DRAFT (first part: NX-ARCH-GAP-001 decided by the owner; proposal for NX-ARCH-GAP-004; not reviewed or approved) |
+| Status | DRAFT (NX-ARCH-GAP-001 decided by the owner; NX-ARCH-GAP-004 and the interconnect details proposed; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
 | Version | 0.1.0-draft |
@@ -16,11 +16,11 @@
 
 ## Purpose
 
-This document specifies the application AXI and memory-access architecture of the Nexus SoC. Its first part works on the two open items that belong to KOS-NEXUS-007: the C910 access path to the APB peripherals (NX-ARCH-GAP-001, AC-014) and the DDR4 controller ingress topology and port count (NX-ARCH-GAP-004, AC-016). For each it states the required behaviour, the options, a recommendation and the decisions the owner is asked to make. It is written for the owner and for the engineers who will write the memory and address-map documents (KOS-NEXUS-008) and the interconnect RTL.
+This document specifies the application AXI and memory-access architecture of the Nexus SoC. Its first part works on the two open items that belong to KOS-NEXUS-007: the C910 access path to the APB peripherals (NX-ARCH-GAP-001, AC-014) and the DDR4 controller ingress topology and port count (NX-ARCH-GAP-004, AC-016). For each it states the required behaviour, the options and the decision or proposal. It is written for the owner and for the engineers who will write the memory and address-map documents (KOS-NEXUS-008) and the interconnect RTL.
 
 ## 1. Status of this part
 
-Section 3 records the owner's decisions for NX-ARCH-GAP-001 (SELECTED: NX-DEC-021 and NX-DEC-022, NX-REQ-067 to NX-REQ-075); that gap is closed with the residual items listed in 3.4. Everything else here is a PROPOSAL (label PROPOSED). NX-ARCH-GAP-004 and NX-REQ-030 stay OPEN until the owner states a decision. After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
+Section 3 records the owner's decisions for NX-ARCH-GAP-001 (SELECTED: NX-DEC-021 and NX-DEC-022, NX-REQ-067 to NX-REQ-075); that gap is closed with the residual items listed in 3.4. Everything else here is a PROPOSAL (label PROPOSED), including the resolution of NX-ARCH-GAP-004. The owner asked that no item stay OPEN; a PROPOSED item is changed later by change request (4.6). After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
 
 Later parts of KOS-NEXUS-007 add the secure fabric, the APB bridge details, QoS and protection at the memory-access layer and the connectivity matrix.
 
@@ -32,7 +32,7 @@ Later parts of KOS-NEXUS-007 add the secure fabric, the APB bridge details, QoS 
 | IN-2 | Two AXI-to-APB interconnects (APB-0 and APB-1), 32-bit APB, 200 to 250 MHz target. Only the count is SELECTED. | NX-REQ-016, NX-DEC-015; NX-REQ-052 | SELECTED count; PROPOSED parameters |
 | IN-3 | The C910 attaches to AXI-0 with a 128-bit AXI4 interface and 8 outstanding reads and writes; the C910 configuration is not confirmed. | NX-REQ-051, NX-REQ-056; NX-ARCH-OI-001 | PROPOSED |
 | IN-4 | A Memory Access Crossbar (MAX) with four fabric ingress ports provides arbitration, QoS, address decode and protection toward memory. | NX-REQ-049 | PROPOSED |
-| IN-5 | DDR4 is the primary system memory, targeting DDR4-3200 (3200 MT/s per pin). Data width and capacity are not selected. | NX-REQ-002, NX-DEC-001; NX-REQ-064; NX-ARCH-OI-005 | SELECTED role; PROPOSED target; OPEN width |
+| IN-5 | DDR4 is the primary system memory, targeting DDR4-3200 (3200 MT/s per pin). Data width and capacity are proposed in NX-REQ-076. | NX-REQ-002, NX-DEC-001; NX-REQ-064, NX-REQ-076 | SELECTED role; PROPOSED target, width and capacity |
 | IN-6 | The normal camera, ISP and NPU path does not use DDR4 for intermediates. | NX-REQ-047 | PROPOSED |
 | IN-7 | Peripheral register windows are proposed near 0x40000000 (APB-0 peripherals) and 0x41000000 (APB-1 control). The application address map is held by KOS-NEXUS-008. | NX-REQ-052, NX-REQ-053 | PROPOSED |
 
@@ -50,7 +50,7 @@ The path from a C910 load or store to an APB register, and back, carries registe
 | Bursts | Supported burst types and lengths, burst splitting, alignment, byte strobes and the behaviour for an unsupported transaction |
 | Outstanding traffic | Buffering limits, backpressure, ID handling and how a response is matched to its original AXI transaction after width conversion |
 | Responses | Handling of DECERR, SLVERR, downstream errors and malformed or unsupported transactions |
-| Timeout | Timeout scope, the response, recovery, and whether a timed-out APB transaction can still complete later; the numerical value stays OPEN |
+| Timeout | Timeout scope, the response, recovery, and whether a timed-out APB transaction can still complete later; the numerical value is proposed in 6 |
 | APB errors | PSLVERR propagation and the behaviour for a target that never asserts PREADY |
 | Access control | The trusted address-window decode, the allowed AxPROT attributes, default-deny for any access not explicitly allowed, and that protection is checked before an APB access is issued |
 | Reset | The behaviour of in-flight transactions during bridge or peripheral reset and during clock-domain reset release |
@@ -73,7 +73,7 @@ Route: the C910 reaches the APB-0 and APB-1 register windows through AXI-0, one 
 | Area | Decision | Requirement |
 |---|---|---|
 | Responses | An unmapped address returns DECERR, a denied access returns SLVERR and an APB PSLVERR returns SLVERR; each reaches the C910 as a bus error | NX-REQ-068 |
-| Timeout | A hung APB target times out and returns SLVERR; the value, recovery and late completion are OPEN | NX-REQ-069 |
+| Timeout | A hung APB target times out and returns SLVERR; the value, recovery and late completion are proposed in section 6 | NX-REQ-069 |
 | Masters | C910 only | NX-REQ-070 |
 | Bridge structure | One bridge for width conversion and clock crossing, AXI4 both sides | NX-REQ-071 |
 | Access control | Trusted address-window policy with default-deny, checked before any APB access, AxPROT attributes set per window, secure resources unreachable, policy not changeable by the application domain. AxPROT alone is not the security boundary | NX-REQ-072 |
@@ -85,7 +85,7 @@ Access attributes are device-type, non-cacheable, ordered and non-speculative; t
 
 ### 3.4 Residual items
 
-The gap is closed. These items stay OPEN, owner Dinesh: the timeout value, recovery and whether a timed-out access can complete later (NX-ARCH-OI-033); the buffering limits, backpressure and ID handling of the bridge and the APB protocol version (NX-ARCH-OI-034); and the C910 configuration check (NX-ARCH-OI-001). The address windows are held by KOS-NEXUS-008.
+The gap is closed. The residual items are PROPOSED in section 6: the timeout value and recovery (NX-REQ-080, NX-ARCH-OI-033) and the bridge buffering, ID handling and APB version (NX-REQ-081, NX-ARCH-OI-034). The C910 configuration check (NX-ARCH-OI-001) and the address windows are handled with the address-map work (KOS-NEXUS-008).
 
 ## 4. DDR4 controller ingress (NX-ARCH-GAP-004, AC-016)
 
@@ -98,11 +98,11 @@ The A0 draft documents these DDR4 consumers. All figures are the draft's workloa
 | Display, three full-screen layers, XRGB8888 | 663.552 MB/s read | A0 draft 5.4 |
 | Ethernet, two MACs at 1 Gbps full duplex | 500 MB/s as an upper bound (2 MACs x 2 directions x 125 MB/s); only directions that DMA to or from DDR4 count, descriptor traffic is not included | Derived here from NX-REQ-040 (1000 Mbps per MAC); not an A0 figure |
 | Camera RGB888 output, only if sent to DDR4 (optional use) | 49.152 MB/s write | A0 draft 3.8 |
-| C910 cluster | Not documented | OPEN |
-| NPU models, weights and large activations | Not documented | OPEN, NX-ARCH-OI-010 |
-| DMA buffers, recording, other system memory | Not documented | OPEN; recording and optional intermediates are NX-ARCH-OI-011 |
+| C910 cluster | Not documented; budget proposed in 4.4 | NX-REQ-077 |
+| NPU models, weights and large activations | Not documented; budget proposed in 4.4 | NX-REQ-077; NX-ARCH-OI-010 |
+| DMA buffers, recording, other system memory | Not documented; covered by the unallocated headroom in 4.4 | NX-REQ-077; NX-ARCH-OI-011 |
 
-The documented consumers add up to about 1.213 GB/s. The CPU and NPU, which are expected to dominate DDR4 traffic, have no documented bandwidth. AC-016 therefore cannot be completed from documented requirements: the derivation below is a method with its inputs shown, and the CPU and NPU demand is an owner or engineering input.
+The documented consumers add up to about 1.213 GB/s. The CPU and NPU, which are expected to dominate DDR4 traffic, have no documented bandwidth. Without those inputs the derivation could not be completed from documented requirements, so 4.4 proposes them as budgets and the derivation follows from the proposal.
 
 ### 4.2 Capacity
 
@@ -124,22 +124,49 @@ The rule is: ports = ceil(DDR4 peak bandwidth / per-direction bandwidth of one p
 | B | The MAX presents two ports to the controller, split by address interleave or by traffic class | Covers x32 with 128-bit ports and part of x64; keeps the MAX | Interleave or class split and controller support for multiple ports need specification; extra area and complexity |
 | C | The fabrics connect directly to a multi-port DDR4 controller with no separate MAX | Fewest hops | Conflicts with the proposed MAX (NX-REQ-049) if the MAX is meant to be the sole aggregation point; arbitration, QoS and protection move into the controller IP, which is not selected. A controller with one AXI ingress and internal arbitration is a different topology from a genuinely multi-port controller, and the intended topology must be stated before the options are compared |
 
-### 4.4 Recommendation (PROPOSED)
+### 4.4 Proposed topology and sizing (PROPOSED)
 
-Keep the MAX (Option A or B) and fix the controller port count from the rule in 4.2 once the DDR4 data width and the CPU and NPU demand are stated. Until those two inputs exist, no port count is recommended; the document does not pick a number the inputs cannot support. If the owner states a width and a demand, the table gives the count. If the width is x32 or less, Option A with a 256-bit port is sufficient on theoretical grounds. If it is x64, Option B with two 256-bit ports or four 128-bit ports is the minimum.
+The owner asked that no item stay OPEN and that changes come later by change request. The inputs that were missing in 4.1 are therefore proposed here as sizing choices. They are not measurements and not owner decisions; a change request replaces any of them and the derivation is repeated.
 
-### 4.5 Decisions requested from the owner
+| Input | Proposed value | Requirement |
+|---|---|---|
+| DDR4 data width | x32 at DDR4-3200: 12.8 GB/s theoretical peak; capacity chosen at board level up to the 64 GiB window | NX-REQ-076 |
+| Sustained fraction | 70% of the peak, so 8.96 GB/s sustained | NX-REQ-077 |
+| Display | 0.664 GB/s (documented) | NX-REQ-077 |
+| Ethernet | 0.500 GB/s (upper bound) | NX-REQ-077 |
+| Camera, optional | 0.049 GB/s (documented) | NX-REQ-077 |
+| C910 cluster | 2.0 GB/s budget | NX-REQ-077 |
+| NPU | 5.0 GB/s budget | NX-REQ-077 |
+| Unallocated headroom | 8.96 minus 8.213 = 0.747 GB/s | NX-REQ-077 |
 
-1. State the intended DDR4 data width, or record that it stays OPEN with an owner (NX-ARCH-OI-005).
-2. State the planned CPU and NPU DDR4 bandwidth demand, or ask for an estimate from the NPU and CPU work; until then NX-REQ-030 stays OPEN.
-3. Choose Option A, B or C, or defer the choice until 1 and 2 are known.
-4. State whether the sustained-efficiency assumption is a fixed value or an analysis output.
+Derivation with the rule of 4.2: ports = ceil(12.8 / 16) = 1, using a 256-bit port at 500 MHz (16 GB/s per direction) and the worst case of one direction carrying the whole peak. The sustained demand of 8.213 GB/s also fits one such port. Topology: Option A, the Memory Access Crossbar takes the four fabric ingress ports and presents one 256-bit AXI4 port to the DDR4 controller (NX-REQ-030). A 128-bit port at 500 MHz (8 GB/s) would not carry the x32 peak and is not proposed.
+
+### 4.5 Arbitration (PROPOSED)
+
+The Memory Access Crossbar arbitrates by four QoS classes in priority order: display (real-time, underflow-sensitive), Ethernet DMA, C910, then NPU and other DMA. The lowest class has starvation prevention so that the NPU budget is still served (NX-REQ-078).
+
+### 4.6 Changing this proposal
+
+A change request is a pull request that edits NX-REQ-030 and NX-REQ-076 to NX-REQ-078 and this section, with a changelog entry. Examples: a x64 interface gives ceil(25.6 / 16) = 2 ports of 256-bit, or one port at a width and clock that carry 25.6 GB/s; a different CPU or NPU budget or sustained fraction is recomputed with the same rule. AC-016 asks for the ports to be derived from documented bandwidth requirements: the derivation above is made from the PROPOSED requirements NX-REQ-076 and NX-REQ-077; whether that meets AC-016 is for the owner's review.
 
 ## 5. Effect on the gaps
 
 | Gap | Requirement | State after this part |
 |---|---|---|
-| NX-ARCH-GAP-001 | NX-REQ-027 | CLOSED: route NX-DEC-021, behaviour NX-DEC-022; residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 |
-| NX-ARCH-GAP-004 | NX-REQ-030 | OPEN; method and options in section 4 |
+| NX-ARCH-GAP-001 | NX-REQ-027 | CLOSED: route NX-DEC-021, behaviour NX-DEC-022; residual items proposed in section 6 |
+| NX-ARCH-GAP-004 | NX-REQ-030 | PROPOSED: resolved by the proposal in section 4; changed only by change request |
 
-AC-016 is not met by this part. It requires the number and width of the memory-access ports to be derived from documented bandwidth requirements. The missing inputs are the DDR4 data width and controller efficiency assumption, the CPU read and write demand and peak, the NPU model, activation and weight traffic, the concurrent display, Ethernet and camera traffic, and the headroom and QoS or latency constraints. The closure method is the rule in 4.2 once those inputs are documented. Until then the issue stays OPEN with Dinesh as owner; leaving it OPEN is a disposition of the gap, not a pass of the criterion.
+## 6. Fabric behaviour and bridge details (PROPOSED)
+
+These close the open items NX-ARCH-OI-004, NX-ARCH-OI-033 and NX-ARCH-OI-034 by proposal.
+
+| Area | Proposal | Requirement |
+|---|---|---|
+| Protocol and decode | AXI4 on the four application fabrics and the Memory Access Crossbar; decode by the application address map (held by KOS-NEXUS-008); an unmapped address returns DECERR | NX-REQ-079 |
+| QoS | AxQOS carries the four classes of 4.5 | NX-REQ-078, NX-REQ-079 |
+| Outstanding transactions | Per-master limits are set in the IP specifications; the interconnect supports at least the C910's 8 reads and 8 writes | NX-REQ-079 |
+| C910-to-APB timeout | 1024 bridge-clock cycles; the bridge aborts the access, returns SLVERR, discards a later APB completion, records the event in a status register and raises an error interrupt | NX-REQ-080 |
+| Bridge buffering | One outstanding access per APB target, AXI backpressure while a target is busy, the AXI ID returned on the response | NX-REQ-081 |
+| APB version | APB4 (PSLVERR, PSTRB, PPROT) on APB-0 and APB-1 | NX-REQ-081 |
+
+The timeout value of 1024 cycles and the other figures are proposals; the C910 configuration check (NX-ARCH-OI-001) is handled with the address-map work.

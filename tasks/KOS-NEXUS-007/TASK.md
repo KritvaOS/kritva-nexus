@@ -24,4 +24,4 @@ Inputs: the accepted system architecture ([architecture/SYSTEM_ARCHITECTURE.md](
 
 Verification method: Architecture review; bandwidth analysis recorded in the document.
 
-Progress note: NX-ARCH-GAP-001 is closed: the route (NX-DEC-021) and the behaviour (NX-DEC-022, NX-REQ-068 to NX-REQ-075) are owner decisions, with residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 open. NX-ARCH-GAP-004 is OPEN pending the DDR4 width and the CPU and NPU bandwidth demand. See [architecture/INTERCONNECT_SPECIFICATION.md](../../architecture/INTERCONNECT_SPECIFICATION.md).
+Progress note: NX-ARCH-GAP-001 is closed by owner decisions (NX-DEC-021, NX-DEC-022); NX-ARCH-GAP-004 and the interconnect open issues are resolved by PROPOSED requirements (NX-REQ-030, NX-REQ-076 to NX-REQ-081), changed only by change request. See [architecture/INTERCONNECT_SPECIFICATION.md](../../architecture/INTERCONNECT_SPECIFICATION.md).

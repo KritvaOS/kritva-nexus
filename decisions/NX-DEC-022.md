@@ -33,3 +33,4 @@ Consequences: With NX-DEC-021 the path is defined end to end. NX-REQ-027 is supe
 | Date | Change |
 |---|---|
 | 2026-11-09 | Record created for KOS-NEXUS-007 with label SELECTED. |
+| 2026-11-09 | Addendum: the residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 are proposed (NX-REQ-080, NX-REQ-081, PROPOSED), not decided here; the text above is unchanged. |
