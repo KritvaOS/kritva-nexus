@@ -11,7 +11,7 @@
 | Proposal status | PROPOSED |
 | Owner and reviewer | Dinesh (interim, not independent) |
 | Acceptance | [ACCEPTANCE_CRITERIA.md](../../ACCEPTANCE_CRITERIA.md): AC-033 (module-size guidelines and RTL coding guidelines written and applied). The checks named in AC-030 to AC-032 are implemented by later tasks (for example KOS-NEXUS-081) and are not part of this task. |
-| Deliverables | `standards/RTL_DESIGN_STANDARD.md` (KNX-RTL-STD-001; written in the next pull request) with stable rule identifiers, an enforcement level per rule, a proposed compliance-check plan, a waiver format and a manifest schema. |
+| Deliverables | [standards/RTL_DESIGN_STANDARD.md](../../standards/RTL_DESIGN_STANDARD.md) (KNX-RTL-STD-001) with stable rule identifiers, an enforcement level per rule, a proposed compliance-check plan, a waiver format and a manifest schema. |
 | Acceptance evidence | None yet. Merge commit SHA, pull request, review record. Evidence type: software. |
 
 Objective: Define the RTL coding, naming, file, reset, clock, library, memory and latch conventions for Kritva Nexus, and say which rules a CI check can decide.
