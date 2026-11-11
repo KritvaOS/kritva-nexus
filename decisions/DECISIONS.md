@@ -34,3 +34,4 @@ Rules:
 | [NX-DEC-021](NX-DEC-021.md) | C910 access to APB peripherals through AXI-0 and AXI-3 | SELECTED | NX-REQ-067, NX-REQ-027 |
 | [NX-DEC-022](NX-DEC-022.md) | Behaviour of the C910-to-APB path | SELECTED | NX-REQ-068 to NX-REQ-075 |
 | [NX-DEC-023](NX-DEC-023.md) | Approval of the RTL Design Standard KNX-RTL-STD-001 | SELECTED | NX-REQ-082 to NX-REQ-089 |
+| [NX-DEC-024](NX-DEC-024.md) | Claude co-author line and session reference for Nexus commits | SELECTED | None (repository working rule) |
