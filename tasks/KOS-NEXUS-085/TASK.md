@@ -31,3 +31,5 @@ Out of scope: the PDF generation script and CI check, any change to a requiremen
 Inputs: [architecture/SYSTEM_ARCHITECTURE.md](../../architecture/SYSTEM_ARCHITECTURE.md), [architecture/INTERCONNECT_SPECIFICATION.md](../../architecture/INTERCONNECT_SPECIFICATION.md), [requirements/REQUIREMENTS.md](../../requirements/REQUIREMENTS.md), [decisions/DECISIONS.md](../../decisions/DECISIONS.md).
 
 Verification method: Review that every row traces to an NX-REQ ID with the register label and adds no value; page count checked once the generator exists.
+
+Progress note: the first draft is [datasheet/NEXUS_DATASHEET.md](../../datasheet/NEXUS_DATASHEET.md) with the block diagram [datasheet/nexus_block_diagram.svg](../../datasheet/nexus_block_diagram.svg), linked from the README. A test render fitted six A4 pages. It has no approval record, the PDF generation script and CI page-count check are still to do under owner-only paths, and the task stays IN_PROGRESS until the owner moves it to review.
