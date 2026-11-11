@@ -8,7 +8,7 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.2.0-draft |
+| Version | 0.2.1-draft |
 | Last Updated | 2026-11-11 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -65,7 +65,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Interrupt controllers | Application, security and always-on controllers | OPEN | 057 |
 | Always-on domain | Wake-up, reset, security and power control | OPEN | 031 |
 | Clock, reset and power control | PLLs, DVFS, power and reset domains, critical faults | SELECTED (017, 018); PROPOSED (058 to 063, 066) | 017, 018, 058 to 063, 066 |
-| Debug and lifecycle | Debug authorisation and lifecycle (no requirement yet) | OPEN | none (NX-ARCH-OI-020) |
+| Debug and lifecycle | Debug interface and authorisation not yet defined; no NX-REQ exists, tracked by NX-ARCH-OI-020 | OPEN | none (NX-ARCH-OI-020) |
 
 ## 3. External interfaces
 
@@ -73,7 +73,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 
 | Interface | Planned description | Label | NX-REQ | NX-INT |
 |---|---|---|---|---|
-| DDR4 | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window | SELECTED (002); PROPOSED (064, 076) | 002, 064, 076 | 020 |
+| DDR4 | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the OPEN application address width | SELECTED (002); PROPOSED (064, 076); OPEN (029) | 002, 029, 064, 076 | 020 |
 | Octal SPI PSRAM | Secondary memory device; controller target 200 to 400 MHz; protocol, mode and capacity not selected | SELECTED (003); PROPOSED (065) | 003, 065 | 021 |
 | OSPI NOR | Primary boot medium; device and controller details not selected | SELECTED | 004 | 022 |
 | Ethernet | Two ports, 10/100/1000 Mbps over RGMII with external PHYs; EtherCAT MainDevice operation | SELECTED (008); PROPOSED (040, 041) | 008, 040, 041 | 009 |
@@ -82,7 +82,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Peripheral I/O | Counts only: 16 PWM, 32 GPIO, 4 UART, 4 I2C, 1 SPI master, 1 SPI slave, 2 I2S; pin allocation not decided | SELECTED | 019 to 026 | 010 |
 | Clocks, power and reset | Four integer and two fractional PLLs; seven power domains; eight reset domains; the external clock, reset and power pins are not defined | PROPOSED | 058, 059, 060, 061, 066 | 017, 018 |
 | Critical fault inputs | Thermal, power and tamper faults with a hardware response independent of application CPU execution | PROPOSED | 063 | 019 |
-| Debug and lifecycle | Debug interface and lifecycle authorisation not defined | OPEN | none (NX-ARCH-OI-020) | none |
+| Debug and lifecycle | Debug interface and lifecycle authorisation not defined; no NX-REQ exists, tracked by NX-ARCH-OI-020 | OPEN | none (NX-ARCH-OI-020) | none |
 | Always-on wake sources | Always-on domain and its wake sources (8 to 16 sources) not defined | OPEN | 031, 057 | 015 |
 
 ## 4. Application CPU, interconnect and memory
@@ -104,7 +104,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | C910-to-APB behaviour | DECERR unmapped, SLVERR denied or APB error; default-deny address windows checked before issue; strongly ordered, one access per target; single-beat only; in-flight access completes SLVERR at reset; C910 only | SELECTED | 068, 070, 072 to 075 |
 | C910-to-APB timeout | A hung target returns SLVERR; a timeout of 1024 bridge-clock cycles is proposed | SELECTED (069); PROPOSED (080) | 069, 080 |
 | DDR4 primary memory | DDR4 | SELECTED | 002 |
-| DDR4 interface | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window | PROPOSED | 064, 076 |
+| DDR4 interface | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the OPEN application address width | PROPOSED (064, 076); OPEN (029) | 029, 064, 076 |
 | DDR4 ingress | One 256-bit AXI4 port at 500 MHz from the crossbar | PROPOSED | 030 |
 | DDR4 planning figures | Theoretical peak 12.8 GB/s; 70% sustained fraction (8.96 GB/s); budgets display 0.664, Ethernet 0.500, optional camera 0.049, C910 2.0, NPU 5.0, headroom 0.747 GB/s. Sizing figures, not measurements | PROPOSED | 077 |
 | Secondary memory | Octal SPI PSRAM; controller target 200 to 400 MHz | SELECTED (003); PROPOSED (065) | 003, 065 |
@@ -115,7 +115,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 
 ## 5. Internal connectivity
 
-The internal connectivity is shown in Appendix A (Figure 2). Each link carries the label of the interface register entry it comes from. A link that the registers do not define is not drawn, and a link whose requirement is OPEN is drawn dotted or left out with a note.
+The internal connectivity is shown in Appendix A (Figure 2). The interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) is authoritative for these interfaces; this table restates it and must be updated whenever the register changes. Each link in the diagram carries the label of the interface register entry it comes from. A link that the registers do not define is not drawn, and a link whose requirement is OPEN is drawn dotted or left out with a note.
 
 | Interface | Between | Label | NX-INT | NX-REQ |
 |---|---|---|---|---|
@@ -186,7 +186,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Cryptography | AES-128 and AES-256; SHA-256; an asymmetric accelerator whose algorithms are not yet defined | SELECTED (013, 014); PROPOSED (035) | 013, 014, 035 |
 | Secure interconnect | Dedicated, separate secure AXI interconnect; 32-bit data and address, 2 outstanding reads and 2 writes | SELECTED (032); PROPOSED (033) | 032, 033 |
 | Application exclusion | The application AXI is planned not to reach security ROM, SRAM, eFuse, key management or the security interrupt controller; raw secrets are not to be exposed through application interfaces | PROPOSED | 034, 039 |
-| Secure boot | Proposed sequence: the security core starts first, authenticates the OSPI NOR image from immutable ROM and authorises C910 reset release; C910 reset is hardware-controlled by the security domain; a C910 warm reset does not reset it | PROPOSED | 036, 037, 038 |
+| Secure boot | Proposed sequence: the security core is to start first, authenticate the OSPI NOR image from immutable ROM and authorise C910 reset release; C910 reset is hardware-controlled by the security domain; a C910 warm reset does not reset it | PROPOSED | 036, 037, 038 |
 | Secure address map | Separate secure address space proposed | PROPOSED | 054 |
 | Secure and application address spaces | Separation and treatment of overlapping ranges not yet defined | OPEN | 028 |
 | Always-on domain | Responsibilities and interfaces not yet defined | OPEN | 031 |
@@ -197,7 +197,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Reset domains | Eight: AON, SEC, CPU, MEM, AI, ISP, DISP, IO; asynchronous assertion, synchronous deassertion | PROPOSED | 061 |
 | CDC and RDC | Every crossing is planned to use a synchroniser, asynchronous FIFO or reset synchroniser and to be checked, with documented waivers | PROPOSED | 062 |
 | Interrupts | Application controller with 128 sources, security controller with 32, always-on controller with 8 to 16 wake sources; PLIC versus AIA not decided | OPEN | 057 |
-| DVFS | C910 and NPU | SELECTED | 017, 018 |
+| DVFS | DVFS planned for the C910 and the NPU (selected requirements) | SELECTED | 017, 018 |
 
 ## 9. Open items, design baseline and status
 
@@ -221,6 +221,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 |---|---|---|
 | 0.1.0-draft | 2026-11-11 | First draft for KOS-NEXUS-085, derived from NX-REQ-001 to NX-REQ-091 and NX-DEC-001 to NX-DEC-023 |
 | 0.2.0-draft | 2026-11-11 | Page budget set by the owner to 8 to 12 pages. Single diagram replaced by an external interface view and an internal connectivity view. Added the external interface, internal connectivity and debug items; split mixed labels per requirement; DVFS and safety wording changed to planned wording. Changes follow the ChatGPT review of 2026-11-11 |
+| 0.2.1-draft | 2026-11-11 | Second ChatGPT review: diagram link style now follows the label of each NX-INT entry (display and peripheral I/O links dashed); NX-INT tags added to more links; DDR4 capacity marked subject to the OPEN address width (NX-REQ-029); debug row states that no NX-REQ exists; secure-boot and DVFS wording tightened; the interface register is stated to be authoritative for section 5 |
 
 ## Appendix A. Internal connectivity view
 
