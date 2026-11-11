@@ -14,6 +14,7 @@
 | Technical Owner | Dinesh (interim, not independent) |
 | Security Owner | Dinesh (program Security Owner, D-032 in kritva-program) |
 | Architecture | Not yet defined |
+| Datasheet | [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) (DERIVED, DRAFT; preliminary planning summary of the requirements register) |
 | Milestones | [planning/MILESTONE.md](planning/MILESTONE.md) (PROPOSED) |
 | Tasks | [planning/TASKS.md](planning/TASKS.md) (PROPOSED) |
 | Acceptance Criteria | [ACCEPTANCE_CRITERIA.md](ACCEPTANCE_CRITERIA.md) (PROPOSED) |
@@ -62,7 +63,6 @@ A document that is planned but not written has no link here. Open items that mus
 |---|---|---|
 | [LICENSE](LICENSE) | REFERENCE, in force | Under what terms the repository may be used |
 | This README | REFERENCE (navigation), DRAFT | What the repository is for and what exists |
-| [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) | DERIVED, DRAFT | What the planned Nexus blocks and features are, as a short preliminary datasheet that restates the requirements register |
 | [AGENTS.md](AGENTS.md) | AUTHORITATIVE for repository working rules, DRAFT | Who decides, what agents must not change, commit and evidence rules |
 | [ACCEPTANCE_CRITERIA.md](ACCEPTANCE_CRITERIA.md) | AUTHORITATIVE for acceptance, PROPOSED | What makes a task, gate or milestone acceptable |
 | [planning/TASKS.md](planning/TASKS.md) | INPUT (read by program tooling), PROPOSED | Which Stage 1 tasks are proposed and their details |
