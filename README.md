@@ -105,8 +105,9 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | [requirements/REQUIREMENTS.md](requirements/REQUIREMENTS.md) | Traceable requirements register | AUTHORITATIVE for requirements, PROPOSED | Yes |
 | [decisions/DECISIONS.md](decisions/DECISIONS.md) | Decision index and records `NX-DEC-NNN.md` with alternatives and rationale | EVIDENCE, PROPOSED | Append only |
 | [standards/RTL_DESIGN_STANDARD.md](standards/RTL_DESIGN_STANDARD.md) | Kritva Nexus RTL design standard (KOS-NEXUS-020), rules with stable IDs and the planned compliance checks | AUTHORITATIVE for RTL design rules, SELECTED (NX-DEC-023) | Yes, by change request |
-| [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) | Preliminary planning datasheet of 3 to 6 pages (KOS-NEXUS-085): blocks, consolidated features and per-block feature list, each row traced to NX-REQ IDs; the PDF is generated and not committed | DERIVED (not AUTHORITATIVE), DRAFT | Yes |
-| [datasheet/nexus_block_diagram.svg](datasheet/nexus_block_diagram.svg) | Block diagram used by the datasheet | DERIVED, DRAFT | Yes |
+| [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) | Preliminary planning datasheet of 8 to 12 pages (KOS-NEXUS-085): blocks, consolidated features, external interfaces, internal connectivity and per-block feature list, each row traced to NX-REQ IDs; the PDF is generated and not committed | DERIVED (not AUTHORITATIVE), DRAFT | Yes |
+| [datasheet/nexus_external_interfaces.svg](datasheet/nexus_external_interfaces.svg) | External interface diagram used by the datasheet | DERIVED, DRAFT | Yes |
+| [datasheet/nexus_internal_connectivity.svg](datasheet/nexus_internal_connectivity.svg) | Internal AXI and security connectivity diagram used by the datasheet | DERIVED, DRAFT | Yes |
 | `rtl/` | Synthesizable, technology-independent RTL | AUTHORITATIVE for implementation, NOT YET IMPLEMENTED | Yes |
 | `technology/` | Generic, FPGA and ASIC mapping wrappers | AUTHORITATIVE for technology mapping, NOT YET IMPLEMENTED | Yes |
 | `verification/` | Test plans, testbenches, assertions, CDC and RDC plans | AUTHORITATIVE for verification, NOT YET IMPLEMENTED | Yes |
