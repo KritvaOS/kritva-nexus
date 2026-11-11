@@ -62,6 +62,7 @@ A document that is planned but not written has no link here. Open items that mus
 |---|---|---|
 | [LICENSE](LICENSE) | REFERENCE, in force | Under what terms the repository may be used |
 | This README | REFERENCE (navigation), DRAFT | What the repository is for and what exists |
+| [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) | DERIVED, DRAFT | What the planned Nexus blocks and features are, as a short preliminary datasheet that restates the requirements register |
 | [AGENTS.md](AGENTS.md) | AUTHORITATIVE for repository working rules, DRAFT | Who decides, what agents must not change, commit and evidence rules |
 | [ACCEPTANCE_CRITERIA.md](ACCEPTANCE_CRITERIA.md) | AUTHORITATIVE for acceptance, PROPOSED | What makes a task, gate or milestone acceptable |
 | [planning/TASKS.md](planning/TASKS.md) | INPUT (read by program tooling), PROPOSED | Which Stage 1 tasks are proposed and their details |
@@ -73,7 +74,6 @@ A document that is planned but not written has no link here. Open items that mus
 | [planning/CHANGELOG.md](planning/CHANGELOG.md) | EVIDENCE, PROPOSED | Record of changes to the repository |
 | [CONTRIBUTING.md](CONTRIBUTING.md) | REFERENCE, DRAFT | How to contribute |
 | [SECURITY.md](SECURITY.md) | AUTHORITATIVE for reporting, DRAFT | How to report a vulnerability |
-| [datasheet/NEXUS_DATASHEET.md](datasheet/NEXUS_DATASHEET.md) | DERIVED, DRAFT | What the planned Nexus blocks and features are, as a short preliminary datasheet that restates the requirements register |
 
 The A0 integration draft is in [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) as a PROPOSED import. The consolidated system architecture is being written in [architecture/SYSTEM_ARCHITECTURE.md](architecture/SYSTEM_ARCHITECTURE.md) (DRAFT, partial).
 
