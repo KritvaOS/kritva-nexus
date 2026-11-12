@@ -3,12 +3,13 @@
 # Label: PROPOSED (NX-REQ-054). Bases are proposals from A0 draft section 7.4; sizes are proposals of this file.
 # The secure space is separate from the application space: numerical overlap with
 # application_map.yaml is not a conflict (NX-REQ-028, NX-REQ-033, NX-REQ-034).
-# The isolation boundary and the permitted access paths are OPEN (NX-ARCH-GAP-002).
+# The boundary has exactly two controlled crossings (NX-DEC-027, NX-REQ-105): the Application boot window
+# below and the Mailbox below; every other security resource is unreachable from the application space.
 # The access attributes of the secure space are not defined (NX-ARCH-OI-021).
 # Any address not listed is unmapped.
 space: secure
 document: KOS-NEXUS-ADDRMAP-002
-version: 0.1.0-draft
+version: 0.2.0-draft
 address_width_bits: 32
 address_width_label: PROPOSED
 address_width_records: [NX-REQ-033]
@@ -99,3 +100,20 @@ regions:
     label: PROPOSED
     records: [NX-REQ-054]
     note: Window size proposed.
+  - name: Mailbox (secure side)
+    base: 0x20090000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-105, NX-REQ-107, NX-REQ-054]
+    note: Secure-side register window of the mailbox crossing; the application side window is in the application peripheral register space (NX-ARCH-OI-036, NX-ARCH-OI-037). Window size proposed.
+  - name: Application boot window
+    base: 0x30000000
+    size: 0x00100000
+    class: crossing_alias
+    label: PROPOSED
+    records: [NX-REQ-105, NX-REQ-106, NX-REQ-054]
+    target_space: application
+    target_region: System SRAM
+    target_base: 0x0000000000
+    note: Alias of the application System SRAM aperture through the secure-to-application bridge; default-deny, no other application region reachable; attachment is OPEN (NX-ARCH-OI-037). Base and size proposed.
