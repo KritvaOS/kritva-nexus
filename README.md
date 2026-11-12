@@ -95,6 +95,7 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | [planning/MILESTONE_STATUS.md](planning/MILESTONE_STATUS.md) | Reported milestone execution state | EVIDENCE, PROPOSED | Yes, until a generator exists |
 | [planning/REVIEW_CHECKLIST.md](planning/REVIEW_CHECKLIST.md), [planning/GIT_COMMIT_STEP.md](planning/GIT_COMMIT_STEP.md), [planning/CHANGELOG.md](planning/CHANGELOG.md) | Review, commit-step and change records | INPUT, PROPOSED | Yes |
 | [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md) | Contribution and security-reporting rules | REFERENCE, DRAFT | Yes (SECURITY.md by owner only) |
+| [planning/CLAUDE_SESSIONS.md](planning/CLAUDE_SESSIONS.md) | Claude session identifiers of Claude-assisted commits, one consolidated file (NX-DEC-028) | REFERENCE, DRAFT | Yes, by every Claude-assisted commit |
 | [Makefile](Makefile) | Make targets; unimplemented gates exit 3 | INPUT, DRAFT | Yes, by owner only |
 | `.github/` | CODEOWNERS, gate configuration, PR template, workflows | INPUT, DRAFT | Yes, by owner only |
 | `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate) and their tests | INPUT, DRAFT | Yes, by owner only |

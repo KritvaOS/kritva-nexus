@@ -34,3 +34,4 @@ Consequences: The `Claude-Session:` trailer and the session link stay forbidden 
 | Date | Change |
 |---|---|
 | 2026-11-11 | Record created with label SELECTED. |
+| 2026-11-12 | Decision 2 replaced by NX-DEC-028: new session rows go in planning/CLAUDE_SESSIONS.md, and every Claude-assisted commit updates that file. The table above is kept as history and is not edited; its row is copied into that file. |

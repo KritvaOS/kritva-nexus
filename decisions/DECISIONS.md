@@ -38,3 +38,4 @@ Rules:
 | [NX-DEC-025](NX-DEC-025.md) | 32-channel general-purpose DMA controller | SELECTED | NX-REQ-092 |
 | [NX-DEC-026](NX-DEC-026.md) | 40-bit application address width | SELECTED | NX-REQ-101 |
 | [NX-DEC-027](NX-DEC-027.md) | Two controlled crossings between the security and application domains | SELECTED | NX-REQ-105 |
+| [NX-DEC-028](NX-DEC-028.md) | One file for the Claude session identifiers, updated by every commit | SELECTED | None (repository working rule) |
