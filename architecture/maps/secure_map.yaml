@@ -1,0 +1,101 @@
+# Kritva Nexus secure address map (KOS-NEXUS-008, part 2).
+# Single machine-readable source of the secure address space.
+# Label: PROPOSED (NX-REQ-054). Bases are proposals from A0 draft section 7.4; sizes are proposals of this file.
+# The secure space is separate from the application space: numerical overlap with
+# application_map.yaml is not a conflict (NX-REQ-028, NX-REQ-033, NX-REQ-034).
+# The isolation boundary and the permitted access paths are OPEN (NX-ARCH-GAP-002).
+# The access attributes of the secure space are not defined (NX-ARCH-OI-021).
+# Any address not listed is unmapped.
+space: secure
+document: KOS-NEXUS-ADDRMAP-002
+version: 0.1.0-draft
+address_width_bits: 32
+address_width_label: PROPOSED
+address_width_records: [NX-REQ-033]
+map_label: PROPOSED
+map_records: [NX-REQ-054]
+regions:
+  - name: Security ROM
+    base: 0x00000000
+    size: 0x00010000
+    class: security_rom
+    label: PROPOSED
+    records: [NX-REQ-010, NX-REQ-054]
+    note: 64 KiB capacity is SELECTED (NX-REQ-010, NX-DEC-009); the base is proposed.
+  - name: Security SRAM
+    base: 0x00010000
+    size: 0x00010000
+    class: security_sram
+    label: PROPOSED
+    records: [NX-REQ-011, NX-REQ-054]
+    note: 64 KiB capacity is SELECTED (NX-REQ-011, NX-DEC-010); the base is proposed.
+  - name: OSPI NOR secure aperture
+    base: 0x10000000
+    size: 0x10000000
+    class: nor_secure
+    label: PROPOSED
+    records: [NX-REQ-038, NX-REQ-054]
+    note: Aperture 256 MiB for the security core NOR access path; the NOR capacity is not selected.
+  - name: AES
+    base: 0x20000000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-013, NX-REQ-054]
+    note: Window size proposed.
+  - name: SHA
+    base: 0x20010000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-014, NX-REQ-054]
+    note: Window size proposed.
+  - name: Asymmetric cryptography
+    base: 0x20020000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-035, NX-REQ-054]
+    note: Window size proposed.
+  - name: eFuse
+    base: 0x20030000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-012, NX-REQ-054]
+    note: Window size proposed.
+  - name: Key management
+    base: 0x20040000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-054]
+    note: Window size proposed.
+  - name: Security control
+    base: 0x20050000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-054]
+    note: Window size proposed.
+  - name: Security interrupt controller
+    base: 0x20060000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-054, NX-REQ-057]
+    note: Window size proposed; the interrupt architecture is OPEN (NX-REQ-057).
+  - name: Security timer and watchdog
+    base: 0x20070000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-054]
+    note: Window size proposed.
+  - name: OSPI registers
+    base: 0x20080000
+    size: 0x00010000
+    class: security_peripheral
+    label: PROPOSED
+    records: [NX-REQ-054]
+    note: Window size proposed.

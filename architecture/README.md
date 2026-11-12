@@ -25,6 +25,7 @@ This is the index of the architecture documents in this repository. It lists eac
 | [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture: domains, interface register and open-issues register | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [INTERCONNECT_SPECIFICATION.md](INTERCONNECT_SPECIFICATION.md) | Application AXI and memory-access architecture (KOS-NEXUS-007): decisions for NX-ARCH-GAP-001 and proposals for NX-ARCH-GAP-004 | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [MEMORY_ARCHITECTURE.md](MEMORY_ARCHITECTURE.md) | Memory roles, the 40-bit application address width and the access policy (KOS-NEXUS-008, part 1); the address maps follow | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
+| [ADDRESS_MAP.md](ADDRESS_MAP.md) | Proposed application and secure address maps (KOS-NEXUS-008, part 2), derived from [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml) | DERIVED (not AUTHORITATIVE) | DRAFT |
 | [A0_INTEGRATION_DRAFT.md](A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion; a reconstruction, not an original document; changed by dated addenda only | INPUT | PROPOSED |
 
 ## Reading order and rules
