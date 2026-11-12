@@ -8,8 +8,8 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.10.0-draft |
-| Last Updated | 2026-11-07 |
+| Version | 0.11.0-draft |
+| Last Updated | 2026-11-11 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
 | Related Documents | [A0 integration draft](A0_INTEGRATION_DRAFT.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md) |
@@ -29,7 +29,7 @@ Detailed interconnect, memory and address-map content belongs to KOS-NEXUS-007 a
 1. Every architecture statement carries one label: `SELECTED` (recorded owner decision, with a decision record), `PROPOSED` (a recommendation, including every one from an AI tool) or `OPEN` (needs engineering definition). A statement without a label is not part of the architecture.
 2. A SELECTED statement names its decision record (NX-DEC-NNN). A PROPOSED or OPEN statement names its requirement (NX-REQ-NNN) or gap (NX-ARCH-GAP-NNN).
 3. Where this document and the requirements register or a decision record differ, the register or record wins and this document is corrected.
-4. Numeric parameters stay PROPOSED unless the requirement is SELECTED. Owner-selected values are only those in the register: 6 MiB frame pool, 720p60 at 1280x720 over parallel DPI, three composition layers, 64 KiB security ROM and SRAM, the four application AXI fabrics, the two AXI-to-APB interconnects, the C910-to-APB route and behaviour and the peripheral counts.
+4. Numeric parameters stay PROPOSED unless the requirement is SELECTED. Owner-selected values are only those in the register: 6 MiB frame pool, 720p60 at 1280x720 over parallel DPI, three composition layers, 64 KiB security ROM and SRAM, the four application AXI fabrics, the two AXI-to-APB interconnects, the C910-to-APB route and behaviour, the peripheral counts and the DMA controller with 32 channels.
 5. Evidence stays separate. Renode results are not evidence of C910 timing, cache behaviour or cycle accuracy; a substitute CPU on FPGA is labelled a substitute; lint, Yosys, FPGA synthesis and OpenLane results are `software` evidence, simulation results are `simulation` evidence and `physical` is reserved for programmed-board results.
 6. A PROPOSED item is changed by a change request: a pull request that edits it with a changelog entry. A SELECTED item also needs a new decision record.
 
@@ -48,6 +48,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | Memory | DDR4, Octal SPI PSRAM, OSPI NOR boot | SELECTED media; PROPOSED controller targets, DDR4 width and ingress | NX-DEC-001 to 003; NX-REQ-030, 064, 065, 076 to 078 | Section 4 |
 | AI and vision | Camera inputs, 6 MiB frame pool, ISP, NPU, NPU DVFS | SELECTED frame-pool capacity and NPU DVFS; PROPOSED the rest | NX-DEC-004, NX-DEC-017; NX-REQ-042 to 047 | Section 3 |
 | Multimedia and connectivity | 720p60 parallel DPI display, three composition layers, two Ethernet MACs, EtherCAT MainDevice, peripherals | SELECTED display mode, layers, MAC count, peripheral counts; PROPOSED EtherCAT, RGMII, compositor | NX-DEC-005 to 007, NX-DEC-020; NX-REQ-040, 041, 048 | Sections 5, 6 and 8 |
+| DMA | General-purpose DMA controller with 32 channels on AXI-3 | SELECTED controller and channel count; PROPOSED placement and features | NX-DEC-025; NX-REQ-092 to 100 | Not in the A0 draft |
 | Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED; PROPOSED accelerator, boot sequence, secure map; OPEN address-space separation | NX-DEC-008 to 013, NX-DEC-019; NX-REQ-033 to 039, 054; NX-REQ-028 | Section 7 |
 | Always-on, clock, reset, power, interrupt | Always-on domain, PLLs, power and reset domains, interrupts, CDC and RDC, DVFS | SELECTED DVFS; PROPOSED PLL, domains and targets; OPEN always-on definition and interrupt architecture | NX-DEC-016, NX-DEC-017; NX-REQ-031, 057 to 063, 066 | Section 10 |
 
@@ -74,11 +75,29 @@ The architecture has four application AXI fabrics (SELECTED, NX-REQ-015, NX-DEC-
 | AXI-0 | Main system, CPU and memory | 128-bit | C910 |
 | AXI-1 | AI and vision | 256-bit | ISP, NPU, camera DMA |
 | AXI-2 | Multimedia and high-speed IO | 128-bit | Display, Ethernet and storage DMA |
-| AXI-3 | General peripherals, control and DMA | 64-bit | Peripheral and I2S DMA |
+| AXI-3 | General peripherals, control and DMA | 64-bit | DMA controller (peripheral and I2S DMA) |
 
 A separate Memory Access Crossbar with four fabric ingress ports is PROPOSED (NX-REQ-049) to avoid serialising memory access through AXI-0; the proposal is one 256-bit AXI4 port from the crossbar to the DDR4 controller, derived for a x32 DDR4-3200 interface (NX-REQ-030, NX-REQ-076 to NX-REQ-078, NX-ARCH-GAP-004), and the sizing assumptions are changed only by change request. The two AXI-to-APB interconnects are proposed at 32-bit APB data width and 200 to 250 MHz (NX-REQ-052).
 
 The route from the C910 to the APB peripherals is SELECTED (NX-REQ-067, NX-DEC-021): the C910 reaches APB-0 and APB-1 through AXI-0, an AXI fabric bridge from AXI-0 to AXI-3, AXI-3 decode and the AXI-to-APB interconnects. The behaviour of the path (error response, timeout, masters, bridge structure, access control, ordering, bursts and reset) is also SELECTED (NX-REQ-068 to NX-REQ-075, NX-DEC-022) and is held in the interconnect specification; NX-ARCH-GAP-001 is closed. The timeout value, recovery and the bridge buffering limits are OPEN (NX-ARCH-OI-033, NX-ARCH-OI-034). The application address map is PROPOSED (NX-REQ-053) and is held by KOS-NEXUS-008, not copied here. Its apertures are not memory capacities: the 16 MiB frame-pool aperture is not the owner-selected 6 MiB capacity, and the DDR4 window does not select a DDR4 device size. Cacheability, coherency, security attributes, permissions and IOMMU needs are OPEN.
+
+### DMA controller
+
+A general-purpose DMA controller with 32 independent channels is SELECTED (NX-REQ-092, NX-DEC-025). Its placement and features are PROPOSED (NX-REQ-093 to NX-REQ-100); the owner's feature list is adapted to AXI terms, as listed in NX-DEC-025.
+
+| Item | Statement | Label | Records |
+|---|---|---|---|
+| Controller | A general-purpose DMA controller with 32 independent channels offloads bulk data movement from the C910. | SELECTED | NX-REQ-092, NX-DEC-025 |
+| Placement | The controller is the peripheral and I2S DMA master on AXI-3 and its registers are reached through the AXI-to-APB interconnects; the camera, display, Ethernet and storage DMA masters stay on their own fabrics. | PROPOSED | NX-REQ-093 |
+| Transfer types | Memory-to-memory, memory-to-peripheral, peripheral-to-memory and peripheral-to-peripheral. | PROPOSED | NX-REQ-094 |
+| Transfer modes | Burst transfers with a configurable length and a limit on consecutive bursts, no bus locking; one-beat-per-arbitration transfers; background transfers at the lowest priority level. | PROPOSED | NX-REQ-095 |
+| Addressing and width | Increment, decrement and fixed addressing; 8, 16, 32 and 64-bit data widths within the 64-bit AXI-3. | PROPOSED | NX-REQ-096 |
+| Scatter-gather | Chains of descriptors held in memory. | PROPOSED | NX-REQ-097 |
+| Arbitration | Configurable per-channel priority, round-robin among equal priorities, the "NPU and other DMA" QoS class on its AXI traffic. | PROPOSED | NX-REQ-098 |
+| Completion and errors | An interrupt on completion or error only; a DECERR or SLVERR response stops the channel and is reported per channel. | PROPOSED | NX-REQ-099 |
+| Low-power operation | Configured transfers can continue while the C910 cluster is in a low-power state; the DMA power domain and wake-up conditions are defined with the power-domain and always-on definitions. | PROPOSED | NX-REQ-100 |
+
+Memory-to-memory copies cross AXI-3 (64-bit) and the Memory Access Crossbar; their throughput is not quantified, and the DDR4 sizing of section 4 of the interconnect specification has no DMA line. Peripheral request mapping, descriptor format, coherency and the DMA power domain are NX-ARCH-OI-035.
 
 ## 7. External memory
 
@@ -200,6 +219,7 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-020 | DDR4 controller and PHY to the DDR4 device | DDR4 controller, DDR4 PHY, DDR4 device | SELECTED role; PROPOSED target and width | NX-REQ-002; NX-REQ-064; NX-REQ-076 | A later IP and subsystem task | Dinesh | NX-ARCH-GAP-004, NX-ARCH-OI-005 |
 | NX-INT-021 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | NX-REQ-003; NX-REQ-065 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-022 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | NX-REQ-004 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
+| NX-INT-023 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | NX-REQ-093; NX-REQ-094 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-035 |
 
 Assumptions that the interfaces and sections above rest on:
 
@@ -256,3 +276,4 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-032 | Interrupt architecture | Clock, reset and interrupts | NX-REQ-057 | Dinesh | OPEN |
 | NX-ARCH-OI-033 | C910-to-APB timeout value, recovery and late completion: proposed as 1024 bridge-clock cycles | AXI fabrics | NX-REQ-080 | Dinesh | PROPOSED |
 | NX-ARCH-OI-034 | AXI fabric bridge buffering limits, backpressure, ID handling and APB version: proposed | AXI fabrics | NX-REQ-081 | Dinesh | PROPOSED |
+| NX-ARCH-OI-035 | DMA controller details: peripheral request and handshake mapping, descriptor format, memory coherency, DMA power domain and wake-up; decided in the DMA specification by PROPOSED defaults, changed by change request | DMA | NX-REQ-093 to NX-REQ-100 | Dinesh | OPEN |

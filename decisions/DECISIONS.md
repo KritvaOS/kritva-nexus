@@ -35,3 +35,4 @@ Rules:
 | [NX-DEC-022](NX-DEC-022.md) | Behaviour of the C910-to-APB path | SELECTED | NX-REQ-068 to NX-REQ-075 |
 | [NX-DEC-023](NX-DEC-023.md) | Approval of the RTL Design Standard KNX-RTL-STD-001 | SELECTED | NX-REQ-082 to NX-REQ-089 |
 | [NX-DEC-024](NX-DEC-024.md) | Claude co-author line and session reference for Nexus commits | SELECTED | None (repository working rule) |
+| [NX-DEC-025](NX-DEC-025.md) | 32-channel general-purpose DMA controller | SELECTED | NX-REQ-092 |
