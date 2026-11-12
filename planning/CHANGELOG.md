@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- KOS-NEXUS-008 part 1: `architecture/MEMORY_ARCHITECTURE.md` (version 0.1.0-draft) defines the memory inventory, the 40-bit application address width and the proposed access policy; NX-DEC-026 and NX-REQ-101 (SELECTED, the 40-bit width), NX-REQ-102 to NX-REQ-104 (PROPOSED, access attributes, coherency and IOMMU position, unmapped access) added; NX-REQ-029 and NX-ARCH-GAP-003 stay OPEN with a confirmation procedure and owner; NX-ARCH-OI-003 moves to PROPOSED; `architecture/SYSTEM_ARCHITECTURE.md` is version 0.12.0-draft; the datasheet is revision 0.3.2-draft. The address maps, the secure and application space separation (NX-ARCH-GAP-002) and the machine-readable map source follow in later parts.
+
 - KOS-NEXUS-085 datasheet revision 0.3.1-draft after the third ChatGPT review: wording only, so the DMA features, the AXI-3 placement, the register access path, the low-power operation and the memory-to-memory path are stated as proposed; the NX-REQ column of NX-INT-023 is unchanged because it must match the interface register. No label or requirement changed.
 
 - KOS-NEXUS-085 datasheet revision 0.3.0-draft adds the 32-channel DMA controller of NX-DEC-025 (NX-REQ-092 to NX-REQ-100, NX-INT-023, NX-ARCH-OI-035): new datasheet section 7, DMA rows in the consolidated features, block list and internal connectivity tables, section numbers 7 to 9 moved to 8 to 10, Appendix B updated, and the AXI-3 master in `datasheet/nexus_internal_connectivity.svg` shown as the DMA controller. Labels are unchanged from the registers.
