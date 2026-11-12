@@ -5,10 +5,10 @@
 | Document ID | KOS-NEXUS-ARCH-003 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Architecture |
-| Status | DRAFT (part 1 of KOS-NEXUS-008: memory roles, address width and access policy; the address maps are in ADDRESS_MAP.md; not reviewed or approved) |
+| Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.2.0-draft |
+| Version | 0.3.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -24,7 +24,7 @@ This is the first part of KOS-NEXUS-008. It decides and proposes the following.
 
 1. The application address width is 40 bits, SELECTED by the owner (NX-DEC-026, NX-REQ-101). The confirmation against the C910 configuration and against every application master is a procedure with an owner (section 4); it is not yet done.
 2. The memory roles, the access attributes per memory class, the coherency position and the unmapped-access policy are PROPOSED defaults (NX-REQ-102 to NX-REQ-104). They change by change request.
-3. The application address map and the secure address map are held in [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml) and shown in [ADDRESS_MAP.md](ADDRESS_MAP.md) (part 2); both stay PROPOSED (NX-REQ-053, NX-REQ-054). The separation of the two address spaces (NX-ARCH-GAP-002, NX-REQ-028) is a later part of this task.
+3. The application address map and the secure address map are held in [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml) and shown in [ADDRESS_MAP.md](ADDRESS_MAP.md) (part 2); both stay PROPOSED (NX-REQ-053, NX-REQ-054). The separation of the two address spaces and the two controlled crossings between the security and application domains are section 5 (part 3; NX-DEC-027, NX-REQ-105 to NX-REQ-108).
 
 No capacity, bandwidth, latency or timing value appears here that a requirement or the owner has not stated.
 
@@ -86,9 +86,27 @@ No value is recorded in step 2 or step 3 by this document. Every cell in the tab
 
 The master placement is PROPOSED (NX-REQ-051). The DMA controller is NX-REQ-092 (SELECTED) with placement PROPOSED (NX-REQ-093).
 
-## 5. Address spaces
+## 5. Address spaces and domain crossings
 
-The application address space and the secure address space are two separate address spaces on two separate interconnects (NX-REQ-028, NX-REQ-033, NX-REQ-034). Numerical ranges of the two proposed maps may overlap, and an overlap is not a conflict because no master reaches both spaces through one decode. The isolation boundary and the permitted access paths between the two spaces are not yet defined: that is NX-ARCH-GAP-002 and NX-REQ-028, OPEN, and a later part of KOS-NEXUS-008 resolves it. This part states no access path between the spaces.
+The application address space and the secure address space are two separate address spaces on two separate interconnects (NX-REQ-028, NX-REQ-033, NX-REQ-034). The numerical ranges of the two proposed maps overlap in places, and an overlap is not a conflict because an address is interpreted in the space of the interconnect it arrives on (NX-REQ-108). The two maps are in [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml).
+
+The boundary between the security domain and the application domain has exactly two controlled crossings (NX-DEC-027, NX-REQ-105): SELECTED. Everything else in the security domain stays unreachable from the application domain (NX-REQ-034, PROPOSED). The remaining statements of this section are PROPOSED.
+
+### 5.1 Boot window: security core to application (NX-INT-024)
+
+The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core, because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is OPEN (NX-ARCH-OI-037).
+
+### 5.2 Mailbox: application to security (NX-INT-025)
+
+The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this proposal.
+
+### 5.3 Isolation rules
+
+1. Both crossings are default-deny, and no path other than the two crossings exists between the domains (NX-REQ-108).
+2. An address is interpreted in the address space of the interconnect it arrives on; a crossing translates the address explicitly, and no master reaches both spaces through one decode.
+3. An unmapped or forbidden access at a crossing returns DECERR or SLVERR as in section 6.3 (NX-REQ-104, NX-REQ-108).
+4. C910 reset release stays hardware-controlled by the security domain and is not one of the crossings (NX-REQ-037, NX-INT-014).
+5. Changing either crossing, or adding a third, needs a new decision record (NX-DEC-027).
 
 ## 6. Access policy of the application address map (PROPOSED)
 
@@ -122,7 +140,7 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | Item | Label | Records | Owner |
 |---|---|---|---|
 | Confirmation of the 40-bit width against the C910 configuration and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
-| Separation and access paths between the secure and application address spaces | OPEN | NX-REQ-028, NX-ARCH-GAP-002 | Dinesh |
+| Attachment of the two crossings, mailbox layout, message format and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
 | Application and secure address maps (in ADDRESS_MAP.md and the two map files) | PROPOSED | NX-REQ-053, NX-REQ-054 | Dinesh |
 | PSRAM, NOR and on-chip memory organisation details | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 | DMA request mapping, descriptor format, coherency and power domain | OPEN | NX-ARCH-OI-035 | Dinesh |
@@ -133,3 +151,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 |---|---|---|
 | 0.1.0-draft | 2026-11-12 | First part for KOS-NEXUS-008: memory inventory, the selected 40-bit address width with its confirmation procedure, address-space statement and the proposed access policy |
 | 0.2.0-draft | 2026-11-12 | The address maps moved to ADDRESS_MAP.md and the two map files (part 2) |
+| 0.3.0-draft | 2026-11-12 | Part 3: section 5 defines the two controlled crossings of NX-DEC-027 and the isolation rules |

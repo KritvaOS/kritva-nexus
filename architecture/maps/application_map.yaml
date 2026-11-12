@@ -4,10 +4,12 @@
 # Bases and apertures are proposals from A0 draft section 9.6; an aperture is not a capacity.
 # Any address not listed is unmapped and returns DECERR (NX-REQ-079, NX-REQ-104).
 # Access attributes follow NX-REQ-102 (PROPOSED).
-# Separate address space: the secure map is secure_map.yaml (NX-REQ-028, NX-ARCH-GAP-002 OPEN).
+# Separate address space: the secure map is secure_map.yaml (NX-REQ-028, NX-REQ-108).
+# Two controlled crossings exist (NX-DEC-027, NX-REQ-105): the security core reaches System SRAM through
+# the boot window and the application reaches the mailbox window in the peripheral register space.
 space: application
 document: KOS-NEXUS-ADDRMAP-001
-version: 0.1.0-draft
+version: 0.2.0-draft
 address_width_bits: 40
 address_width_label: SELECTED
 address_width_records: [NX-DEC-026, NX-REQ-101]
@@ -23,7 +25,7 @@ regions:
     perm: rwx
     label: PROPOSED
     records: [NX-REQ-053, NX-REQ-102]
-    note: Capacity of the physical SRAM is not selected; the aperture is 1 MiB.
+    note: Capacity of the physical SRAM is not selected; the aperture is 1 MiB. Reachable by the security core through the boot window (NX-REQ-106), and by no other security path.
   - name: Camera frame pool
     base: 0x0010000000
     size: 0x0001000000
@@ -68,7 +70,7 @@ regions:
     perm: rw-
     label: PROPOSED
     records: [NX-REQ-053, NX-REQ-072, NX-REQ-102]
-    note: Window allocation per peripheral instance, including the DMA controller registers, is OPEN (NX-ARCH-OI-036).
+    note: Window allocation per peripheral instance, including the DMA controller registers and the application-side mailbox window (NX-REQ-107), is OPEN (NX-ARCH-OI-036).
   - name: OSPI NOR window
     base: 0x0060000000
     size: 0x0010000000

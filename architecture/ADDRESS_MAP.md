@@ -5,10 +5,10 @@
 | Document ID | KOS-NEXUS-ARCH-004 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Architecture |
-| Status | DRAFT (part 2 of KOS-NEXUS-008: the proposed application and secure address maps; not reviewed or approved) |
+| Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the proposed application and secure address maps and the two domain crossings; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.1.0-draft |
+| Version | 0.2.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -29,7 +29,7 @@ This document shows the application address map and the secure address map for t
 
 ## 2. Application address map (40-bit, PROPOSED)
 
-Source: [maps/application_map.yaml](maps/application_map.yaml). The attributes follow NX-REQ-102.
+Source: [maps/application_map.yaml](maps/application_map.yaml). The attributes follow NX-REQ-102. The System SRAM region is also the target of the boot window crossing (section 4).
 
 | Region | First address | Last address | Size | C910 cacheable | Permissions | Label | NX-REQ |
 |---|---|---|---|---|---|---|---|
@@ -63,19 +63,30 @@ Source: [maps/secure_map.yaml](maps/secure_map.yaml). The access attributes of t
 | Security interrupt controller | 0x2006_0000 | 0x2006_FFFF | 64 KiB | PROPOSED | 054, 057 |
 | Security timer and watchdog | 0x2007_0000 | 0x2007_FFFF | 64 KiB | PROPOSED | 054 |
 | OSPI registers | 0x2008_0000 | 0x2008_FFFF | 64 KiB | PROPOSED | 054 |
+| Mailbox (secure side) | 0x2009_0000 | 0x2009_FFFF | 64 KiB | PROPOSED | 105, 107, 054 |
+| Application boot window | 0x3000_0000 | 0x300F_FFFF | 1 MiB | PROPOSED | 105, 106, 054 |
 
-Notes. The security ROM and SRAM capacities of 64 KiB are SELECTED; their bases are proposed. The secure NOR aperture is a range for the security core path and does not select a NOR capacity. The interrupt architecture of the security interrupt controller is OPEN (NX-REQ-057).
+Notes. The security ROM and SRAM capacities of 64 KiB are SELECTED; their bases are proposed. The secure NOR aperture is a range for the security core path and does not select a NOR capacity. The interrupt architecture of the security interrupt controller is OPEN (NX-REQ-057). The mailbox window and the application boot window are the two controlled crossings of NX-DEC-027 (section 4); the boot window is an alias of the 1 MiB application System SRAM aperture and is not a memory of the security domain.
 
-## 4. Two separate address spaces
+## 4. Two separate address spaces and two controlled crossings
 
-The application and secure address spaces are separate spaces on separate interconnects (NX-REQ-028, NX-REQ-033, NX-REQ-034). Several numerical ranges of the two maps coincide, for example the secure NOR aperture at 0x1000_0000 and the application camera frame pool at 0x00_1000_0000. That is not a conflict: no master reaches both spaces through one decode, and the two files are checked separately. Whether any access path crosses between the spaces, and where the isolation boundary lies, is NX-ARCH-GAP-002 and NX-REQ-028, OPEN, and is the next part of KOS-NEXUS-008. This document states no access path between the spaces.
+The application and secure address spaces are separate spaces on separate interconnects (NX-REQ-028, NX-REQ-033, NX-REQ-034). Several numerical ranges of the two maps coincide, for example the secure NOR aperture at 0x1000_0000 and the application camera frame pool at 0x00_1000_0000. That is not a conflict: an address is interpreted in the address space of the interconnect it arrives on (NX-REQ-108), no master reaches both spaces through one decode, and the two files are checked separately.
+
+The boundary has exactly two controlled crossings (NX-DEC-027, NX-REQ-105, SELECTED), and both are default-deny (NX-REQ-108, PROPOSED).
+
+| Crossing | Direction | Secure map | Application map | Label | Records |
+|---|---|---|---|---|---|
+| Boot window | Security core to application | Application boot window, 0x3000_0000 to 0x300F_FFFF (1 MiB alias) | System SRAM, 0x00_0000_0000 to 0x00_000F_FFFF; no other application region | SELECTED crossing; PROPOSED window | NX-REQ-105, NX-REQ-106 |
+| Mailbox | Application to security | Mailbox (secure side), 0x2009_0000 to 0x2009_FFFF | Mailbox window in the peripheral register space, base OPEN (NX-ARCH-OI-036) | SELECTED crossing; PROPOSED mailbox | NX-REQ-105, NX-REQ-107 |
+
+The application side attachment of the bridge to an application fabric, the mailbox register layout and message format, the interrupt directions and the secure-side validation rule are OPEN (NX-ARCH-OI-037). The security core does not reach DDR4 in this proposal. All other secure regions stay unreachable from the application space (NX-REQ-034).
 
 ## 5. Open items
 
 | Item | Label | Records | Owner |
 |---|---|---|---|
 | Confirmation of the 40-bit width against the C910 and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
-| Isolation boundary and access paths between the two spaces | OPEN | NX-REQ-028, NX-ARCH-GAP-002 | Dinesh |
+| Attachment of the two crossings, mailbox layout and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
 | Division of the peripheral register space among instances, including the DMA controller registers | OPEN | NX-ARCH-OI-036 | Dinesh |
 | Access attributes and finalisation of the secure map | OPEN | NX-ARCH-OI-021 | Dinesh |
 | PSRAM, NOR and on-chip memory capacities and organisation | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
@@ -86,3 +97,4 @@ The application and secure address spaces are separate spaces on separate interc
 | Version | Date | Change |
 |---|---|---|
 | 0.1.0-draft | 2026-11-12 | First part 2 draft for KOS-NEXUS-008: the two map files and their tables |
+| 0.2.0-draft | 2026-11-12 | Part 3: the two controlled crossings (NX-DEC-027) added to the secure map and the separation section |

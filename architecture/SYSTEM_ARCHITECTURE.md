@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.13.0-draft |
+| Version | 0.14.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -155,7 +155,8 @@ The display, Ethernet and storage DMA masters are proposed on AXI-2, and the per
 | Secret exposure | Raw secrets are not exposed through ordinary application interfaces. | PROPOSED | NX-REQ-039 |
 | Secure address map | A separate secure address space with the proposed map held in architecture/maps/secure_map.yaml (derived from A0 draft section 7.4). | PROPOSED | NX-REQ-054 |
 | Address-space separation | The secure and application address spaces are separate address spaces on separate interconnects, with independent decode and access control. This is the architectural statement; the proposed secure map is NX-REQ-054 and the application exclusion is NX-REQ-034. | PROPOSED | NX-REQ-054, NX-REQ-034 |
-| Isolation boundary and access paths | The isolation boundary, the permitted access paths and the treatment of overlapping numerical ranges are not yet defined. This gap is not resolved by the separation statement above. | OPEN | NX-REQ-028, NX-ARCH-GAP-002 |
+| Controlled crossings | The boundary between the security and application domains has exactly two controlled crossings: a security-core access path into one application window and one application-to-security mailbox. | SELECTED | NX-REQ-105, NX-DEC-027 |
+| Boot window and mailbox | The window is the System SRAM region reached through a secure-to-application bridge; the mailbox has a window in each address space. Both are default-deny, every other security resource is unreachable, overlapping ranges are not conflicts, and the application-side attachment is not defined. | PROPOSED | NX-REQ-106, NX-REQ-107, NX-REQ-108, NX-REQ-028, NX-ARCH-GAP-002 |
 
 The security domain is described here as an architecture direction. Root-key provisioning, anti-rollback policy, recovery behaviour, debug lifecycle and authorisation, eFuse programming and access control, secure boot failure handling and the security interrupt and fault-response details are OPEN. No security claim is made from this document: it contains no threat model, no verification result and no hardware validation.
 
@@ -209,7 +210,7 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-009 | Ethernet MAC DMA on AXI-2 and the RGMII interface to external PHYs | Ethernet MACs, AXI-2, external PHYs | PROPOSED (MAC count SELECTED) | NX-REQ-008; NX-REQ-040; NX-REQ-041 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-015, NX-ARCH-OI-016 |
 | NX-INT-010 | Peripheral and I2S DMA on AXI-3 and the peripheral register access through APB | Peripherals, AXI-3, APB-0 and APB-1 | PROPOSED (counts SELECTED) | NX-REQ-019 to NX-REQ-026; NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-022 |
 | NX-INT-011 | Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED concept; PROPOSED parameters | NX-REQ-032; NX-REQ-033 | KOS-NEXUS-007 and 008 | Dinesh | NX-ARCH-OI-021 |
-| NX-INT-012 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | OPEN | NX-REQ-028; NX-REQ-034; NX-ARCH-GAP-002 | KOS-NEXUS-008 | Dinesh | NX-ARCH-GAP-002 |
+| NX-INT-012 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | PROPOSED | NX-REQ-028; NX-REQ-034; NX-REQ-108; NX-ARCH-GAP-002 | KOS-NEXUS-008 | Dinesh | NX-ARCH-GAP-002 |
 | NX-INT-013 | Security core access to OSPI NOR before the application fabrics are active | Security core, OSPI NOR controller | PROPOSED | NX-REQ-036; NX-REQ-038 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-006, NX-ARCH-OI-019 |
 | NX-INT-014 | Hardware control of C910 reset release by the security domain | Security domain, C910 reset | PROPOSED | NX-REQ-037 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-019 |
 | NX-INT-015 | Always-on domain to reset, wake-up, security and power control | Always-on domain, reset, security, power control | OPEN | NX-REQ-031 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-031 |
@@ -221,6 +222,8 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-021 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | NX-REQ-003; NX-REQ-065 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-022 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | NX-REQ-004 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-023 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | NX-REQ-093; NX-REQ-094 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-035 |
+| NX-INT-024 | Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing; PROPOSED window and bridge | NX-REQ-105; NX-REQ-106 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
+| NX-INT-025 | Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing; PROPOSED mailbox | NX-REQ-105; NX-REQ-107 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
 
 Assumptions that the interfaces and sections above rest on:
 
@@ -240,7 +243,7 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | ID | Issue | Domain | Requirement | Owner | Status |
 |---|---|---|---|---|---|---|---|
 | NX-ARCH-GAP-001 | C910 to APB access path: closed by NX-DEC-021 (route) and NX-DEC-022 (behaviour); residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 proposed | AXI fabrics | NX-REQ-067 to NX-REQ-075 (NX-REQ-027 superseded) | Dinesh | CLOSED |
-| NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths | Security | NX-REQ-028 | Dinesh | OPEN |
+| NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths: defined by NX-DEC-027 (two controlled crossings) and proposed in section 5 of MEMORY_ARCHITECTURE | Security | NX-REQ-028; NX-REQ-105; NX-REQ-106; NX-REQ-107; NX-REQ-108 | Dinesh | PROPOSED |
 | NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is unconfirmed against the C910 configuration and the application masters | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
 | NX-ARCH-GAP-004 | DDR4 controller ingress: resolved by proposal, one 256-bit port for x32 DDR4-3200 | Memory | NX-REQ-030; NX-REQ-076 to NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-001 | Exact C910 RTL release and configuration; cache sizes and cluster configuration; AXI interface parameters against the C910 RTL | CPU and interconnect | None | Dinesh | OPEN |
@@ -279,3 +282,4 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-034 | AXI fabric bridge buffering limits, backpressure, ID handling and APB version: proposed | AXI fabrics | NX-REQ-081 | Dinesh | PROPOSED |
 | NX-ARCH-OI-035 | DMA controller details: peripheral request and handshake mapping, descriptor format, memory coherency, DMA power domain and wake-up; decided in the DMA specification by PROPOSED defaults, changed by change request | DMA | NX-REQ-093 to NX-REQ-100 | Dinesh | OPEN |
 | NX-ARCH-OI-036 | Division of the application peripheral register space (0x00_4000_0000 to 0x00_4FFF_FFFF) among the peripheral instances, including the DMA controller register window and the APB-0 and APB-1 split; proposed in ADDRESS_MAP once the instance counts and the APB split are defined | Memory | NX-REQ-053 | Dinesh | OPEN |
+| NX-ARCH-OI-037 | Domain crossings: the application-fabric attachment of the secure-to-application bridge, the mailbox register layout, message format, interrupt directions and secure-side validation rule; whether the security core may later reach DDR4 | Security | NX-REQ-106; NX-REQ-107 | Dinesh | OPEN |
