@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+"""Regression tests for the address-map checker (KOS-NEXUS-008).
+
+The checker is structural only. These tests copy the real map files, tables and register into a temporary
+tree, break one thing at a time and expect the checker to name it, so that a change to the checker cannot
+silently weaken it. They do not test that any base, size or attribute is right.
+"""
+import importlib.util
+import shutil
+import tempfile
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+_spec = importlib.util.spec_from_file_location("check_address_maps", ROOT / "scripts" / "check_address_maps.py")
+C = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(C)
+
+FILES = ["architecture/maps/application_map.yaml", "architecture/maps/secure_map.yaml",
+         "architecture/ADDRESS_MAP.md", "requirements/REQUIREMENTS.md"]
+
+
+class Tree:
+    def __init__(self):
+        self.dir = tempfile.TemporaryDirectory()
+        self.root = Path(self.dir.name)
+        for f in FILES:
+            (self.root / f).parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy(ROOT / f, self.root / f)
+
+    def edit(self, rel, old, new, count=1):
+        p = self.root / rel
+        text = p.read_text(encoding="utf-8")
+        assert text.count(old) >= 1, f"{old!r} not found in {rel}"
+        p.write_text(text.replace(old, new, count), encoding="utf-8")
+
+    def problems(self):
+        errs, _ = C.run(self.root)
+        return errs
+
+    def close(self):
+        self.dir.cleanup()
+
+
+class AddressMapChecker(unittest.TestCase):
+    def setUp(self):
+        self.t = Tree()
+        self.addCleanup(self.t.close)
+
+    def has(self, fragment):
+        errs = self.t.problems()
+        self.assertTrue(any(fragment in e for e in errs), f"expected {fragment!r} in {errs}")
+
+    def test_repository_files_pass(self):
+        self.assertEqual(self.t.problems(), [])
+
+    def test_overlap_inside_a_space(self):
+        self.t.edit("architecture/maps/application_map.yaml", "base: 0x0010000000", "base: 0x00000F0000")
+        self.has("overlaps")
+
+    def test_out_of_order(self):
+        self.t.edit("architecture/maps/application_map.yaml", "base: 0x0040000000", "base: 0x0005000000")
+        self.has("out of ascending order")
+
+    def test_beyond_address_width(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "size: 0x00100000\n    class: crossing_alias",
+                    "size: 0x100000000\n    class: crossing_alias")
+        self.has("beyond the 32-bit address width")
+
+    def test_misaligned_base(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "base: 0x20000000", "base: 0x20000800")
+        self.has("not 4 KiB aligned")
+
+    def test_duplicate_name(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "name: SHA", "name: AES")
+        self.has("duplicate region name AES")
+
+    def test_bad_label(self):
+        self.t.edit("architecture/maps/application_map.yaml", "label: PROPOSED\n    records: [NX-REQ-053, NX-REQ-102]",
+                    "label: DONE\n    records: [NX-REQ-053, NX-REQ-102]")
+        self.has("is not SELECTED, PROPOSED or OPEN")
+
+    def test_bad_permission_string(self):
+        self.t.edit("architecture/maps/application_map.yaml", "perm: rwx", "perm: rwz")
+        self.has("perm must be")
+
+    def test_missing_required_key(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "    class: security_rom\n", "")
+        self.has("missing class")
+
+    def test_alias_size_mismatch(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "size: 0x00100000", "size: 0x00080000")
+        self.has("differs from")
+
+    def test_alias_target_missing(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "target_region: System SRAM", "target_region: Nowhere")
+        self.has("is not an application region")
+
+    def test_alias_target_base_wrong(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "target_base: 0x0000000000", "target_base: 0x0000001000")
+        self.has("target_base does not equal")
+
+    def test_mailbox_region_missing(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "name: Mailbox (secure side)", "name: Mail slot")
+        self.has("Mailbox (secure side) is missing")
+
+    def test_unknown_requirement(self):
+        self.t.edit("architecture/maps/application_map.yaml", "NX-REQ-102]", "NX-REQ-999]")
+        self.has("NX-REQ-999 is not in the requirements register")
+
+    def test_table_row_differs(self):
+        self.t.edit("architecture/ADDRESS_MAP.md", "| 16 MiB | No | rw- |", "| 8 MiB | No | rw- |")
+        self.has("differs from the file")
+
+    def test_table_row_missing(self):
+        text = (self.t.root / "architecture/ADDRESS_MAP.md").read_text(encoding="utf-8")
+        row = next(l for l in text.splitlines() if l.startswith("| OSPI registers |"))
+        self.t.edit("architecture/ADDRESS_MAP.md", row + "\n", "")
+        self.has("table has")
+
+    def test_missing_file(self):
+        (self.t.root / "architecture/maps/secure_map.yaml").unlink()
+        self.has("secure_map.yaml not found")
+
+
+class Parser(unittest.TestCase):
+    def test_subset(self):
+        errs = []
+        m = C.parse("# c\nspace: x\nwidth: 40   # note\nlist: [A, B]\nregions:\n  - name: N\n    base: 0x10\n"
+                    "    perm: \"---\"\n    cacheable: true\n    note: text with: colon\n", errs, "t")
+        self.assertEqual(errs, [])
+        self.assertEqual(m["width"], 40)
+        self.assertEqual(m["list"], ["A", "B"])
+        r = m["regions"][0]
+        self.assertEqual((r["name"], r["base"], r["perm"], r["cacheable"], r["note"]),
+                         ("N", 16, "---", True, "text with: colon"))
+
+    def test_unreadable_line_is_reported(self):
+        errs = []
+        C.parse("space x\n", errs, "t")
+        self.assertTrue(errs)
+
+    def test_hex_grouping(self):
+        self.assertEqual(C.hexs(0x1000000000, 40), "0x10_0000_0000")
+        self.assertEqual(C.hexs(0x20080000, 32), "0x2008_0000")
+
+    def test_size_text(self):
+        self.assertEqual(C.size_text(1 << 30), "1 GiB")
+        self.assertEqual(C.size_text(0xC000000), "192 MiB")
+        self.assertEqual(C.size_text(0x10000), "64 KiB")
+
+
+if __name__ == "__main__":
+    unittest.main()

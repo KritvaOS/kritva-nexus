@@ -12,15 +12,17 @@ help: ## Show this list
 	  /^[a-zA-Z0-9_.-]+:[^=].*##/ { if (g != "") { printf "\n%s\n", g; g = "" }; sub(/^ +/, "", $$2); printf "  %-24s %s\n", $$1, $$2 }' $(MAKEFILE_LIST)
 
 ##@ Checks
-.PHONY: check docs-check check-readme
+.PHONY: check docs-check check-readme check-maps
 
 REQUIRED := ACCEPTANCE_CRITERIA.md AGENTS.md CONTRIBUTING.md SECURITY.md LICENSE README.md \
   planning/TASKS.md planning/MILESTONE.md planning/MILESTONE_STATUS.md planning/REVIEW_CHECKLIST.md \
   planning/GIT_COMMIT_STEP.md planning/CHANGELOG.md .github/CODEOWNERS
 
-check: ## Required planning files exist; commit-message checker tests pass
+check: ## Required planning files exist; commit-message and address-map checker tests pass; address maps check
 	@for f in $(REQUIRED); do test -f $$f || { echo "missing $$f"; exit 1; }; done
 	@python3 -m unittest discover -s tests/commit_message_check
+	@python3 -m unittest discover -s tests/address_map_check
+	@python3 scripts/check_address_maps.py
 	@echo "check ok"
 
 docs-check: ## Every relative Markdown link points to an existing file
@@ -28,6 +30,10 @@ docs-check: ## Every relative Markdown link points to an existing file
 
 check-readme: ## Structural check of README.md (metadata, topics, relative links)
 	@python3 scripts/check_readme.py README.md
+
+check-maps: ## Address-map files: overlaps, width, alignment, crossings, table agreement
+	@python3 -m unittest discover -s tests/address_map_check
+	@python3 scripts/check_address_maps.py
 
 ##@ Gates (unimplemented gates exit 3)
 .PHONY: lint test-unit test-integration test-regression test acceptance

@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the proposed application and secure address maps and the two domain crossings; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.2.0-draft |
+| Version | 0.2.1-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -25,7 +25,7 @@ This document shows the application address map and the secure address map for t
 3. An aperture is a range of addresses, not a memory capacity. The selected capacities are those of the register: the 6 MiB camera frame pool and the 64 KiB security ROM and SRAM. The DDR4, PSRAM and NOR capacities are not selected.
 4. Any address that no region lists is unmapped. An access to an unmapped or reserved address returns DECERR, and an access that a region forbids returns SLVERR (NX-REQ-079, NX-REQ-104, PROPOSED).
 5. A PROPOSED region changes by a change request: a pull request that edits the file with a changelog entry. Moving to SELECTED needs a decision record.
-6. There is no checker for the files yet. A checker for overlaps, the address width, alignment and agreement of the tables belongs under the owner-only script path and is a later step. This part was checked once by hand with a throwaway script, which is not part of the repository.
+6. `scripts/check_address_maps.py` checks the two files and these tables (`make check-maps`, also run by `make check` and the address-map-check workflow): file structure and header keys, region keys and labels, unique names, 4 KiB alignment, address-width bounds, ascending order and no overlap inside each space, the boot-window alias against its application region, the mailbox region, the NX-REQ identifiers against the register, and every table row against its file. A PASS does not show that a base, size or attribute is right or that the width fits the C910 or any master.
 
 ## 2. Application address map (40-bit, PROPOSED)
 
@@ -90,7 +90,7 @@ The application side attachment of the bridge to an application fabric, the mail
 | Division of the peripheral register space among instances, including the DMA controller registers | OPEN | NX-ARCH-OI-036 | Dinesh |
 | Access attributes and finalisation of the secure map | OPEN | NX-ARCH-OI-021 | Dinesh |
 | PSRAM, NOR and on-chip memory capacities and organisation | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
-| Checker for the map files | OPEN | None (no requirement exists) | Dinesh |
+| Review of the map values and attributes by the owner (the checker is structural only) | OPEN | NX-REQ-053, NX-REQ-054, NX-REQ-102 | Dinesh |
 
 ## History
 
@@ -98,3 +98,4 @@ The application side attachment of the bridge to an application fabric, the mail
 |---|---|---|
 | 0.1.0-draft | 2026-11-12 | First part 2 draft for KOS-NEXUS-008: the two map files and their tables |
 | 0.2.0-draft | 2026-11-12 | Part 3: the two controlled crossings (NX-DEC-027) added to the secure map and the separation section |
+| 0.2.1-draft | 2026-11-12 | The map checker exists (scripts/check_address_maps.py); rule 6 and the open items updated |

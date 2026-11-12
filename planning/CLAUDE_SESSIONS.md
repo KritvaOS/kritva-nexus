@@ -31,7 +31,7 @@ This is the one file that lists the Claude sessions that helped write commits in
 | Date | Session identifier | Work |
 |---|---|---|
 | 2026-11-11 | session_01KqgaDkHBpV3gbQLqZQqZgm | KOS-NEXUS-085 datasheet revision 0.2.0-draft and NX-DEC-024 (copied unchanged from the session table of NX-DEC-024) |
-| 2026-11-12 | session_01KqgaDkHBpV3gbQLqZQqZgm | Same session. Work of 2026-11-11 not listed above: datasheet revision 0.2.1-draft and NX-DEC-025 (32-channel DMA controller, NX-REQ-092 to NX-REQ-100). Work of 2026-11-12: datasheet revisions 0.3.0-draft to 0.3.4-draft; KOS-NEXUS-008 memory architecture, address maps and domain crossings (NX-DEC-026, NX-DEC-027); NX-DEC-028 and this file; the mailbox clarification after review 4 (NX-REQ-106 to NX-REQ-108) |
+| 2026-11-12 | session_01KqgaDkHBpV3gbQLqZQqZgm | Same session. Work of 2026-11-11 not listed above: datasheet revision 0.2.1-draft and NX-DEC-025 (32-channel DMA controller, NX-REQ-092 to NX-REQ-100). Work of 2026-11-12: datasheet revisions 0.3.0-draft to 0.3.4-draft; KOS-NEXUS-008 memory architecture, address maps and domain crossings (NX-DEC-026, NX-DEC-027); NX-DEC-028 and this file; the mailbox clarification after review 4 (NX-REQ-106 to NX-REQ-108); the address-map checker (scripts/check_address_maps.py) |
 
 ## History
 
