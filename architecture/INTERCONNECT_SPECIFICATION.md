@@ -8,7 +8,7 @@
 | Status | DRAFT (NX-ARCH-GAP-001 decided by the owner; NX-ARCH-GAP-004 and the interconnect details proposed; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.1.0-draft |
+| Version | 0.1.1-draft |
 | Last Updated | 2026-11-09 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-007; NX-M1 |
@@ -81,7 +81,7 @@ Route: the C910 reaches the APB-0 and APB-1 register windows through AXI-0, one 
 | Bursts | Single-beat only; longer, FIXED and WRAP bursts return SLVERR | NX-REQ-074 |
 | Reset | An in-flight access completes with SLVERR at reset; no new access until both sides are out of reset | NX-REQ-075 |
 
-Access attributes are device-type, non-cacheable, ordered and non-speculative; this follows the ordering decision and is not a separate decision. Secure resources are never reachable on this path (NX-REQ-034).
+Access attributes are device-type, non-cacheable, ordered and non-speculative; this follows the ordering decision and is not a separate decision. Secure resources are never reachable on this path (NX-REQ-034). The one window related to security is the application-side window of the mailbox (NX-REQ-107, PROPOSED): it is an application-domain peripheral window allowed by this policy, not a secure resource, and it gives no route to the secure map (MEMORY_ARCHITECTURE section 5.2).
 
 ### 3.4 Residual items
 

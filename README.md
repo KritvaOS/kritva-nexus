@@ -98,7 +98,7 @@ Directories are added only when the work they hold is baselined. Empty folders a
 | [planning/CLAUDE_SESSIONS.md](planning/CLAUDE_SESSIONS.md) | Claude session identifiers of Claude-assisted commits, one consolidated file (NX-DEC-028) | REFERENCE, DRAFT | Yes, by every Claude-assisted commit |
 | [Makefile](Makefile) | Make targets; unimplemented gates exit 3 | INPUT, DRAFT | Yes, by owner only |
 | `.github/` | CODEOWNERS, gate configuration, PR template, workflows | INPUT, DRAFT | Yes, by owner only |
-| `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate) and their tests | INPUT, DRAFT | Yes, by owner only |
+| `scripts/` and `tests/` | Repository checks (README, links, commit format, PR gate, address maps) and their tests | INPUT, DRAFT | Yes, by owner only |
 | `architecture/` | SoC architecture, address maps, clock, reset, CDC, security | AUTHORITATIVE for architecture, PLANNED | Yes |
 | [architecture/README.md](architecture/README.md) | Index of the architecture documents | REFERENCE, DRAFT | Hand-maintained |
 | [architecture/A0_INTEGRATION_DRAFT.md](architecture/A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion (a reconstruction, not an original document) | INPUT, PROPOSED | Addenda only |
