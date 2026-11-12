@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.3.0-draft |
+| Version | 0.3.1-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -94,11 +94,11 @@ The boundary between the security domain and the application domain has exactly 
 
 ### 5.1 Boot window: security core to application (NX-INT-024)
 
-The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core, because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is OPEN (NX-ARCH-OI-037).
+The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core, because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is OPEN (NX-ARCH-OI-037); whatever the attachment, the window must be usable after the security core starts and before C910 reset release, so that the boot image can be verified and placed before the application subsystems are initialised.
 
 ### 5.2 Mailbox: application to security (NX-INT-025)
 
-The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this proposal.
+The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this proposal.
 
 ### 5.3 Isolation rules
 
@@ -152,3 +152,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.1.0-draft | 2026-11-12 | First part for KOS-NEXUS-008: memory inventory, the selected 40-bit address width with its confirmation procedure, address-space statement and the proposed access policy |
 | 0.2.0-draft | 2026-11-12 | The address maps moved to ADDRESS_MAP.md and the two map files (part 2) |
 | 0.3.0-draft | 2026-11-12 | Part 3: section 5 defines the two controlled crossings of NX-DEC-027 and the isolation rules |
+| 0.3.1-draft | 2026-11-12 | After review 4: the mailbox application-side window is stated as an application-domain window under NX-REQ-072 and the boot window must be usable before C910 reset release |
