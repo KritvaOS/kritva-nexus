@@ -8,8 +8,8 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.11.0-draft |
-| Last Updated | 2026-11-11 |
+| Version | 0.12.0-draft |
+| Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
 | Related Documents | [A0 integration draft](A0_INTEGRATION_DRAFT.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md) |
@@ -58,8 +58,9 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 |---|---|---|---|
 | CPU IP | The application CPU subsystem uses the Xuantie C910, RV64. The exact RTL release and configuration are not confirmed. | PROPOSED | NX-REQ-001, NX-DEC-018 |
 | Cluster | One cluster of four cores with 64 KB L1 instruction and data caches per core and a shared 1 MB L2; 1.0 to 1.2 GHz is a target, not a timing result. | PROPOSED | NX-REQ-055 |
-| CPU interface | AXI4, 128-bit data, 8 outstanding reads and 8 outstanding writes; the 40-bit address width is unconfirmed. | PROPOSED | NX-REQ-056 |
-| Address width | The application address width is confirmed against the selected C910 configuration before the address map is frozen. | OPEN | NX-REQ-029, NX-ARCH-GAP-003 |
+| CPU interface | AXI4, 128-bit data, 8 outstanding reads and 8 outstanding writes; the 40-bit application address width is SELECTED (NX-DEC-026) and its confirmation against the C910 configuration is OPEN. | PROPOSED | NX-REQ-056 |
+| Address width | The application address width is 40 bits. | SELECTED | NX-REQ-101, NX-DEC-026 |
+| Address width confirmation | The 40-bit width is confirmed against the selected C910 configuration and every application master before the address map is marked SELECTED; the procedure is in section 4 of MEMORY_ARCHITECTURE. | OPEN | NX-REQ-029, NX-ARCH-GAP-003 |
 | DVFS | The clock and power subsystem supports DVFS for the C910 subsystem. | SELECTED | NX-REQ-017, NX-DEC-016 |
 | Interrupts and timers | 128 external sources, 16 inter-processor interrupts, a shared 64-bit timebase, a 32.768 kHz RTC, per-hart timer compare and TAP debug; PLIC/CLINT versus AIA is undecided. | PROPOSED, with the controller choice OPEN | NX-REQ-057 |
 | Power and test support | Clock gating, power gating, hardware performance counters, scan test and MBIST for applicable memories are expected; the implementation is not frozen. | PROPOSED | A0 draft 2.4 |
@@ -225,7 +226,7 @@ Assumptions that the interfaces and sections above rest on:
 
 | ID | Assumption | Records | Open issue |
 |---|---|---|---|
-| NX-ASM-001 | The application address width is 40 bits, as assumed by the proposed address map; it has not been confirmed against the C910 configuration. | NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
+| NX-ASM-001 | The application address width is 40 bits (SELECTED, NX-DEC-026); the C910 configuration and the application masters are assumed to generate 40-bit addresses and this has not been confirmed. | NX-REQ-101; NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
 | NX-ASM-002 | The C910 RTL release and configuration meet the cluster and interface parameters proposed in section 5; neither is confirmed. | NX-REQ-055; NX-REQ-056 | NX-ARCH-OI-001 |
 | NX-ASM-003 | The DDR4 interface is one x32 channel at DDR4-3200 with a sustained fraction of 70%; the DDR4 address window is not a device size. | NX-REQ-064; NX-REQ-076; NX-REQ-077 | NX-ARCH-OI-005 |
 | NX-ASM-004 | Ethernet PHYs are external to the SoC and the PHY is selected at board level. | NX-REQ-040 | NX-ARCH-OI-015 |
@@ -240,11 +241,11 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 |---|---|---|---|---|---|---|---|
 | NX-ARCH-GAP-001 | C910 to APB access path: closed by NX-DEC-021 (route) and NX-DEC-022 (behaviour); residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 proposed | AXI fabrics | NX-REQ-067 to NX-REQ-075 (NX-REQ-027 superseded) | Dinesh | CLOSED |
 | NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths | Security | NX-REQ-028 | Dinesh | OPEN |
-| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width is unconfirmed against the C910 configuration | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
+| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is unconfirmed against the C910 configuration and the application masters | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
 | NX-ARCH-GAP-004 | DDR4 controller ingress: resolved by proposal, one 256-bit port for x32 DDR4-3200 | Memory | NX-REQ-030; NX-REQ-076 to NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-001 | Exact C910 RTL release and configuration; cache sizes and cluster configuration; AXI interface parameters against the C910 RTL | CPU and interconnect | None | Dinesh | OPEN |
 | NX-ARCH-OI-002 | PLIC/CLINT versus AIA integration | CPU and interconnect | None | Dinesh | OPEN |
-| NX-ARCH-OI-003 | Application address-map attributes (cacheability, coherency, security, read/write/execute permissions) and IOMMU requirements | CPU and interconnect | None | Dinesh | OPEN |
+| NX-ARCH-OI-003 | Application address-map attributes (cacheability, coherency, security, read/write/execute permissions) and IOMMU requirements: proposed in section 6 of MEMORY_ARCHITECTURE | CPU and interconnect | NX-REQ-102; NX-REQ-103; NX-REQ-104 | Dinesh | PROPOSED |
 | NX-ARCH-OI-004 | AXI routing, decode, QoS, outstanding transactions and error behaviour: proposed in the interconnect specification section 6 | CPU and interconnect | NX-REQ-078; NX-REQ-079 | Dinesh | PROPOSED |
 | NX-ARCH-OI-005 | DDR4 width and capacity; memory arbitration and bandwidth allocation: proposed in the interconnect specification section 4 | Memory | NX-REQ-076; NX-REQ-077; NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-006 | PSRAM protocol, mode, capacity and bandwidth; OSPI NOR device and controller details | Memory | None | Dinesh | OPEN |

@@ -3,7 +3,7 @@
 | Property | Value |
 |---|---|
 | Milestone | NX-M1 |
-| Status | NOT_STARTED (proposed; Nexus is outside the V2 plan and is not registered in kritva-program) |
+| Status | IN_PROGRESS (started by the owner on 2026-11-12; proposed; Nexus is outside the V2 plan and is not registered in kritva-program) |
 | Weight | none (no baseline; Nexus is planned for the V3 plan) |
 | Depends on | KOS-NEXUS-006, KOS-NEXUS-007, KOS-NEXUS-084 |
 | Workstream | ARCH |
@@ -23,3 +23,5 @@ Out of scope: Memory controller RTL; SRAM macro selection.
 Inputs: KOS-NEXUS-006, KOS-NEXUS-007, KOS-NEXUS-084, the configuration of the selected CPU.
 
 Verification method: Architecture review; the address width is checked against the CPU configuration.
+
+Progress note: part 1 is [architecture/MEMORY_ARCHITECTURE.md](../../architecture/MEMORY_ARCHITECTURE.md) with NX-DEC-026 (40-bit width SELECTED) and NX-REQ-101 to NX-REQ-104. Still to do: the application and secure address maps in one machine-readable source with the format agreed, the separation of the two address spaces (NX-ARCH-GAP-002), and the confirmation of the width against the C910 configuration and every application master (NX-ARCH-GAP-003, owner Dinesh). The task stays IN_PROGRESS.

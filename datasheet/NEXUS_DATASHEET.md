@@ -8,7 +8,7 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.1-draft |
+| Version | 0.3.2-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -16,7 +16,7 @@
 
 ## Purpose
 
-**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-100), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-025) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-023). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
+**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-104), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-026) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-023). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
 
 No RTL, FPGA image or silicon exists, and no figure here is measured. "Planned" means required by the register; it does not mean built. Every row names the requirements it restates and their label: **SELECTED** (an owner decision is recorded), **PROPOSED** (recommended, not approved, shown as preliminary and not committed) or **OPEN** (not yet defined). Where the requirements of one row carry different labels, the label column gives each label with its requirement numbers. A frequency, bandwidth, TOPS or power figure is a target or a planning figure, never an achieved result.
 
@@ -41,7 +41,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED | 009 to 014, 032 |
 | Clock and power | DVFS planned for the C910 and the NPU | SELECTED | 017, 018 |
 | Always-on, interrupts | Always-on domain and interrupt architecture | OPEN | 031, 057 |
-| Address spaces | Application address width and secure and application address-space separation | OPEN | 028, 029 |
+| Address spaces | 40-bit application address width (selected); its confirmation against the C910 configuration, the secure and application address-space separation and the memory access policy (cacheability, coherency, unmapped access) | SELECTED (101); PROPOSED (102 to 104); OPEN (028, 029) | 028, 029, 101 to 104 |
 | Engineering baseline | RTL design standard KNX-RTL-STD-001 required for all design RTL | SELECTED | 082 to 089 |
 
 ## 2. Block list
@@ -111,8 +111,9 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | DDR4 planning figures | Theoretical peak 12.8 GB/s; 70% sustained fraction (8.96 GB/s); budgets display 0.664, Ethernet 0.500, optional camera 0.049, C910 2.0, NPU 5.0, headroom 0.747 GB/s. Sizing figures, not measurements | PROPOSED | 077 |
 | Secondary memory | Octal SPI PSRAM; controller target 200 to 400 MHz | SELECTED (003); PROPOSED (065) | 003, 065 |
 | Boot medium | OSPI NOR | SELECTED | 004 |
-| Application address map | 40-bit address map proposed | PROPOSED | 053 |
-| Application address width | Not yet confirmed against the selected C910 configuration | OPEN | 029 |
+| Application address width | 40 bits | SELECTED | 101 |
+| Application address map | Address map proposed; memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access proposed | PROPOSED | 053, 102, 103, 104 |
+| Width confirmation | The 40-bit width is not yet confirmed against the selected C910 configuration and every application master | OPEN | 029 |
 | Secure and application address spaces | Separation and treatment of overlapping ranges not yet defined | OPEN | 028 |
 
 ## 5. Internal connectivity
@@ -245,6 +246,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | 0.2.1-draft | 2026-11-11 | Second ChatGPT review: diagram link style now follows the label of each NX-INT entry (display and peripheral I/O links dashed); NX-INT tags added to more links; DDR4 capacity marked subject to the OPEN address width (NX-REQ-029); debug row states that no NX-REQ exists; secure-boot and DVFS wording tightened; the interface register is stated to be authoritative for section 5 |
 | 0.3.0-draft | 2026-11-12 | Added the 32-channel DMA controller (NX-DEC-025, NX-REQ-092 to NX-REQ-100, NX-INT-023, NX-ARCH-OI-035): new section 7, DMA rows in sections 1, 2 and 5, section numbers 7 to 9 moved to 8 to 10, DMA master shown on AXI-3 in Appendix A |
 | 0.3.1-draft | 2026-11-12 | Third ChatGPT review of the DMA content: wording now states which DMA items are proposed (section 1), the shared peripheral and I2S DMA master role (section 2), that the register access is not the C910 bridge route (section 7) and that the low-power and memory-to-memory paths are proposals. Labels unchanged |
+| 0.3.2-draft | 2026-11-12 | Memory architecture part 1 (NX-DEC-026, NX-REQ-101 to NX-REQ-104): the 40-bit application address width is SELECTED and its confirmation stays OPEN; memory access policy rows added; Appendix B updated |
 
 ## Appendix A. Internal connectivity view
 
@@ -265,6 +267,6 @@ This table shows where each group of requirements is restated. NX-REQ-027 is SUP
 | 008, 019 to 026, 040, 041 | 1, 2, 3, 5, 8 |
 | 009 to 014, 032 to 039 | 1, 2, 9 |
 | 017, 018, 031, 057 to 063, 066 | 1, 2, 3, 5, 9, 10 |
-| 028, 029, 053, 054 | 1, 4, 9, 10 |
+| 028, 029, 053, 054, 101 to 104 | 1, 4, 9, 10 |
 | 082 to 091 | 1, 10 |
 | 092 to 100 | 1, 2, 5, 7, 10 |

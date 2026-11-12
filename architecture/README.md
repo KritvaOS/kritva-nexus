@@ -9,7 +9,7 @@
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
 | Version | 0.1.0-draft |
-| Last Updated | 2026-11-08 |
+| Last Updated | 2026-11-12 |
 | Authority | REFERENCE |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
 | Related Documents | [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md) |
@@ -24,6 +24,7 @@ This is the index of the architecture documents in this repository. It lists eac
 |---|---|---|---|
 | [SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md) | Consolidated top-level system architecture: domains, interface register and open-issues register | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [INTERCONNECT_SPECIFICATION.md](INTERCONNECT_SPECIFICATION.md) | Application AXI and memory-access architecture (KOS-NEXUS-007): decisions for NX-ARCH-GAP-001 and proposals for NX-ARCH-GAP-004 | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
+| [MEMORY_ARCHITECTURE.md](MEMORY_ARCHITECTURE.md) | Memory roles, the 40-bit application address width and the access policy (KOS-NEXUS-008, part 1); the address maps follow | INPUT (not AUTHORITATIVE until the owner approves it) | DRAFT |
 | [A0_INTEGRATION_DRAFT.md](A0_INTEGRATION_DRAFT.md) | A0 integration draft imported from a discussion; a reconstruction, not an original document; changed by dated addenda only | INPUT | PROPOSED |
 
 ## Reading order and rules
