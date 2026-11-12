@@ -8,7 +8,7 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.0-draft |
+| Version | 0.3.1-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -37,7 +37,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Display | 720p60 parallel DPI, three composition layers | SELECTED | 006, 007 |
 | Ethernet | Two independent MACs; RGMII and EtherCAT MainDevice operation | SELECTED (008); PROPOSED (040, 041) | 008, 040, 041 |
 | Peripherals | 16 PWM, 32 GPIO, 4 timers, 4 UART, 4 I2C, 1 SPI master, 1 SPI slave, 2 I2S (counts only) | SELECTED | 019 to 026 |
-| DMA | General-purpose DMA controller with 32 channels on AXI-3: four transfer types, burst and fine-grained modes, scatter-gather, priority arbitration, completion and error interrupts | SELECTED (092); PROPOSED (093 to 100) | 092 to 100 |
+| DMA | General-purpose DMA controller with 32 channels (selected); the following are proposed, not selected: placement on AXI-3, four transfer types, burst and fine-grained modes, scatter-gather, priority arbitration, completion and error interrupts | SELECTED (092); PROPOSED (093 to 100) | 092 to 100 |
 | Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED | 009 to 014, 032 |
 | Clock and power | DVFS planned for the C910 and the NPU | SELECTED | 017, 018 |
 | Always-on, interrupts | Always-on domain and interrupt architecture | OPEN | 031, 057 |
@@ -55,7 +55,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | AXI-to-APB-0 and APB-1 | Peripheral register access | SELECTED (016); PROPOSED (052) | 016, 052 |
 | DDR4 controller and PHY | Primary system memory | SELECTED (002); PROPOSED (030, 064, 076, 077) | 002, 030, 064, 076, 077 |
 | OSPI PSRAM and OSPI NOR controllers | Secondary memory and boot medium | SELECTED (003, 004); PROPOSED (065) | 003, 004, 065 |
-| DMA controller | Bulk data movement with 32 channels; AXI-3 master | SELECTED (092); PROPOSED (093 to 100) | 092 to 100 |
+| DMA controller | Bulk data movement with 32 channels; proposed shared peripheral and I2S DMA master on AXI-3 | SELECTED (092); PROPOSED (093 to 100) | 092 to 100 |
 | Camera inputs and ISP | Image capture and processing | PROPOSED | 042 to 045 |
 | Camera frame pool, ISP and NPU local SRAM | Local memories that avoid DDR4 intermediates | SELECTED (005); PROPOSED (047) | 005, 047 |
 | NPU | Neural-network acceleration | PROPOSED | 046 |
@@ -164,17 +164,17 @@ The internal connectivity is shown in Appendix A (Figure 2). The interface regis
 | Feature | Planned value or description | Label | NX-REQ |
 |---|---|---|---|
 | DMA controller | General-purpose DMA controller with 32 independent channels, to offload bulk data movement from the C910 | SELECTED | 092 |
-| Placement | Peripheral and I2S DMA master on AXI-3; configuration registers reached through the AXI-to-APB interconnects; camera, display, Ethernet and storage DMA masters stay on their own fabrics | PROPOSED | 093 |
+| Placement | Peripheral and I2S DMA master on AXI-3; configuration registers reached through the AXI-to-APB interconnects (exact path and address mapping not defined, NX-ARCH-OI-035; this is not the C910 AXI-0 to AXI-3 bridge route); camera, display, Ethernet and storage DMA masters stay on their own fabrics | PROPOSED | 093 |
 | Transfer types | Memory-to-memory, memory-to-peripheral, peripheral-to-memory and peripheral-to-peripheral | PROPOSED | 094 |
 | Transfer modes | Burst transfers with a configurable burst length and a limit on consecutive bursts, no bus locking; one beat per arbitration; background transfers for the lowest priority level | PROPOSED | 095 |
 | Addressing and width | Increment, decrement and fixed addressing; 8, 16, 32 and 64-bit data widths within the 64-bit AXI-3 | PROPOSED | 096 |
 | Scatter-gather | Chains of descriptors held in memory | PROPOSED | 097 |
 | Arbitration | Configurable per-channel priority, round-robin among equal priorities, the "NPU and other DMA" QoS class on its AXI traffic | PROPOSED | 098, 078 |
 | Completion and errors | An interrupt on completion or error only; a DECERR or SLVERR response stops the channel and is reported per channel; interrupt routing follows the interrupt architecture | PROPOSED (099); OPEN (057) | 057, 099 |
-| Low-power operation | Configured transfers can continue while the C910 cluster is in a low-power state; the DMA power domain and wake-up conditions are not defined | PROPOSED (060, 100); OPEN (031) | 031, 060, 100 |
+| Low-power operation | Proposed requirement: configured transfers may continue while the C910 cluster is in a low-power state; the DMA power domain and wake-up conditions are not defined | PROPOSED (060, 100); OPEN (031) | 031, 060, 100 |
 | Request mapping and descriptors | Peripheral request mapping, descriptor format, coherency, DMA power domain and wake-up not yet defined; no NX-REQ exists, tracked by NX-ARCH-OI-035 | OPEN | none (NX-ARCH-OI-035) |
 
-Memory-to-memory copies cross AXI-3 (64-bit) and the Memory Access Crossbar; their throughput is not quantified, and the DDR4 planning figures in section 4 have no DMA line.
+Proposed path: memory-to-memory copies cross AXI-3 (64-bit) and the Memory Access Crossbar; their throughput is not quantified, and the DDR4 planning figures in section 4 have no DMA line.
 
 ## 8. Multimedia, connectivity and peripherals
 
@@ -244,6 +244,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | 0.2.0-draft | 2026-11-11 | Page budget set by the owner to 8 to 12 pages. Single diagram replaced by an external interface view and an internal connectivity view. Added the external interface, internal connectivity and debug items; split mixed labels per requirement; DVFS and safety wording changed to planned wording. Changes follow the ChatGPT review of 2026-11-11 |
 | 0.2.1-draft | 2026-11-11 | Second ChatGPT review: diagram link style now follows the label of each NX-INT entry (display and peripheral I/O links dashed); NX-INT tags added to more links; DDR4 capacity marked subject to the OPEN address width (NX-REQ-029); debug row states that no NX-REQ exists; secure-boot and DVFS wording tightened; the interface register is stated to be authoritative for section 5 |
 | 0.3.0-draft | 2026-11-12 | Added the 32-channel DMA controller (NX-DEC-025, NX-REQ-092 to NX-REQ-100, NX-INT-023, NX-ARCH-OI-035): new section 7, DMA rows in sections 1, 2 and 5, section numbers 7 to 9 moved to 8 to 10, DMA master shown on AXI-3 in Appendix A |
+| 0.3.1-draft | 2026-11-12 | Third ChatGPT review of the DMA content: wording now states which DMA items are proposed (section 1), the shared peripheral and I2S DMA master role (section 2), that the register access is not the C910 bridge route (section 7) and that the low-power and memory-to-memory paths are proposals. Labels unchanged |
 
 ## Appendix A. Internal connectivity view
 
