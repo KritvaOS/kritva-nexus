@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.12.0-draft |
+| Version | 0.13.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -153,7 +153,7 @@ The display, Ethernet and storage DMA masters are proposed on AXI-2, and the per
 | Secure boot | The security core starts first, authenticates the boot image from OSPI NOR using the immutable ROM and authorises C910 reset release before the application subsystems are initialised; an authorised NOR access path is usable before the application fabrics and the C910 are active. | PROPOSED | NX-REQ-036, NX-REQ-038 |
 | Reset control | C910 reset release is hardware-controlled by the security domain, and a C910 warm reset does not reset the security domain. | PROPOSED | NX-REQ-037 |
 | Secret exposure | Raw secrets are not exposed through ordinary application interfaces. | PROPOSED | NX-REQ-039 |
-| Secure address map | A separate secure address space with the proposed map of A0 draft section 7.4. | PROPOSED | NX-REQ-054 |
+| Secure address map | A separate secure address space with the proposed map held in architecture/maps/secure_map.yaml (derived from A0 draft section 7.4). | PROPOSED | NX-REQ-054 |
 | Address-space separation | The secure and application address spaces are separate address spaces on separate interconnects, with independent decode and access control. This is the architectural statement; the proposed secure map is NX-REQ-054 and the application exclusion is NX-REQ-034. | PROPOSED | NX-REQ-054, NX-REQ-034 |
 | Isolation boundary and access paths | The isolation boundary, the permitted access paths and the treatment of overlapping numerical ranges are not yet defined. This gap is not resolved by the separation statement above. | OPEN | NX-REQ-028, NX-ARCH-GAP-002 |
 
@@ -278,3 +278,4 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-033 | C910-to-APB timeout value, recovery and late completion: proposed as 1024 bridge-clock cycles | AXI fabrics | NX-REQ-080 | Dinesh | PROPOSED |
 | NX-ARCH-OI-034 | AXI fabric bridge buffering limits, backpressure, ID handling and APB version: proposed | AXI fabrics | NX-REQ-081 | Dinesh | PROPOSED |
 | NX-ARCH-OI-035 | DMA controller details: peripheral request and handshake mapping, descriptor format, memory coherency, DMA power domain and wake-up; decided in the DMA specification by PROPOSED defaults, changed by change request | DMA | NX-REQ-093 to NX-REQ-100 | Dinesh | OPEN |
+| NX-ARCH-OI-036 | Division of the application peripheral register space (0x00_4000_0000 to 0x00_4FFF_FFFF) among the peripheral instances, including the DMA controller register window and the APB-0 and APB-1 split; proposed in ADDRESS_MAP once the instance counts and the APB split are defined | Memory | NX-REQ-053 | Dinesh | OPEN |

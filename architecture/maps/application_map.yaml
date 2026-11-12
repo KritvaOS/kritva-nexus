@@ -1,0 +1,98 @@
+# Kritva Nexus application address map (KOS-NEXUS-008, part 2).
+# Single machine-readable source of the application address space.
+# Label: PROPOSED (NX-REQ-053). The address width is SELECTED (NX-DEC-026, NX-REQ-101).
+# Bases and apertures are proposals from A0 draft section 9.6; an aperture is not a capacity.
+# Any address not listed is unmapped and returns DECERR (NX-REQ-079, NX-REQ-104).
+# Access attributes follow NX-REQ-102 (PROPOSED).
+# Separate address space: the secure map is secure_map.yaml (NX-REQ-028, NX-ARCH-GAP-002 OPEN).
+space: application
+document: KOS-NEXUS-ADDRMAP-001
+version: 0.1.0-draft
+address_width_bits: 40
+address_width_label: SELECTED
+address_width_records: [NX-DEC-026, NX-REQ-101]
+width_confirmation: OPEN   # NX-REQ-029, NX-ARCH-GAP-003
+map_label: PROPOSED
+map_records: [NX-REQ-053, NX-REQ-102]
+regions:
+  - name: System SRAM
+    base: 0x0000000000
+    size: 0x0000100000
+    class: system_sram
+    cacheable: false
+    perm: rwx
+    label: PROPOSED
+    records: [NX-REQ-053, NX-REQ-102]
+    note: Capacity of the physical SRAM is not selected; the aperture is 1 MiB.
+  - name: Camera frame pool
+    base: 0x0010000000
+    size: 0x0001000000
+    class: local_sram
+    cacheable: false
+    perm: rw-
+    label: PROPOSED
+    records: [NX-REQ-005, NX-REQ-047, NX-REQ-053, NX-REQ-102]
+    note: Aperture 16 MiB; the usable capacity of 6 MiB is SELECTED (NX-REQ-005, NX-DEC-004).
+  - name: ISP SRAM
+    base: 0x0011000000
+    size: 0x0001000000
+    class: local_sram
+    cacheable: false
+    perm: rw-
+    label: PROPOSED
+    records: [NX-REQ-047, NX-REQ-053, NX-REQ-102]
+    note: Aperture 16 MiB, not a capacity.
+  - name: NPU SRAM
+    base: 0x0012000000
+    size: 0x0002000000
+    class: local_sram
+    cacheable: false
+    perm: rw-
+    label: PROPOSED
+    records: [NX-REQ-047, NX-REQ-053, NX-REQ-102]
+    note: Aperture 32 MiB, not a capacity.
+  - name: Reserved
+    base: 0x0014000000
+    size: 0x000C000000
+    class: reserved
+    cacheable: false
+    perm: "---"
+    label: PROPOSED
+    records: [NX-REQ-053, NX-REQ-104]
+    note: Treated as unmapped (DECERR).
+  - name: Peripheral register space
+    base: 0x0040000000
+    size: 0x0010000000
+    class: peripheral
+    cacheable: false
+    perm: rw-
+    label: PROPOSED
+    records: [NX-REQ-053, NX-REQ-072, NX-REQ-102]
+    note: Window allocation per peripheral instance, including the DMA controller registers, is OPEN (NX-ARCH-OI-036).
+  - name: OSPI NOR window
+    base: 0x0060000000
+    size: 0x0010000000
+    class: nor
+    cacheable: true
+    perm: r-x
+    label: PROPOSED
+    records: [NX-REQ-004, NX-REQ-053, NX-REQ-102]
+    note: Aperture 256 MiB; the NOR device and capacity are not selected (NX-ARCH-OI-006).
+  - name: OSPI PSRAM
+    base: 0x0070000000
+    size: 0x0010000000
+    class: psram
+    cacheable: true
+    perm: rwx
+    label: PROPOSED
+    records: [NX-REQ-003, NX-REQ-053, NX-REQ-102]
+    note: Aperture 256 MiB; the PSRAM capacity is not selected (NX-ARCH-OI-006).
+  - name: DDR4
+    base: 0x1000000000
+    size: 0x1000000000
+    class: ddr4
+    cacheable: true
+    perm: rwx
+    label: PROPOSED
+    records: [NX-REQ-002, NX-REQ-053, NX-REQ-076, NX-REQ-102]
+    note: Window of 64 GiB; it does not select a 64 GiB device. Capacity is chosen at board level.

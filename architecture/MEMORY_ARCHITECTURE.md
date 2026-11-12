@@ -5,10 +5,10 @@
 | Document ID | KOS-NEXUS-ARCH-003 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Architecture |
-| Status | DRAFT (part 1 of KOS-NEXUS-008: memory roles, address width and access policy; the address maps follow in later parts; not reviewed or approved) |
+| Status | DRAFT (part 1 of KOS-NEXUS-008: memory roles, address width and access policy; the address maps are in ADDRESS_MAP.md; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.1.0-draft |
+| Version | 0.2.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -24,7 +24,7 @@ This is the first part of KOS-NEXUS-008. It decides and proposes the following.
 
 1. The application address width is 40 bits, SELECTED by the owner (NX-DEC-026, NX-REQ-101). The confirmation against the C910 configuration and against every application master is a procedure with an owner (section 4); it is not yet done.
 2. The memory roles, the access attributes per memory class, the coherency position and the unmapped-access policy are PROPOSED defaults (NX-REQ-102 to NX-REQ-104). They change by change request.
-3. The application address map and the secure address map, the separation of the two address spaces (NX-ARCH-GAP-002, NX-REQ-028) and the machine-readable map source are later parts of this task. Until they merge, the proposed map of the A0 draft (section 9.6, NX-REQ-053) and the secure map (section 7.4, NX-REQ-054) are the only maps, and both stay PROPOSED.
+3. The application address map and the secure address map are held in [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml) and shown in [ADDRESS_MAP.md](ADDRESS_MAP.md) (part 2); both stay PROPOSED (NX-REQ-053, NX-REQ-054). The separation of the two address spaces (NX-ARCH-GAP-002, NX-REQ-028) is a later part of this task.
 
 No capacity, bandwidth, latency or timing value appears here that a requirement or the owner has not stated.
 
@@ -123,7 +123,7 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 |---|---|---|---|
 | Confirmation of the 40-bit width against the C910 configuration and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
 | Separation and access paths between the secure and application address spaces | OPEN | NX-REQ-028, NX-ARCH-GAP-002 | Dinesh |
-| Application and secure address maps with the machine-readable source | PROPOSED | NX-REQ-053, NX-REQ-054 | Dinesh |
+| Application and secure address maps (in ADDRESS_MAP.md and the two map files) | PROPOSED | NX-REQ-053, NX-REQ-054 | Dinesh |
 | PSRAM, NOR and on-chip memory organisation details | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 | DMA request mapping, descriptor format, coherency and power domain | OPEN | NX-ARCH-OI-035 | Dinesh |
 
@@ -132,3 +132,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | Version | Date | Change |
 |---|---|---|
 | 0.1.0-draft | 2026-11-12 | First part for KOS-NEXUS-008: memory inventory, the selected 40-bit address width with its confirmation procedure, address-space statement and the proposed access policy |
+| 0.2.0-draft | 2026-11-12 | The address maps moved to ADDRESS_MAP.md and the two map files (part 2) |

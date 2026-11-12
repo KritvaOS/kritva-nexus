@@ -8,7 +8,7 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.2-draft |
+| Version | 0.3.3-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -112,7 +112,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Secondary memory | Octal SPI PSRAM; controller target 200 to 400 MHz | SELECTED (003); PROPOSED (065) | 003, 065 |
 | Boot medium | OSPI NOR | SELECTED | 004 |
 | Application address width | 40 bits | SELECTED | 101 |
-| Application address map | Address map proposed; memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access proposed | PROPOSED | 053, 102, 103, 104 |
+| Application address map | Address map proposed (held in two machine-readable files, one per address space); memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access proposed | PROPOSED | 053, 102, 103, 104 |
 | Width confirmation | The 40-bit width is not yet confirmed against the selected C910 configuration and every application master | OPEN | 029 |
 | Secure and application address spaces | Separation and treatment of overlapping ranges not yet defined | OPEN | 028 |
 
@@ -229,6 +229,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Always-on domain definition | OPEN | 031 |
 | Interrupt architecture | OPEN | 057 |
 | Debug lifecycle and authorisation (NX-ARCH-OI-020, no requirement yet) | OPEN | none (NX-ARCH-OI-020) |
+| Division of the peripheral register space among instances, including the DMA registers (NX-ARCH-OI-036, no requirement yet) | OPEN | none (NX-ARCH-OI-036) |
 | DMA request mapping, descriptor format, coherency, power domain and wake-up (NX-ARCH-OI-035, no requirement yet) | OPEN | none (NX-ARCH-OI-035) |
 | C910 CPU selection | PROPOSED | 001 |
 | DDR4 ingress port, width and bandwidth sizing | PROPOSED | 030, 064, 076, 077 |
@@ -247,6 +248,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | 0.3.0-draft | 2026-11-12 | Added the 32-channel DMA controller (NX-DEC-025, NX-REQ-092 to NX-REQ-100, NX-INT-023, NX-ARCH-OI-035): new section 7, DMA rows in sections 1, 2 and 5, section numbers 7 to 9 moved to 8 to 10, DMA master shown on AXI-3 in Appendix A |
 | 0.3.1-draft | 2026-11-12 | Third ChatGPT review of the DMA content: wording now states which DMA items are proposed (section 1), the shared peripheral and I2S DMA master role (section 2), that the register access is not the C910 bridge route (section 7) and that the low-power and memory-to-memory paths are proposals. Labels unchanged |
 | 0.3.2-draft | 2026-11-12 | Memory architecture part 1 (NX-DEC-026, NX-REQ-101 to NX-REQ-104): the 40-bit application address width is SELECTED and its confirmation stays OPEN; memory access policy rows added; Appendix B updated |
+| 0.3.3-draft | 2026-11-12 | Memory architecture part 2 (address maps in two machine-readable files, NX-ARCH-OI-036): application map row notes the map files; open-item row for the peripheral register space added. Labels unchanged |
 
 ## Appendix A. Internal connectivity view
 
