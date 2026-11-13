@@ -4,11 +4,11 @@
 # Label: PROPOSED (NX-REQ-112). The parent region and its base and size are SELECTED (NX-REQ-053, NX-DEC-030).
 # APB-0 holds the peripherals of NX-REQ-019 to NX-REQ-026; APB-1 holds control and block registers.
 # A window size is an aperture, not a register count. Any address in the parent region that no window lists
-# is unmapped and returns DECERR (NX-REQ-104). No window is allocated for the application interrupt
-# controller, because PLIC versus AIA is undecided (NX-REQ-057, NX-ARCH-OI-032).
+# is unmapped and returns DECERR (NX-REQ-104). The PLIC and CLINT windows follow the proposed application
+# interrupt controller baseline (NX-REQ-116); PLIC versus AIA stays undecided as a requirement (NX-REQ-057).
 space: application_peripheral
 document: KOS-NEXUS-ADDRMAP-003
-version: 0.1.0-draft
+version: 0.2.0-draft
 parent_region: Peripheral register space
 map_label: PROPOSED
 map_records: [NX-REQ-112]
@@ -250,3 +250,19 @@ windows:
     label: PROPOSED
     records: [NX-REQ-051, NX-REQ-112]
     note: Storage DMA control registers. Window size proposed.
+  - name: Application interrupt controller (PLIC)
+    apb: APB-1
+    base: 0x0041400000
+    size: 0x0000400000
+    class: interrupt_ctrl
+    label: PROPOSED
+    records: [NX-REQ-057, NX-REQ-112, NX-REQ-116]
+    note: PLIC with 128 external sources; the 4 MiB aperture covers the priority, pending, enable and per-context registers for the C910 contexts and is not a register count. Window size proposed.
+  - name: Application timer and software interrupt (CLINT)
+    apb: APB-1
+    base: 0x0041800000
+    size: 0x0000010000
+    class: interrupt_ctrl
+    label: PROPOSED
+    records: [NX-REQ-057, NX-REQ-112, NX-REQ-116]
+    note: CLINT for the C910 timer and software interrupts. Window size proposed.

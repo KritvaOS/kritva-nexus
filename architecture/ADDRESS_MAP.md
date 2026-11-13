@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the application and secure address maps and the two domain crossings, approved by the owner in NX-DEC-030; the peripheral register windows are PROPOSED; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.5.0-draft |
+| Version | 0.6.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -81,8 +81,10 @@ Source: [maps/peripheral_windows.yaml](maps/peripheral_windows.yaml). The window
 | Ethernet MAC0 | APB-1 | 0x00_410A_0000 | 0x00_410A_FFFF | 64 KiB | PROPOSED | 008, 112 |
 | Ethernet MAC1 | APB-1 | 0x00_410B_0000 | 0x00_410B_FFFF | 64 KiB | PROPOSED | 008, 112 |
 | Storage DMA | APB-1 | 0x00_410C_0000 | 0x00_410C_FFFF | 64 KiB | PROPOSED | 051, 112 |
+| Application interrupt controller (PLIC) | APB-1 | 0x00_4140_0000 | 0x00_417F_FFFF | 4 MiB | PROPOSED | 057, 112, 116 |
+| Application timer and software interrupt (CLINT) | APB-1 | 0x00_4180_0000 | 0x00_4180_FFFF | 64 KiB | PROPOSED | 057, 112, 116 |
 
-Notes. APB-0 carries the peripherals whose counts are SELECTED (NX-REQ-019 to NX-REQ-026, NX-DEC-020) and APB-1 carries the control and block registers; the 16 MiB apertures of the two bridge windows and the 64 KiB size of each window are proposals, not register counts. Each instance has its own window, so a peripheral is never shared between instances in one window except the blocks that the requirements count as one block (PWM, GPIO and the general-purpose timers). The mailbox window (0x00_4105_0000 to 0x00_4105_FFFF) is the only security-related window on the C910-to-APB path (NX-REQ-110) and gives no route to the secure map. The DMA controller window is at 0x00_4100_0000 and the OSPI NOR controller window, the only way to program or erase the NOR device (NX-REQ-111), is at 0x00_4101_0000. No window is allocated for the application interrupt controller because PLIC versus AIA is undecided (NX-REQ-057, NX-ARCH-OI-032), and the register layout of every block is OPEN. An address of the region that no window lists is unmapped and returns DECERR (NX-REQ-104).
+Notes. APB-0 carries the peripherals whose counts are SELECTED (NX-REQ-019 to NX-REQ-026, NX-DEC-020) and APB-1 carries the control and block registers; the 16 MiB apertures of the two bridge windows and the 64 KiB size of each window are proposals, not register counts. Each instance has its own window, so a peripheral is never shared between instances in one window except the blocks that the requirements count as one block (PWM, GPIO and the general-purpose timers). The mailbox window (0x00_4105_0000 to 0x00_4105_FFFF) is the only security-related window on the C910-to-APB path (NX-REQ-110) and gives no route to the secure map. The DMA controller window is at 0x00_4100_0000 and the OSPI NOR controller window, the only way to program or erase the NOR device (NX-REQ-111), is at 0x00_4101_0000. The PLIC and CLINT windows follow the proposed application interrupt controller baseline (NX-REQ-116); the register layout of every block is OPEN. An address of the region that no window lists is unmapped and returns DECERR (NX-REQ-104).
 
 ## 3. Secure address map (32-bit width PROPOSED, map SELECTED)
 
@@ -115,8 +117,8 @@ The boundary has exactly two controlled crossings (NX-DEC-027, NX-REQ-105, SELEC
 
 | Crossing | Direction | Secure map | Application map | Label | Records |
 |---|---|---|---|---|---|
-| Boot window | Security core to application | Application boot window, 0x3000_0000 to 0x300F_FFFF (1 MiB alias) | System SRAM, 0x00_0000_0000 to 0x00_000F_FFFF; no other application region and no DDR4 | SELECTED; attachment OPEN | NX-REQ-105, NX-REQ-106, NX-REQ-109 |
-| Mailbox | Application to security | Mailbox (secure side), 0x2009_0000 to 0x2009_FFFF | Mailbox (application side), 0x00_4105_0000 to 0x00_4105_FFFF (PROPOSED, NX-REQ-112) | SELECTED; attachment and layout OPEN | NX-REQ-105, NX-REQ-107, NX-REQ-110 |
+| Boot window | Security core to application | Application boot window, 0x3000_0000 to 0x300F_FFFF (1 MiB alias) | System SRAM, 0x00_0000_0000 to 0x00_000F_FFFF; no other application region and no DDR4 | SELECTED; PROPOSED attachment (NX-REQ-113) | NX-REQ-105, NX-REQ-106, NX-REQ-109, NX-REQ-113 |
+| Mailbox | Application to security | Mailbox (secure side), 0x2009_0000 to 0x2009_FFFF | Mailbox (application side), 0x00_4105_0000 to 0x00_4105_FFFF (PROPOSED, NX-REQ-112) | SELECTED; PROPOSED layout and interrupts (NX-REQ-114, NX-REQ-115) | NX-REQ-105, NX-REQ-107, NX-REQ-110, NX-REQ-114, NX-REQ-115 |
 
 The application side attachment of the bridge to an application fabric, the mailbox register layout and message format, the interrupt directions and the secure-side validation rule are OPEN (NX-ARCH-OI-037). The security core does not reach DDR4 in this proposal. All other secure regions stay unreachable from the application space (NX-REQ-034).
 
@@ -124,9 +126,10 @@ The application side attachment of the bridge to an application fabric, the mail
 
 | Item | Label | Records | Owner |
 |---|---|---|---|
-| Attachment of the two crossings, mailbox layout and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
+| Attachment of the two crossings, mailbox layout, messages, validation rule and interrupts (MEMORY_ARCHITECTURE 5.4 and 5.5) | PROPOSED | NX-REQ-113, NX-REQ-114, NX-REQ-115, NX-ARCH-OI-037 | Dinesh |
 | Owner review and selection of the peripheral register windows (section 2.1) | PROPOSED | NX-REQ-112, NX-ARCH-OI-036 | Dinesh |
-| Application interrupt controller window and the register layout of every block | OPEN | NX-REQ-057, NX-ARCH-OI-032 | Dinesh |
+| Application interrupt controller baseline (PLIC and CLINT windows) | PROPOSED | NX-REQ-116, NX-ARCH-OI-032 | Dinesh |
+| Register layout of every block, and the security and always-on interrupt controllers | OPEN | NX-REQ-057, NX-ARCH-OI-032 | Dinesh |
 | Access attributes and finalisation of the secure map | OPEN | NX-ARCH-OI-021 | Dinesh |
 | PSRAM, NOR and on-chip memory capacities and organisation | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 
@@ -141,3 +144,4 @@ The application side attachment of the bridge to an application fabric, the mail
 | 0.3.0-draft | 2026-11-13 | NX-DEC-030: both maps and every region are SELECTED; the width confirmation is OPEN for every master except the C910 |
 | 0.4.0-draft | 2026-11-13 | Section 2.1: the peripheral register space is divided into APB-0 and APB-1 windows and per-instance windows (PROPOSED, NX-REQ-112) |
 | 0.5.0-draft | 2026-11-13 | NX-DEC-031: the width confirmation is closed by the owner's statement for every application master |
+| 0.6.0-draft | 2026-11-13 | PLIC and CLINT windows added to section 2.1 (NX-REQ-116); the crossing details are proposed (NX-REQ-113 to NX-REQ-115) |
