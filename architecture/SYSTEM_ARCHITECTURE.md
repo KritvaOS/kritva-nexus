@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.20.0-draft |
+| Version | 0.21.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -269,7 +269,7 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-018 | Signature and hash formats; asymmetric cryptographic algorithms | Security | None | Dinesh | OPEN |
 | NX-ARCH-OI-019 | Root-key provisioning; anti-rollback policy; recovery behaviour; secure boot failure handling | Security | None | Dinesh | OPEN |
 | NX-ARCH-OI-020 | Debug lifecycle and authorisation; eFuse programming and access control | Security | None | Dinesh | OPEN |
-| NX-ARCH-OI-021 | Secure address-map finalisation; security interrupt and fault-response details | Security | None | Dinesh | OPEN |
+| NX-ARCH-OI-021 | Secure address-map finalisation: the secure width (NX-REQ-033) and the access attributes (NX-REQ-119) are proposed for selection; privilege levels, lock states, the security interrupt and the fault response stay open | Security | NX-REQ-033; NX-REQ-119 | Dinesh | PROPOSED |
 | NX-ARCH-OI-022 | PWM, GPIO, timer, UART, I2C, SPI and I2S capabilities and timing; pinmux and package pin assignment | Peripherals | None | Dinesh | OPEN |
 | NX-ARCH-OI-023 | PLL allocation and feasibility; clock source and clock-tree architecture; jitter requirements | Clock, reset and power | None | Dinesh | OPEN |
 | NX-ARCH-OI-024 | DVFS operating points and voltage sequencing; PMIC and rail selection; power-domain implementation | Clock, reset and power | None | Dinesh | OPEN |
@@ -287,3 +287,4 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-036 | Division of the application peripheral register space (0x00_4000_0000 to 0x00_4FFF_FFFF) among the peripheral instances, including the DMA controller register window and the APB-0 and APB-1 split; closed by NX-DEC-033 (ADDRESS_MAP section 2.1, peripheral_windows.yaml, NX-REQ-112); the register layout of each block stays open | Memory | NX-REQ-053; NX-REQ-112 | Dinesh | CLOSED |
 | NX-ARCH-OI-037 | Domain crossings: the application-fabric attachment of the secure-to-application bridge (usable before C910 reset release), the mailbox register layout, message format, interrupt directions and secure-side validation rule; closed by NX-DEC-033 (MEMORY_ARCHITECTURE 5.4 and 5.5); the remaining items are NX-ARCH-OI-038 and NX-ARCH-OI-025, and whether the security core may later reach DDR4 needs a decision record (NX-DEC-027) | Security | NX-REQ-106; NX-REQ-107; NX-REQ-113; NX-REQ-114; NX-REQ-115 | Dinesh | CLOSED |
 | NX-ARCH-OI-038 | Mailbox allow-list contents, requester authentication, replay and flood protection and the response to repeated invalid requests; the reset domain of AXI-3 and System SRAM for the boot window (with NX-ARCH-OI-025); the System SRAM attachment point on the fabrics; the width and clock conversion between the secure AXI and AXI-3 | Security | NX-REQ-113; NX-REQ-114 | Dinesh | OPEN |
+| NX-ARCH-OI-039 | Register layout of every block: the register conventions, the common header and the registers of each block class are proposed; bit fields depend on IP selection and block specifications | Interface | NX-REQ-117; NX-REQ-118 | Dinesh | PROPOSED |

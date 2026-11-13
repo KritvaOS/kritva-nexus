@@ -26,6 +26,15 @@ Implemented checks, and nothing more:
      the parent region, the peripheral window inside the APB window it names), is listed in ascending order
      and overlaps no other; the DMA controller, OSPI NOR controller and application-side mailbox windows
      exist; the NX-REQ identifiers exist; and the table of section 2.1 of ADDRESS_MAP.md agrees row by row.
+  8. Both maps carry cacheable and perm for every region (the secure attributes are PROPOSED, NX-REQ-119); in the
+     secure map a security_rom or nor_secure region has no write permission and a crossing_alias region has no
+     execute permission; the secure header has attributes_label and attributes_records.
+  9. architecture/maps/register_layouts.yaml (NX-REQ-117, NX-REQ-118): the common registers and the registers of
+     each layout have 4-byte aligned, unique, ascending offsets, an access type of RO, RW, WO, W1C or W1S and a
+     note; a layout with a header keeps its registers at or above the header size and every layout fits inside
+     the smallest window of the blocks that use it; every peripheral window and every security peripheral
+     region has one block entry with an existing layout (or layout none with the label OPEN); the identifiers
+     exist; and the register tables of section 2.2 of ADDRESS_MAP.md agree row by row.
 A PASS does not show that a base, size or attribute is right, that the width fits the C910 or any master,
 or that anything is approved; that is review work (NX-REQ-029, NX-ARCH-GAP-003). Exit 0 if it passes, 1 if not.
 Stdlib only.
@@ -37,6 +46,11 @@ from pathlib import Path
 
 MAPS = {"application": "architecture/maps/application_map.yaml", "secure": "architecture/maps/secure_map.yaml"}
 PERIPH = "architecture/maps/peripheral_windows.yaml"
+LAYOUTS = "architecture/maps/register_layouts.yaml"
+LAYOUT_KEYS = ["space", "document", "version", "layout_label", "layout_records", "register_width_bits", "header_size",
+               "common_registers", "layouts", "registers", "blocks"]
+REG_KEYS = ["name", "offset", "access", "note"]
+ACCESS = {"RO", "RW", "WO", "W1C", "W1S"}
 PERIPH_KEYS = ["space", "document", "version", "parent_region", "map_label", "map_records", "apb_windows", "windows"]
 APB_KEYS = ["name", "base", "size", "label", "records", "note"]
 WINDOW_KEYS = ["name", "apb", "base", "size", "class", "label", "records", "note"]
@@ -45,6 +59,7 @@ HEADER_KEYS = ["space", "document", "version", "address_width_bits", "address_wi
                "address_width_records", "map_label", "map_records", "regions"]
 REGION_KEYS = ["name", "base", "size", "class", "label", "records", "note"]
 APP_REGION_KEYS = ["cacheable", "perm"]
+SECURE_HEADER_KEYS = ["attributes_label", "attributes_records"]
 LABELS = {"SELECTED", "PROPOSED", "OPEN"}
 ALIGN = 0x1000
 RECORD_RE = re.compile(r"^NX-(REQ|DEC|ARCH-GAP|ARCH-OI|INT)-\d{3}$")
@@ -129,8 +144,7 @@ def expected_rows(m, app):
     for r in m["regions"]:
         end = r["base"] + r["size"] - 1
         cells = [r["name"], hexs(r["base"], bits), hexs(end, bits), size_text(r["size"])]
-        if app:
-            cells += ["Yes" if r["cacheable"] else "No", r["perm"]]
+        cells += ["Yes" if r["cacheable"] else "No", r["perm"]]
         cells += [r["label"], ids_text(r["records"])]
         rows.append(cells)
     return rows
@@ -147,6 +161,126 @@ def periph_rows(pw):
         rows.append([r["name"], r["apb"], hexs(r["base"], 40), hexs(end, 40), size_text(r["size"]), r["label"],
                      ids_text(r["records"])])
     return rows
+
+
+def hex_off(v):
+    return f"0x{v:04X}"
+
+
+def reg_row(r):
+    return [r["name"], hex_off(r["offset"]), r["access"], r["note"]]
+
+
+def check_regs(items, keys, label, errs, w, lo, hi, layout_header=False):
+    """Offset rules shared by common registers and layout registers; returns nothing."""
+    seen_n, seen_o, prev = set(), set(), -1
+    for r in items:
+        name = r.get("name", "?")
+        miss = [k for k in keys if k not in r]
+        if miss:
+            errs.append(f"{w}: {label} {name}: missing {', '.join(miss)}")
+            continue
+        o = r["offset"]
+        if not isinstance(o, int) or o % 4:
+            errs.append(f"{w}: {label} {name}: offset must be a 4-byte aligned integer")
+            continue
+        if name in seen_n:
+            errs.append(f"{w}: {label} {name}: duplicate register name")
+        if o in seen_o:
+            errs.append(f"{w}: {label} {name}: duplicate offset {hex(o)}")
+        if o < prev:
+            errs.append(f"{w}: {label} {name}: offsets are not ascending")
+        seen_n.add(name), seen_o.add(o)
+        prev = max(prev, o)
+        if r["access"] not in ACCESS:
+            errs.append(f"{w}: {label} {name}: access {r['access']!r} is not one of {sorted(ACCESS)}")
+        if lo is not None and o < lo:
+            errs.append(f"{w}: {label} {name}: offset {hex(o)} is below {hex(lo)}")
+        if hi is not None and o + 4 > hi:
+            errs.append(f"{w}: {label} {name}: offset {hex(o)} does not fit the smallest window ({size_text(hi)})")
+
+
+def check_layouts(maps, rl, errs):
+    w = "register layouts"
+    for k in LAYOUT_KEYS:
+        if k not in rl:
+            errs.append(f"{w}: missing key {k}")
+    if rl.get("space") != "register_layouts":
+        errs.append(f"{w}: space is {rl.get('space')!r}, expected 'register_layouts'")
+    if rl.get("layout_label") not in LABELS:
+        errs.append(f"{w}: layout_label must be one of {sorted(LABELS)}")
+    if rl.get("register_width_bits") != 32:
+        errs.append(f"{w}: register_width_bits must be 32")
+    hs = rl.get("header_size")
+    if not isinstance(hs, int) or hs <= 0 or hs % 4:
+        errs.append(f"{w}: header_size must be a positive multiple of 4")
+        return False
+    sizes = {("application", x["name"]): x["size"] for x in maps["peripheral"]["windows"]}
+    sizes.update({("secure", x["name"]): x["size"] for x in maps["secure"]["regions"]
+                  if x.get("class") == "security_peripheral"})
+    check_regs(rl.get("common_registers") or [], REG_KEYS, "common register", errs, w, 0, hs)
+    layouts, names = {}, set()
+    for l_ in rl.get("layouts") or []:
+        n = l_.get("name", "?")
+        miss = [k for k in ("name", "header", "label", "records", "note") if k not in l_]
+        if miss:
+            errs.append(f"{w}: layout {n}: missing {', '.join(miss)}")
+            continue
+        if n in names:
+            errs.append(f"{w}: duplicate layout {n}")
+        names.add(n)
+        if not isinstance(l_["header"], bool):
+            errs.append(f"{w}: layout {n}: header must be true or false")
+        if l_["label"] not in LABELS:
+            errs.append(f"{w}: layout {n}: label {l_['label']!r} is not SELECTED, PROPOSED or OPEN")
+        layouts[n] = l_
+    blocks, bnames = rl.get("blocks") or [], set()
+    users = {}
+    for b in blocks:
+        n = b.get("name", "?")
+        miss = [k for k in ("name", "space", "layout", "label", "records") if k not in b]
+        if miss:
+            errs.append(f"{w}: block {n}: missing {', '.join(miss)}")
+            continue
+        key = (b["space"], n)
+        if key in bnames:
+            errs.append(f"{w}: duplicate block {n}")
+        bnames.add(key)
+        if key not in sizes:
+            errs.append(f"{w}: block {n}: no {b['space']} peripheral window or security peripheral region of that name")
+        if b["label"] not in LABELS:
+            errs.append(f"{w}: block {n}: label {b['label']!r} is not SELECTED, PROPOSED or OPEN")
+        recs = b["records"]
+        if not isinstance(recs, list) or not recs or not all(RECORD_RE.match(str(x)) for x in recs):
+            errs.append(f"{w}: block {n}: records must be a non-empty list of NX identifiers")
+        if b["layout"] == "none":
+            if b["label"] != "OPEN":
+                errs.append(f"{w}: block {n}: layout none needs the label OPEN")
+        elif b["layout"] not in layouts:
+            errs.append(f"{w}: block {n}: layout {b['layout']!r} is not defined")
+        else:
+            users.setdefault(b["layout"], []).append(key)
+    for key in sizes:
+        if key not in bnames:
+            errs.append(f"{w}: {key[0]} window {key[1]} has no block entry")
+    regs = rl.get("registers") or []
+    for n, l_ in layouts.items():
+        mine = [r for r in regs if r.get("layout") == n]
+        if not mine:
+            errs.append(f"{w}: layout {n} has no registers")
+        small = min((sizes[k] for k in users.get(n, []) if k in sizes), default=None)
+        check_regs(mine, REG_KEYS, f"layout {n} register", errs, w, hs if l_.get("header") is True else None, small)
+    for r in regs:
+        if r.get("layout") not in layouts:
+            errs.append(f"{w}: register {r.get('name')}: layout {r.get('layout')!r} is not defined")
+    for n in layouts:
+        if n not in users:
+            errs.append(f"{w}: layout {n} is used by no block")
+    return True
+
+
+def layout_block_rows(rl):
+    return [[b["name"], b["space"], b["layout"], b["label"], ids_text(b["records"])] for b in rl["blocks"]]
 
 
 def table_after(lines, heading_prefix):
@@ -185,7 +319,13 @@ def check_map(space, m, errs):
         errs.append(f"{w}: no regions")
         return False
     ok, names, prev_base, prev_end, prev_name = True, set(), -1, -1, None
-    keys = REGION_KEYS + (APP_REGION_KEYS if space == "application" else [])
+    keys = REGION_KEYS + APP_REGION_KEYS
+    if space == "secure":
+        for k in SECURE_HEADER_KEYS:
+            if k not in m:
+                errs.append(f"{w}: missing key {k}")
+        if m.get("attributes_label") not in LABELS:
+            errs.append(f"{w}: attributes_label must be one of {sorted(LABELS)}")
     for r in regions:
         name = r.get("name", "?")
         miss = [k for k in keys if k not in r]
@@ -218,11 +358,15 @@ def check_map(space, m, errs):
         recs = r["records"]
         if not isinstance(recs, list) or not recs or not all(RECORD_RE.match(str(x)) for x in recs):
             errs.append(f"{w}: region {name}: records must be a non-empty list of NX identifiers")
-        if space == "application":
-            if not isinstance(r["cacheable"], bool):
-                errs.append(f"{w}: region {name}: cacheable must be true or false")
-            if not re.fullmatch(r"[r-][w-][x-]", str(r["perm"])):
-                errs.append(f"{w}: region {name}: perm must be three characters of r, w, x or -")
+        if not isinstance(r["cacheable"], bool):
+            errs.append(f"{w}: region {name}: cacheable must be true or false")
+        if not re.fullmatch(r"[r-][w-][x-]", str(r["perm"])):
+            errs.append(f"{w}: region {name}: perm must be three characters of r, w, x or -")
+        elif space == "secure":
+            if r["class"] in ("security_rom", "nor_secure") and r["perm"][1] == "w":
+                errs.append(f"{w}: region {name}: a {r['class']} region must not be writable")
+            if r["class"] == "crossing_alias" and r["perm"][2] == "x":
+                errs.append(f"{w}: region {name}: a crossing_alias region must not be executable")
     return ok
 
 
@@ -336,6 +480,12 @@ def check_records(maps, root, errs):
         used = set(m.get("map_records", [])) | set(m.get("address_width_records", []))
         for r in m.get("regions", []):
             used |= set(r.get("records", []))
+        if space == "secure":
+            used |= set(m.get("attributes_records", []))
+        if space == "layouts":
+            used |= set(m.get("layout_records", []))
+            for r in m.get("layouts", []) + m.get("blocks", []):
+                used |= set(r.get("records", []))
         if space == "peripheral":
             used |= set(m.get("map_records", []))
             for r in m.get("apb_windows", []) + m.get("windows", []):
@@ -363,6 +513,32 @@ def check_tables(maps, root, errs):
         for g, w in zip(got, want):
             if g != w:
                 errs.append(f"ADDRESS_MAP.md: {space} row {w[0]!r} differs from the file: table {g} / file {w}")
+    rl = maps.get("layouts")
+    if rl:
+        got = table_after(lines, "## 2.2 Register layouts")
+        want = layout_block_rows(rl)
+        if got is None:
+            errs.append("ADDRESS_MAP.md: no table under '## 2.2 Register layouts'")
+        else:
+            if len(got) != len(want):
+                errs.append(f"ADDRESS_MAP.md: block table has {len(got)} rows, the file has {len(want)} blocks")
+            for g, w_ in zip(got, want):
+                if g != w_:
+                    errs.append(f"ADDRESS_MAP.md: block row {w_[0]!r} differs from the file: table {g} / file {w_}")
+        sets = [("common header", [reg_row(r) for r in rl["common_registers"]])]
+        for l_ in rl["layouts"]:
+            sets.append((l_["name"], [reg_row(r) for r in rl["registers"] if r["layout"] == l_["name"]]))
+        for name, want in sets:
+            head = f"### Layout {name} ("
+            got = table_after(lines[lines.index(next(x for x in lines if x.startswith("## 2.2 Register layouts"))):], head)
+            if got is None:
+                errs.append(f"ADDRESS_MAP.md: no table under '{head}'")
+                continue
+            if len(got) != len(want):
+                errs.append(f"ADDRESS_MAP.md: layout {name} table has {len(got)} rows, the file has {len(want)} registers")
+            for g, w_ in zip(got, want):
+                if g != w_:
+                    errs.append(f"ADDRESS_MAP.md: layout {name} row {w_[0]!r} differs from the file: table {g} / file {w_}")
     pw = maps.get("peripheral")
     if pw:
         heading = "## 2.1 Peripheral register windows"
@@ -397,6 +573,13 @@ def run(root):
         pw = parse(pp.read_text(encoding="utf-8"), errs, PERIPH)
         if "application" in maps and check_periph(maps["application"], pw, errs):
             maps["peripheral"] = pw
+    lp = root / LAYOUTS
+    if not lp.exists():
+        errs.append(f"{LAYOUTS} not found")
+    elif {"application", "secure", "peripheral"} <= set(maps):
+        rl = parse(lp.read_text(encoding="utf-8"), errs, LAYOUTS)
+        if check_layouts(maps, rl, errs):
+            maps["layouts"] = rl
     if "application" in maps and "secure" in maps:
         check_crossings(maps["application"], maps["secure"], errs)
         check_records(maps, root, errs)
@@ -413,9 +596,10 @@ def main():
     if errs:
         print(f"check_address_maps: {len(errs)} problem(s)")
         return 1
+    kind = {"peripheral": ("windows", "windows"), "layouts": ("blocks", "blocks")}
     print("check_address_maps ok: " + ", ".join(
-        f"{k} {len(v['windows']) if k == 'peripheral' else len(v['regions'])} "
-        f"{'windows' if k == 'peripheral' else 'regions'}" for k, v in maps.items()))
+        f"{k} {len(v[kind[k][0]]) if k in kind else len(v['regions'])} {kind[k][1] if k in kind else 'regions'}"
+        for k, v in maps.items()))
     return 0
 
 
