@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the proposed application and secure address maps and the two domain crossings; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.2.1-draft |
+| Version | 0.2.2-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -33,17 +33,17 @@ Source: [maps/application_map.yaml](maps/application_map.yaml). The attributes f
 
 | Region | First address | Last address | Size | C910 cacheable | Permissions | Label | NX-REQ |
 |---|---|---|---|---|---|---|---|
-| System SRAM | 0x00_0000_0000 | 0x00_000F_FFFF | 1 MiB | No | rwx | PROPOSED | 053, 102 |
+| System SRAM | 0x00_0000_0000 | 0x00_000F_FFFF | 1 MiB | No | rwx | PROPOSED | 053, 102, 109 |
 | Camera frame pool | 0x00_1000_0000 | 0x00_10FF_FFFF | 16 MiB | No | rw- | PROPOSED | 005, 047, 053, 102 |
 | ISP SRAM | 0x00_1100_0000 | 0x00_11FF_FFFF | 16 MiB | No | rw- | PROPOSED | 047, 053, 102 |
 | NPU SRAM | 0x00_1200_0000 | 0x00_13FF_FFFF | 32 MiB | No | rw- | PROPOSED | 047, 053, 102 |
 | Reserved | 0x00_1400_0000 | 0x00_1FFF_FFFF | 192 MiB | No | --- | PROPOSED | 053, 104 |
-| Peripheral register space | 0x00_4000_0000 | 0x00_4FFF_FFFF | 256 MiB | No | rw- | PROPOSED | 053, 072, 102 |
-| OSPI NOR window | 0x00_6000_0000 | 0x00_6FFF_FFFF | 256 MiB | Yes | r-x | PROPOSED | 004, 053, 102 |
+| Peripheral register space | 0x00_4000_0000 | 0x00_4FFF_FFFF | 256 MiB | No | rw- | PROPOSED | 053, 072, 102, 110 |
+| OSPI NOR window | 0x00_6000_0000 | 0x00_6FFF_FFFF | 256 MiB | Yes | r-x | PROPOSED | 004, 053, 102, 111 |
 | OSPI PSRAM | 0x00_7000_0000 | 0x00_7FFF_FFFF | 256 MiB | Yes | rwx | PROPOSED | 003, 053, 102 |
 | DDR4 | 0x10_0000_0000 | 0x1F_FFFF_FFFF | 64 GiB | Yes | rwx | PROPOSED | 002, 053, 076, 102 |
 
-Notes. The DDR4 window starts at 0x10_0000_0000 and needs a master that generates 40-bit addresses; the width check of section 4 of the memory architecture covers it. The frame-pool aperture is 16 MiB and its usable capacity is the SELECTED 6 MiB. The ISP SRAM and NPU SRAM windows are apertures. The peripheral register space is one range; how it is divided among the peripheral instances, including the register window of the DMA controller (NX-REQ-092, NX-REQ-093), is OPEN (NX-ARCH-OI-036). The memory-class attributes are explained in section 6 of the memory architecture.
+Notes. The OSPI NOR window is cacheable and read-only, and program and erase go only through the NOR controller registers (SELECTED, NX-REQ-111, NX-DEC-029). The DDR4 window starts at 0x10_0000_0000 and needs a master that generates 40-bit addresses; the width check of section 4 of the memory architecture covers it. The frame-pool aperture is 16 MiB and its usable capacity is the SELECTED 6 MiB. The ISP SRAM and NPU SRAM windows are apertures. The peripheral register space is one range; how it is divided among the peripheral instances, including the register window of the DMA controller (NX-REQ-092, NX-REQ-093), is OPEN (NX-ARCH-OI-036). The memory-class attributes are explained in section 6 of the memory architecture.
 
 ## 3. Secure address map (32-bit, PROPOSED)
 
@@ -63,8 +63,8 @@ Source: [maps/secure_map.yaml](maps/secure_map.yaml). The access attributes of t
 | Security interrupt controller | 0x2006_0000 | 0x2006_FFFF | 64 KiB | PROPOSED | 054, 057 |
 | Security timer and watchdog | 0x2007_0000 | 0x2007_FFFF | 64 KiB | PROPOSED | 054 |
 | OSPI registers | 0x2008_0000 | 0x2008_FFFF | 64 KiB | PROPOSED | 054 |
-| Mailbox (secure side) | 0x2009_0000 | 0x2009_FFFF | 64 KiB | PROPOSED | 105, 107, 054 |
-| Application boot window | 0x3000_0000 | 0x300F_FFFF | 1 MiB | PROPOSED | 105, 106, 054 |
+| Mailbox (secure side) | 0x2009_0000 | 0x2009_FFFF | 64 KiB | PROPOSED | 105, 107, 110, 054 |
+| Application boot window | 0x3000_0000 | 0x300F_FFFF | 1 MiB | PROPOSED | 105, 106, 109, 054 |
 
 Notes. The security ROM and SRAM capacities of 64 KiB are SELECTED; their bases are proposed. The secure NOR aperture is a range for the security core path and does not select a NOR capacity. The interrupt architecture of the security interrupt controller is OPEN (NX-REQ-057). The mailbox window and the application boot window are the two controlled crossings of NX-DEC-027 (section 4); the boot window is an alias of the 1 MiB application System SRAM aperture and is not a memory of the security domain.
 
@@ -76,8 +76,8 @@ The boundary has exactly two controlled crossings (NX-DEC-027, NX-REQ-105, SELEC
 
 | Crossing | Direction | Secure map | Application map | Label | Records |
 |---|---|---|---|---|---|
-| Boot window | Security core to application | Application boot window, 0x3000_0000 to 0x300F_FFFF (1 MiB alias) | System SRAM, 0x00_0000_0000 to 0x00_000F_FFFF; no other application region | SELECTED crossing; PROPOSED window | NX-REQ-105, NX-REQ-106 |
-| Mailbox | Application to security | Mailbox (secure side), 0x2009_0000 to 0x2009_FFFF | Mailbox window in the peripheral register space, base OPEN (NX-ARCH-OI-036) | SELECTED crossing; PROPOSED mailbox | NX-REQ-105, NX-REQ-107 |
+| Boot window | Security core to application | Application boot window, 0x3000_0000 to 0x300F_FFFF (1 MiB alias) | System SRAM, 0x00_0000_0000 to 0x00_000F_FFFF; no other application region and no DDR4 | SELECTED crossing and window scope; PROPOSED alias and bridge | NX-REQ-105, NX-REQ-106, NX-REQ-109 |
+| Mailbox | Application to security | Mailbox (secure side), 0x2009_0000 to 0x2009_FFFF | Mailbox window in the peripheral register space, base OPEN (NX-ARCH-OI-036) | SELECTED crossing and mailbox rule; PROPOSED mailbox | NX-REQ-105, NX-REQ-107, NX-REQ-110 |
 
 The application side attachment of the bridge to an application fabric, the mailbox register layout and message format, the interrupt directions and the secure-side validation rule are OPEN (NX-ARCH-OI-037). The security core does not reach DDR4 in this proposal. All other secure regions stay unreachable from the application space (NX-REQ-034).
 
@@ -99,3 +99,4 @@ The application side attachment of the bridge to an application fabric, the mail
 | 0.1.0-draft | 2026-11-12 | First part 2 draft for KOS-NEXUS-008: the two map files and their tables |
 | 0.2.0-draft | 2026-11-12 | Part 3: the two controlled crossings (NX-DEC-027) added to the secure map and the separation section |
 | 0.2.1-draft | 2026-11-12 | The map checker exists (scripts/check_address_maps.py); rule 6 and the open items updated |
+| 0.2.2-draft | 2026-11-13 | Records of NX-DEC-029 added to the System SRAM, peripheral space and NOR regions and to the two crossing regions |
