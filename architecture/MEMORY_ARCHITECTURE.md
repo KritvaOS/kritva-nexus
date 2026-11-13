@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; the owner approved the proposals in NX-DEC-030; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.5.0-draft |
+| Version | 0.6.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -98,7 +98,7 @@ The security core reaches the application domain through a secure-to-application
 
 ### 5.2 Mailbox: application to security (NX-INT-025)
 
-The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. This rule is SELECTED (NX-REQ-110, NX-DEC-029), and so is the rest of the mailbox (NX-REQ-107, NX-DEC-030), except the details marked OPEN. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this architecture.
+The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. This rule is SELECTED (NX-REQ-110, NX-DEC-029), and so is the rest of the mailbox (NX-REQ-107, NX-DEC-030), except the details marked OPEN. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window is proposed at 0x00_4105_0000 in the peripheral register windows (NX-REQ-112, PROPOSED). No security claim is made from this architecture.
 
 ### 5.3 Isolation rules
 
@@ -141,6 +141,7 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 |---|---|---|---|
 | Confirmation of the 40-bit width against the C910 configuration and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
 | Attachment of the two crossings, mailbox layout, message format and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
+| Division of the peripheral register space into windows (ADDRESS_MAP.md section 2.1 and peripheral_windows.yaml) | PROPOSED | NX-REQ-112, NX-ARCH-OI-036 | Dinesh |
 | Application and secure address maps (in ADDRESS_MAP.md and the two map files), approved by the owner | SELECTED | NX-REQ-053, NX-REQ-054, NX-DEC-030 | Dinesh |
 | PSRAM, NOR and on-chip memory organisation details | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 | DMA request mapping, descriptor format, coherency and power domain | OPEN | NX-ARCH-OI-035 | Dinesh |
@@ -155,3 +156,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.3.1-draft | 2026-11-12 | After review 4: the mailbox application-side window is stated as an application-domain window under NX-REQ-072 and the boot window must be usable before C910 reset release |
 | 0.4.0-draft | 2026-11-13 | Three owner-confirmed points are SELECTED by NX-DEC-029: boot window scope, mailbox rule and NOR window access |
 | 0.5.0-draft | 2026-11-13 | NX-DEC-030: the owner approved the proposed maps, access policy, boot window, mailbox and isolation rules; the C910 is confirmed at 40 bits and the other masters stay OPEN |
+| 0.6.0-draft | 2026-11-13 | The peripheral register space is divided into windows by a PROPOSED requirement (NX-REQ-112); the mailbox window base is proposed |

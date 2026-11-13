@@ -17,6 +17,7 @@ C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 
 FILES = ["architecture/maps/application_map.yaml", "architecture/maps/secure_map.yaml",
+         "architecture/maps/peripheral_windows.yaml",
          "architecture/ADDRESS_MAP.md", "requirements/REQUIREMENTS.md"]
 
 
@@ -118,6 +119,46 @@ class AddressMapChecker(unittest.TestCase):
         self.t.edit("architecture/ADDRESS_MAP.md", row + "\n", "")
         self.has("table has")
 
+    def test_window_outside_its_apb_window(self):
+        self.t.edit("architecture/maps/peripheral_windows.yaml", "base: 0x0040010000", "base: 0x0050010000")
+        self.has("is outside")
+
+    def test_window_overlap(self):
+        self.t.edit("architecture/maps/peripheral_windows.yaml", "base: 0x0040010000", "base: 0x0040008000")
+        self.has("overlaps")
+
+    def test_window_unknown_apb(self):
+        self.t.edit("architecture/maps/peripheral_windows.yaml", "    apb: APB-0\n", "    apb: APB-9\n")
+        self.has("is not an APB window")
+
+    def test_window_outside_parent_region(self):
+        self.t.edit("architecture/maps/application_map.yaml", "size: 0x0010000000\n    class: peripheral",
+                    "size: 0x0000800000\n    class: peripheral")
+        self.has("is outside")
+
+    def test_required_window_missing(self):
+        self.t.edit("architecture/maps/peripheral_windows.yaml", "name: DMA controller", "name: DMA engine")
+        self.has("window DMA controller is missing")
+
+    def test_window_unknown_requirement(self):
+        self.t.edit("architecture/maps/peripheral_windows.yaml", "NX-REQ-019,", "NX-REQ-998,")
+        self.has("NX-REQ-998 is not in the requirements register")
+
+    def test_window_table_row_differs(self):
+        self.t.edit("architecture/ADDRESS_MAP.md", "| PWM controller | APB-0 | 0x00_4000_0000 | 0x00_4000_FFFF | 64 KiB |",
+                    "| PWM controller | APB-0 | 0x00_4000_0000 | 0x00_4000_7FFF | 32 KiB |")
+        self.has("peripheral row")
+
+    def test_window_table_row_missing(self):
+        text = (self.t.root / "architecture/ADDRESS_MAP.md").read_text(encoding="utf-8")
+        row = next(l for l in text.splitlines() if l.startswith("| Storage DMA | APB-1 |"))
+        self.t.edit("architecture/ADDRESS_MAP.md", row + "\n", "")
+        self.has("peripheral table has")
+
+    def test_peripheral_file_missing(self):
+        (self.t.root / "architecture/maps/peripheral_windows.yaml").unlink()
+        self.has("peripheral_windows.yaml not found")
+
     def test_missing_file(self):
         (self.t.root / "architecture/maps/secure_map.yaml").unlink()
         self.has("secure_map.yaml not found")
@@ -134,6 +175,14 @@ class Parser(unittest.TestCase):
         r = m["regions"][0]
         self.assertEqual((r["name"], r["base"], r["perm"], r["cacheable"], r["note"]),
                          ("N", 16, "---", True, "text with: colon"))
+
+    def test_two_lists(self):
+        errs = []
+        m = C.parse("space: x\napb_windows:\n  - name: A\n    base: 0x10\nwindows:\n  - name: W\n    apb: A\n"
+                    "  - name: V\n    apb: A\n", errs, "t")
+        self.assertEqual(errs, [])
+        self.assertEqual([r["name"] for r in m["apb_windows"]], ["A"])
+        self.assertEqual([r["name"] for r in m["windows"]], ["W", "V"])
 
     def test_unreadable_line_is_reported(self):
         errs = []

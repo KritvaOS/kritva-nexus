@@ -9,7 +9,7 @@
 # the boot window and the application reaches the mailbox window in the peripheral register space.
 space: application
 document: KOS-NEXUS-ADDRMAP-001
-version: 0.3.0-draft
+version: 0.3.1-draft
 address_width_bits: 40
 address_width_label: SELECTED
 address_width_records: [NX-DEC-026, NX-REQ-101]
@@ -70,7 +70,7 @@ regions:
     perm: rw-
     label: SELECTED
     records: [NX-REQ-053, NX-REQ-072, NX-REQ-102, NX-REQ-110]
-    note: Window allocation per peripheral instance, including the DMA controller registers and the application-side mailbox window (NX-REQ-107), is OPEN (NX-ARCH-OI-036).
+    note: Divided into per-instance windows, including the DMA controller registers and the application-side mailbox window (NX-REQ-107), by peripheral_windows.yaml (NX-REQ-112, PROPOSED). The base and size of this region are unchanged.
   - name: OSPI NOR window
     base: 0x0060000000
     size: 0x0010000000
