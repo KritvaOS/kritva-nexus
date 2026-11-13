@@ -5,10 +5,10 @@
 | Document ID | KOS-NEXUS-ARCH-004 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Architecture |
-| Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the application and secure address maps and the two domain crossings, approved by the owner in NX-DEC-030; the peripheral register windows and the crossing details are approved in NX-DEC-033; the secure width and attributes and the register layouts are PROPOSED; the document itself has no approval record) |
+| Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the application and secure address maps and the two domain crossings, approved by the owner in NX-DEC-030; the peripheral register windows and the crossing details are approved in NX-DEC-033; the secure width and attributes are approved in NX-DEC-034; the register layouts are PROPOSED; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.8.0-draft |
+| Version | 0.9.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -21,7 +21,7 @@ This document shows the application address map and the secure address map for t
 ## 1. Status and rules
 
 1. Both maps are SELECTED by the owner's approval (NX-DEC-030, NX-REQ-053 and NX-REQ-054). The bases and apertures come from sections 9.6 and 7.4 of the [A0 integration draft](A0_INTEGRATION_DRAFT.md); the secure window sizes come from this part. A region label covers its base, size and attributes; a capacity keeps the label of its own requirement. AC-015 requires the application address width to be confirmed against the C910 and every application master before the application map is SELECTED. The owner approved the map first (NX-DEC-030) and then confirmed the 40-bit width for the C910 and every other application master (NX-DEC-031, NX-REQ-029), which meets AC-015; the confirmation is an owner statement and the RTL evidence is not recorded (NX-ARCH-OI-001), so a master that cannot generate 40-bit addresses leads to a new decision record.
-2. The application address width is 40 bits, SELECTED (NX-DEC-026, NX-REQ-101); its confirmation for every application master is the owner's statement (NX-DEC-031, NX-REQ-029). The secure address width is 32 bits, PROPOSED (NX-REQ-033), and the secure access attributes are OPEN (NX-ARCH-OI-021).
+2. The application address width is 40 bits, SELECTED (NX-DEC-026, NX-REQ-101); its confirmation for every application master is the owner's statement (NX-DEC-031, NX-REQ-029). The secure address width is 32 bits, SELECTED (NX-REQ-033, NX-DEC-034), and the secure access attributes are SELECTED (NX-REQ-119, NX-DEC-034).
 3. An aperture is a range of addresses, not a memory capacity. The selected capacities are those of the register: the 6 MiB camera frame pool and the 64 KiB security ROM and SRAM. The DDR4, PSRAM and NOR capacities are not selected.
 4. Any address that no region lists is unmapped. An access to an unmapped or reserved address returns DECERR, and an access that a region forbids returns SLVERR (NX-REQ-079, NX-REQ-104).
 5. A SELECTED region changes only by a new decision record. A region added later as PROPOSED changes by a change request: a pull request that edits the file with a changelog entry.
@@ -495,9 +495,9 @@ Security timer and watchdog.
 | WDOG_KICK | 0x010C | WO | Restart the watchdog |
 | WDOG_STATUS | 0x0110 | RO | Watchdog state |
 
-## 3. Secure address map (32-bit width and attributes PROPOSED, map SELECTED)
+## 3. Secure address map (32-bit width, attributes and map SELECTED)
 
-Source: [maps/secure_map.yaml](maps/secure_map.yaml). The cacheability and permission columns are PROPOSED (NX-REQ-119, section 3.1); the base, size and label of a region are SELECTED (NX-REQ-054).
+Source: [maps/secure_map.yaml](maps/secure_map.yaml). The cacheability and permission columns are SELECTED (NX-REQ-119, NX-DEC-034, section 3.1), as are the base, size and label of a region (NX-REQ-054).
 
 | Region | First address | Last address | Size | Cacheable | Permissions | Label | NX-REQ |
 |---|---|---|---|---|---|---|---|
@@ -518,11 +518,11 @@ Source: [maps/secure_map.yaml](maps/secure_map.yaml). The cacheability and permi
 
 Notes. The security ROM and SRAM capacities of 64 KiB are SELECTED; their bases are proposed. The secure NOR aperture is a range for the security core path and does not select a NOR capacity. The interrupt architecture of the security interrupt controller is OPEN (NX-REQ-057). The mailbox window and the application boot window are the two controlled crossings of NX-DEC-027 (section 4); the boot window is an alias of the 1 MiB application System SRAM aperture and is not a memory of the security domain.
 
-### 3.1 Secure width and attributes (PROPOSED)
+### 3.1 Secure width and attributes (SELECTED, NX-DEC-034)
 
-Width (NX-REQ-033, PROPOSED). The secure interconnect is proposed with a 32-bit address, a 32-bit data width and 2 outstanding reads and 2 outstanding writes. The security core is a 32-bit RISC-V core, and the highest secure address is 0x300F_FFFF, so every region of the secure map fits in 32 bits; the address-map-check workflow verifies that each region ends inside the declared width. The boot window alias reaches the application System SRAM at 0x00_0000_0000, so the bridge supplies bits 39 to 32 as zero; the width and clock conversion between the secure AXI and AXI-3 stays OPEN (NX-ARCH-OI-038). The data width and the outstanding counts are parameters from the A0 draft and are not evidence-based; the owner selects the whole of NX-REQ-033 in a decision record, or changes it.
+Width (NX-REQ-033, SELECTED). The secure interconnect has a 32-bit address, a 32-bit data width and 2 outstanding reads and 2 outstanding writes. The security core is a 32-bit RISC-V core, and the highest secure address is 0x300F_FFFF, so every region of the secure map fits in 32 bits; the address-map-check workflow verifies that each region ends inside the declared width. The boot window alias reaches the application System SRAM at 0x00_0000_0000, so the bridge supplies bits 39 to 32 as zero; the width and clock conversion between the secure AXI and AXI-3 stays OPEN (NX-ARCH-OI-038). The data width and the outstanding counts come from the A0 draft and the owner accepted them as written (NX-DEC-034); no RTL evidence is recorded for them.
 
-Attributes (NX-REQ-119, PROPOSED). The secure space has no cache: every region is non-cacheable. The security ROM and the OSPI NOR secure aperture are read and execute with no write (program and erase of the NOR go only through its controller registers, as in NX-REQ-111). The security SRAM is read and write with no execute, so that security software runs from the ROM or from the NOR aperture; if the owner wants security software to run from the SRAM, the permission changes to read, write and execute. The security peripheral windows are device memory, read and write, no execute. The application boot window is read and write with no execute, because the security core places the boot image and never runs it. An unmapped or reserved secure address returns DECERR and an access that a region forbids returns SLVERR, as in NX-REQ-104 for the application space. Privilege levels, lock states and per-register policy of the secure space, and the security interrupt and fault-response details, stay OPEN (NX-ARCH-OI-021).
+Attributes (NX-REQ-119, SELECTED). The secure space has no cache: every region is non-cacheable. The security ROM and the OSPI NOR secure aperture are read and execute with no write (program and erase of the NOR go only through its controller registers, as in NX-REQ-111). The security SRAM is read and write with no execute, because security software runs from the ROM (the owner's answer, NX-DEC-034); what runs from the NOR aperture is not defined. The security peripheral windows are device memory, read and write, no execute. The application boot window is read and write with no execute, because the security core places the boot image and never runs it. An unmapped or reserved secure address returns DECERR and an access that a region forbids returns SLVERR, as in NX-REQ-104 for the application space. Privilege levels, lock states and per-register policy of the secure space, and the security interrupt and fault-response details, stay OPEN (NX-ARCH-OI-021).
 
 ## 4. Two separate address spaces and two controlled crossings
 
@@ -544,7 +544,6 @@ The bridge attachment, the mailbox register layout and message format, the inter
 | Mailbox allow-list, requester authentication, replay and flood protection; AXI-3 and System SRAM reset domain; System SRAM attachment point | OPEN | NX-ARCH-OI-038, NX-ARCH-OI-025 | Dinesh |
 | Register layout of every block: conventions and registers of each block class | PROPOSED | NX-REQ-117, NX-REQ-118, NX-ARCH-OI-039 | Dinesh |
 | Bit fields of every register, and the security and always-on interrupt controllers | OPEN | NX-ARCH-OI-039, NX-REQ-057, NX-ARCH-OI-032 | Dinesh |
-| Secure address width and access attributes | PROPOSED | NX-REQ-033, NX-REQ-119, NX-ARCH-OI-021 | Dinesh |
 | Privilege levels, lock states, per-register policy, security interrupt and fault response of the secure space | OPEN | NX-ARCH-OI-021 | Dinesh |
 | PSRAM, NOR and on-chip memory capacities and organisation | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 
@@ -562,3 +561,4 @@ The bridge attachment, the mailbox register layout and message format, the inter
 | 0.6.0-draft | 2026-11-13 | PLIC and CLINT windows added to section 2.1 (NX-REQ-116); the crossing details are proposed (NX-REQ-113 to NX-REQ-115) |
 | 0.7.0-draft | 2026-11-13 | NX-DEC-033: the peripheral register windows, the crossing details and the interrupt controller baseline are SELECTED |
 | 0.8.0-draft | 2026-11-13 | Section 2.2 register layouts (NX-REQ-117, NX-REQ-118, PROPOSED), section 3.1 and attribute columns of the secure map (NX-REQ-033, NX-REQ-119, PROPOSED) |
+| 0.9.0-draft | 2026-11-13 | NX-DEC-034: the secure width and parameters (NX-REQ-033) and the secure attributes (NX-REQ-119) are SELECTED |
