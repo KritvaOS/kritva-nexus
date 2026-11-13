@@ -32,7 +32,7 @@ This is the one file that lists the Claude sessions that helped write commits in
 |---|---|---|
 | 2026-11-11 | session_01KqgaDkHBpV3gbQLqZQqZgm | KOS-NEXUS-085 datasheet revision 0.2.0-draft and NX-DEC-024 (copied unchanged from the session table of NX-DEC-024) |
 | 2026-11-12 | session_01KqgaDkHBpV3gbQLqZQqZgm | Same session. Work of 2026-11-11 not listed above: datasheet revision 0.2.1-draft and NX-DEC-025 (32-channel DMA controller, NX-REQ-092 to NX-REQ-100). Work of 2026-11-12: datasheet revisions 0.3.0-draft to 0.3.4-draft; KOS-NEXUS-008 memory architecture, address maps and domain crossings (NX-DEC-026, NX-DEC-027); NX-DEC-028 and this file; the mailbox clarification after review 4 (NX-REQ-106 to NX-REQ-108); the address-map checker (scripts/check_address_maps.py) |
-| 2026-11-13 | session_01KqgaDkHBpV3gbQLqZQqZgm | Same session. Work of 2026-11-13: KOS-NEXUS-008 owner review answers recorded as NX-DEC-029 (NX-REQ-109 to NX-REQ-111), memory architecture 0.4.0-draft, datasheet revision 0.3.5-draft; test fix for the System SRAM record list; NX-DEC-030 (approval of the PROPOSED architecture items), memory architecture 0.5.0-draft, datasheet revision 0.3.6-draft; NX-REQ-112 (peripheral register windows, PROPOSED), map checker extension, datasheet revision 0.3.7-draft; NX-DEC-031 (40-bit width for every application master) and NX-DEC-032 (address-map-check required), datasheet revision 0.3.8-draft |
+| 2026-11-13 | session_01KqgaDkHBpV3gbQLqZQqZgm | Same session. Work of 2026-11-13: KOS-NEXUS-008 owner review answers recorded as NX-DEC-029 (NX-REQ-109 to NX-REQ-111), memory architecture 0.4.0-draft, datasheet revision 0.3.5-draft; test fix for the System SRAM record list; NX-DEC-030 (approval of the PROPOSED architecture items), memory architecture 0.5.0-draft, datasheet revision 0.3.6-draft; NX-REQ-112 (peripheral register windows, PROPOSED), map checker extension, datasheet revision 0.3.7-draft; NX-DEC-031 (40-bit width for every application master) and NX-DEC-032 (address-map-check required), datasheet revision 0.3.8-draft; NX-REQ-113 to NX-REQ-116 (crossing details and application interrupt controller baseline, PROPOSED), datasheet revision 0.3.9-draft |
 
 ## History
 
@@ -43,3 +43,4 @@ This is the one file that lists the Claude sessions that helped write commits in
 | 0.1.2-draft | 2026-11-13 | Row for 2026-11-13 extended |
 | 0.1.3-draft | 2026-11-13 | Row for 2026-11-13 extended again |
 | 0.1.4-draft | 2026-11-13 | Row for 2026-11-13 extended again |
+| 0.1.5-draft | 2026-11-13 | Row for 2026-11-13 extended again |
