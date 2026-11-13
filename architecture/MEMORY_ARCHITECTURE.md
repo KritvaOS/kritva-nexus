@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; the owner approved the proposals in NX-DEC-030; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.6.0-draft |
+| Version | 0.7.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -57,11 +57,11 @@ The NOR and the PSRAM are separate devices with separate controllers. The DDR4 d
 
 The application address width is 40 bits (NX-DEC-026, NX-REQ-101): SELECTED. It applies to the C910, to every master on the four application AXI fabrics and to the Memory Access Crossbar. The secure address space is separate and uses a 32-bit address (NX-REQ-033, PROPOSED).
 
-The selection of NX-DEC-026 is of the width only. The owner then approved the application address map (NX-DEC-030, NX-REQ-053) before the width was confirmed against every master. AC-015 requires that confirmation before the map is SELECTED, so the approval is an owner decision made ahead of it: the owner confirmed the C910 at 40 bits, and the confirmation for every other master stays OPEN (section 4.2). If a master cannot generate 40-bit addresses, a new decision record supersedes NX-DEC-026 or NX-DEC-030.
+The selection of NX-DEC-026 is of the width only. The owner then approved the application address map (NX-DEC-030, NX-REQ-053) before the width was confirmed against every master. AC-015 requires that confirmation before the map is SELECTED, so the approval is an owner decision made ahead of it: the owner confirmed the C910 at 40 bits (NX-DEC-030) and later every other application master (NX-DEC-031, section 4.2), which meets AC-015. If a master cannot generate 40-bit addresses, a new decision record supersedes NX-DEC-026, NX-DEC-030 or NX-DEC-031.
 
-### 4.2 Confirmation procedure (OPEN, owner Dinesh)
+### 4.2 Confirmation procedure (closed by the owner's statement)
 
-The confirmation is NX-REQ-029 and NX-ARCH-GAP-003. It is a verification of the selected width, and it stays OPEN until the owner records the result. Steps:
+The confirmation is NX-REQ-029 and NX-ARCH-GAP-003. The owner confirmed the width for the C910 (NX-DEC-030) and for every other application master (NX-DEC-031), which closes both. The steps below remain the way to record the evidence source (NX-ARCH-OI-001); none is recorded yet. Steps:
 
 1. Name the exact C910 RTL release and configuration in use (NX-ARCH-OI-001).
 2. Read the physical address width that configuration generates on its AXI master interface and record the source (RTL parameter, configuration file or datasheet) and the value.
@@ -69,20 +69,20 @@ The confirmation is NX-REQ-029 and NX-ARCH-GAP-003. It is a verification of the 
 4. Check each recorded width against 40 bits. A master that generates fewer bits can reach only the lower part of the map; record which proposed regions it cannot reach and whether that is acceptable for its job (for example a DMA master that must reach DDR4 in the proposed window above 4 GiB).
 5. Record the outcome in this document, with the evidence source, and in a review record. If every master presents 40 bits, NX-REQ-029 and NX-ARCH-GAP-003 are closed. If any master does not, a new decision record supersedes NX-DEC-026 or names the master change (decision 4 of NX-DEC-026).
 
-No value is recorded in step 2 or step 3 by this document. Every cell in the table below that holds no result is empty by design.
+The widths in the table below are the owner's statement, not values read from the RTL or a specification, and this document records no source.
 
-### 4.3 Masters to be checked (OPEN)
+### 4.3 Application masters (40 bits confirmed by the owner)
 
 | Master | Fabric | Address width generated | Source | Reaches DDR4 window | Label |
 |---|---|---|---|---|---|
-| C910 cluster | AXI-0 | 40 bits, owner confirmation (NX-DEC-030) | Owner statement of 2026-11-13; the RTL configuration source is not yet recorded (NX-ARCH-OI-001) | Not yet recorded | OPEN |
-| ISP | AXI-1 | Not yet recorded | None | Not yet recorded | OPEN |
-| NPU | AXI-1 | Not yet recorded | None | Not yet recorded | OPEN |
-| Camera DMA | AXI-1 | Not yet recorded | None | Not yet recorded | OPEN |
-| Display controller | AXI-2 | Not yet recorded | None | Not yet recorded | OPEN |
-| Ethernet MACs (2) | AXI-2 | Not yet recorded | None | Not yet recorded | OPEN |
-| Storage DMA | AXI-2 | Not yet recorded | None | Not yet recorded | OPEN |
-| DMA controller (peripheral and I2S DMA) | AXI-3 | Not yet recorded | None | Not yet recorded | OPEN |
+| C910 cluster | AXI-0 | 40 bits, owner confirmation (NX-DEC-030) | Owner statement of 2026-11-13; the RTL configuration source is not yet recorded (NX-ARCH-OI-001) | Not yet recorded | SELECTED |
+| ISP | AXI-1 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| NPU | AXI-1 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| Camera DMA | AXI-1 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| Display controller | AXI-2 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| Ethernet MACs (2) | AXI-2 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| Storage DMA | AXI-2 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
+| DMA controller (peripheral and I2S DMA) | AXI-3 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
 
 The master placement is PROPOSED (NX-REQ-051). The DMA controller is NX-REQ-092 (SELECTED) with placement PROPOSED (NX-REQ-093).
 
@@ -139,7 +139,7 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 
 | Item | Label | Records | Owner |
 |---|---|---|---|
-| Confirmation of the 40-bit width against the C910 configuration and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
+| Confirmation of the 40-bit width against the C910 configuration and every application master (owner statement; RTL evidence source not recorded, NX-ARCH-OI-001) | SELECTED | NX-REQ-029, NX-DEC-031 | Dinesh |
 | Attachment of the two crossings, mailbox layout, message format and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
 | Division of the peripheral register space into windows (ADDRESS_MAP.md section 2.1 and peripheral_windows.yaml) | PROPOSED | NX-REQ-112, NX-ARCH-OI-036 | Dinesh |
 | Application and secure address maps (in ADDRESS_MAP.md and the two map files), approved by the owner | SELECTED | NX-REQ-053, NX-REQ-054, NX-DEC-030 | Dinesh |
@@ -157,3 +157,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.4.0-draft | 2026-11-13 | Three owner-confirmed points are SELECTED by NX-DEC-029: boot window scope, mailbox rule and NOR window access |
 | 0.5.0-draft | 2026-11-13 | NX-DEC-030: the owner approved the proposed maps, access policy, boot window, mailbox and isolation rules; the C910 is confirmed at 40 bits and the other masters stay OPEN |
 | 0.6.0-draft | 2026-11-13 | The peripheral register space is divided into windows by a PROPOSED requirement (NX-REQ-112); the mailbox window base is proposed |
+| 0.7.0-draft | 2026-11-13 | NX-DEC-031: the owner confirmed the 40-bit width for every application master; section 4.3 records the statement and NX-REQ-029 and NX-ARCH-GAP-003 are closed |
