@@ -8,12 +8,13 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.10-draft |
+| Version | 0.3.11-draft |
 | 0.3.6-draft | 2026-11-13 | NX-DEC-030: the proposed address maps, access policy, boundary rules and the secure map are SELECTED (NX-REQ-028, NX-REQ-053, NX-REQ-054, NX-REQ-102 to NX-REQ-104, NX-REQ-106 to NX-REQ-108); the row for NX-ARCH-GAP-002 is removed from the open items because the gap is closed; NX-INT-012, NX-INT-024 and NX-INT-025 are SELECTED |
 | 0.3.7-draft | 2026-11-13 | NX-REQ-112 (PROPOSED): the peripheral register space is divided into APB-0 and APB-1 windows and per-instance windows; the open-item row for NX-ARCH-OI-036 is PROPOSED; Appendix B updated |
 | 0.3.8-draft | 2026-11-13 | NX-DEC-031: NX-REQ-029 is SELECTED (the owner confirmed the 40-bit width for every application master) and the open-item row for NX-ARCH-GAP-003 is removed; the decision range is NX-DEC-001 to NX-DEC-032 |
 | 0.3.9-draft | 2026-11-13 | NX-REQ-113 to NX-REQ-116 (PROPOSED): the bridge attachment, mailbox layout, messages and interrupts, and the application interrupt controller baseline (PLIC and CLINT); NX-INT-016, NX-INT-024 and NX-INT-025 updated; two open-item rows; Appendix B updated |
 | 0.3.10-draft | 2026-11-13 | NX-DEC-033: NX-REQ-112 to NX-REQ-116 are SELECTED (peripheral register windows, crossing details, application interrupt controller baseline); NX-INT-016, NX-INT-024 and NX-INT-025 labels updated; the open-item rows for NX-ARCH-OI-036 and NX-ARCH-OI-037 are replaced by one row for NX-ARCH-OI-038; the decision range is NX-DEC-001 to NX-DEC-033 |
+| 0.3.11-draft | 2026-11-13 | NX-REQ-117 to NX-REQ-119 (PROPOSED): register conventions, block register layouts and secure address-space attributes, with the proposed secure width (NX-REQ-033); rows and open items added; Appendix B updated |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -118,6 +119,8 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Boot medium | OSPI NOR | SELECTED | 004 |
 | Application address width | 40 bits | SELECTED | 101 |
 | Application address map | Address map (held in two machine-readable files, one per address space); memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access; the NOR window is cacheable and read-only with program and erase only through the NOR controller registers; the peripheral register space is divided into per-instance windows | SELECTED (053, 102 to 104, 111, 112) | 053, 102 to 104, 111, 112 |
+| Secure address space | The secure address width of 32 bits and the non-cacheable access attributes of every secure region are proposed, and the whole secure map fits in 32 bits | PROPOSED | 033, 119 |
+| Register layouts | Common register conventions and the registers of each block class are proposed (bit fields are not defined) | PROPOSED | 117, 118 |
 | Width confirmation | The owner confirmed the 40-bit width for the C910 and every application master; the RTL evidence source is not recorded | SELECTED | 029 |
 | Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM only, never DDR4 (selected), and an application-to-security mailbox that keeps the C910-to-APB rule that secure resources are unreachable (selected), both default-deny; bridge attachment, mailbox layout, messages and interrupts defined | SELECTED (028, 105 to 110, 113 to 115) | 028, 105 to 110, 113 to 115 |
 
@@ -235,6 +238,8 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Always-on domain definition | OPEN | 031 |
 | Interrupt architecture | OPEN | 057 |
 | Debug lifecycle and authorisation (NX-ARCH-OI-020, no requirement yet) | OPEN | none (NX-ARCH-OI-020) |
+| Privilege levels, lock states, security interrupt and fault response of the secure space (NX-ARCH-OI-021, no requirement yet) | OPEN | none (NX-ARCH-OI-021) |
+| Bit fields of every register (NX-ARCH-OI-039, no requirement yet) | OPEN | none (NX-ARCH-OI-039) |
 | DMA request mapping, descriptor format, coherency, power domain and wake-up (NX-ARCH-OI-035, no requirement yet) | OPEN | none (NX-ARCH-OI-035) |
 | C910 CPU selection | PROPOSED | 001 |
 | DDR4 ingress port, width and bandwidth sizing | PROPOSED | 030, 064, 076, 077 |
@@ -276,6 +281,6 @@ This table shows where each group of requirements is restated. NX-REQ-027 is SUP
 | 008, 019 to 026, 040, 041 | 1, 2, 3, 5, 8 |
 | 009 to 014, 032 to 039 | 1, 2, 9 |
 | 017, 018, 031, 057 to 063, 066 | 1, 2, 3, 5, 9, 10 |
-| 028, 029, 053, 054, 101 to 116 | 1, 4, 5, 9, 10 |
+| 028, 029, 053, 054, 101 to 119 | 1, 4, 5, 9, 10 |
 | 082 to 091 | 1, 10 |
 | 092 to 100 | 1, 2, 5, 7, 10 |

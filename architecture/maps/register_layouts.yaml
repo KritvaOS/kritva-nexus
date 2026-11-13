@@ -1,0 +1,1185 @@
+# Kritva Nexus register layouts (KOS-NEXUS-008, part 4).
+# Single machine-readable source of the register conventions and of the registers of each block class.
+# Label: PROPOSED (NX-REQ-117, NX-REQ-118). The mailbox layouts follow MEMORY_ARCHITECTURE 5.5 and are SELECTED (NX-REQ-114, NX-DEC-033).
+# Field-level definitions are not proposed here: they depend on IP selection and block specifications (NX-ARCH-OI-039).
+# A register listed here is one 32-bit word at a 4-byte aligned offset inside its block window; an offset that is not listed returns SLVERR.
+space: register_layouts
+document: KOS-NEXUS-REGMAP-001
+version: 0.1.0-draft
+layout_label: PROPOSED
+layout_records: [NX-REQ-117, NX-REQ-118]
+register_width_bits: 32
+header_size: 0x100
+common_registers:
+  - name: ID
+    offset: 0x000
+    access: RO
+    note: Block identifier
+  - name: VERSION
+    offset: 0x004
+    access: RO
+    note: Block version
+  - name: CONTROL
+    offset: 0x008
+    access: RW
+    note: Bit 0 enable, bit 1 soft reset (self-clearing); other bits are block specific
+  - name: STATUS
+    offset: 0x00C
+    access: RO
+    note: Bit 0 busy, bit 1 error; other bits are block specific
+  - name: INT_ENABLE
+    offset: 0x010
+    access: RW
+    note: One enable bit per interrupt cause of the block
+  - name: INT_STATUS
+    offset: 0x014
+    access: W1C
+    note: One status bit per interrupt cause of the block; write 1 to clear
+layouts:
+  - name: pwm
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Pulse-width modulation; the channel count is not defined.
+  - name: gpio
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: General-purpose input and output; the pin count is not defined.
+  - name: timer
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: General-purpose timers; the timer count is not defined.
+  - name: uart
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Serial port; the FIFO depth and the flow-control signals are not defined.
+  - name: i2c
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Two-wire bus controller; the roles supported are not defined.
+  - name: spi
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Serial peripheral interface; master and slave use this layout.
+  - name: i2s
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Audio serial interface.
+  - name: dma
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: General-purpose DMA controller with 32 channels (NX-REQ-092); addresses are 40 bits, as two words.
+  - name: nor_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: OSPI NOR controller; program and erase go only through these registers (NX-REQ-111).
+  - name: psram_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: OSPI PSRAM controller.
+  - name: ddr_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: DDR4 controller; the register set of the controller IP is not selected.
+  - name: sysctl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Clock, reset and power control, including the DVFS of the C910 and the NPU (NX-REQ-017, NX-REQ-018).
+  - name: media_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Buffer-based stream block (ISP, camera, display, storage DMA); the frame format list is not defined.
+  - name: ai_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: NPU control; the command format is not defined.
+  - name: eth_ctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Ethernet MAC; the PHY interface and the descriptor format are not defined.
+  - name: plic
+    header: false
+    label: PROPOSED
+    records: [NX-REQ-116]
+    note: Standard RISC-V PLIC layout with 128 sources; whether the C910 PLIC matches it is not confirmed (NX-ARCH-OI-001).
+  - name: clint
+    header: false
+    label: PROPOSED
+    records: [NX-REQ-116]
+    note: Standard RISC-V CLINT layout; whether the C910 CLINT matches it is not confirmed (NX-ARCH-OI-001).
+  - name: mailbox_app
+    header: false
+    label: SELECTED
+    records: [NX-REQ-114]
+    note: Application-side view of the mailbox, as in MEMORY_ARCHITECTURE 5.5; registers the application may not access are not listed and return SLVERR.
+  - name: mailbox_sec
+    header: false
+    label: SELECTED
+    records: [NX-REQ-114]
+    note: Security-side view of the mailbox, as in MEMORY_ARCHITECTURE 5.5; registers the security domain may not access are not listed and return SLVERR.
+  - name: aes
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: AES block; the modes and key sizes are not defined. Keys are never readable.
+  - name: sha
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: SHA-256 block.
+  - name: pka
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Asymmetric accelerator; the algorithms are not defined (NX-REQ-035), so only the frame is proposed.
+  - name: efuse
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: eFuse macro access; the provisioning scheme is not defined.
+  - name: keymgmt
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Key management; the key hierarchy is not defined.
+  - name: secctrl
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Security control; the debug lifecycle is not defined (NX-ARCH-OI-020).
+  - name: sectimer
+    header: true
+    label: PROPOSED
+    records: [NX-REQ-118]
+    note: Security timer and watchdog.
+registers:
+  - layout: pwm
+    name: CH_ENABLE
+    offset: 0x0100
+    access: RW
+    note: One enable bit per channel
+  - layout: pwm
+    name: CH0_PERIOD
+    offset: 0x0120
+    access: RW
+    note: Channel n at an offset of 0x10 times n
+  - layout: pwm
+    name: CH0_DUTY
+    offset: 0x0124
+    access: RW
+    note: Duty compare value
+  - layout: pwm
+    name: CH0_CTRL
+    offset: 0x0128
+    access: RW
+    note: Polarity and mode
+  - layout: gpio
+    name: DATA_IN
+    offset: 0x0100
+    access: RO
+    note: Sampled pin values
+  - layout: gpio
+    name: DATA_OUT
+    offset: 0x0104
+    access: RW
+    note: Output values
+  - layout: gpio
+    name: DIRECTION
+    offset: 0x0108
+    access: RW
+    note: 1 for output
+  - layout: gpio
+    name: INT_TYPE
+    offset: 0x010C
+    access: RW
+    note: Edge or level per pin
+  - layout: gpio
+    name: INT_POLARITY
+    offset: 0x0110
+    access: RW
+    note: High or low, rising or falling per pin
+  - layout: timer
+    name: COUNT_LO
+    offset: 0x0100
+    access: RO
+    note: Free-running count, low word
+  - layout: timer
+    name: COUNT_HI
+    offset: 0x0104
+    access: RO
+    note: Free-running count, high word
+  - layout: timer
+    name: COMPARE0_LO
+    offset: 0x0120
+    access: RW
+    note: Timer n at an offset of 0x10 times n
+  - layout: timer
+    name: COMPARE0_HI
+    offset: 0x0124
+    access: RW
+    note: Compare value, high word
+  - layout: timer
+    name: TIMER0_CTRL
+    offset: 0x0128
+    access: RW
+    note: One-shot or periodic mode
+  - layout: uart
+    name: TX_DATA
+    offset: 0x0100
+    access: WO
+    note: Transmit FIFO write
+  - layout: uart
+    name: RX_DATA
+    offset: 0x0104
+    access: RO
+    note: Receive FIFO read
+  - layout: uart
+    name: BAUD_DIV
+    offset: 0x0108
+    access: RW
+    note: Baud-rate divisor
+  - layout: uart
+    name: LINE_CTRL
+    offset: 0x010C
+    access: RW
+    note: Data bits, parity and stop bits
+  - layout: uart
+    name: FIFO_CTRL
+    offset: 0x0110
+    access: RW
+    note: FIFO enable, clear and trigger levels
+  - layout: uart
+    name: FIFO_STATUS
+    offset: 0x0114
+    access: RO
+    note: FIFO fill levels and flags
+  - layout: uart
+    name: FLOW_CTRL
+    offset: 0x0118
+    access: RW
+    note: Hardware flow control, if present
+  - layout: i2c
+    name: PRESCALE
+    offset: 0x0100
+    access: RW
+    note: Clock prescaler
+  - layout: i2c
+    name: SLAVE_ADDR
+    offset: 0x0104
+    access: RW
+    note: Own address when addressed as a target
+  - layout: i2c
+    name: TX_DATA
+    offset: 0x0108
+    access: WO
+    note: Transmit data
+  - layout: i2c
+    name: RX_DATA
+    offset: 0x010C
+    access: RO
+    note: Received data
+  - layout: i2c
+    name: COMMAND
+    offset: 0x0110
+    access: WO
+    note: Start, stop, read, write and acknowledge commands
+  - layout: i2c
+    name: BUS_STATUS
+    offset: 0x0114
+    access: RO
+    note: Bus busy, arbitration lost and acknowledge flags
+  - layout: spi
+    name: CLK_DIV
+    offset: 0x0100
+    access: RW
+    note: Serial clock divisor
+  - layout: spi
+    name: FRAME_FORMAT
+    offset: 0x0104
+    access: RW
+    note: Clock mode, word size and bit order
+  - layout: spi
+    name: TX_DATA
+    offset: 0x0108
+    access: WO
+    note: Transmit FIFO write
+  - layout: spi
+    name: RX_DATA
+    offset: 0x010C
+    access: RO
+    note: Receive FIFO read
+  - layout: spi
+    name: FIFO_STATUS
+    offset: 0x0110
+    access: RO
+    note: FIFO fill levels and flags
+  - layout: spi
+    name: CS_CTRL
+    offset: 0x0114
+    access: RW
+    note: Chip-select control
+  - layout: i2s
+    name: CLK_CONFIG
+    offset: 0x0100
+    access: RW
+    note: Bit clock and word clock configuration
+  - layout: i2s
+    name: FORMAT
+    offset: 0x0104
+    access: RW
+    note: Word length and frame format
+  - layout: i2s
+    name: TX_DATA
+    offset: 0x0108
+    access: WO
+    note: Transmit FIFO write
+  - layout: i2s
+    name: RX_DATA
+    offset: 0x010C
+    access: RO
+    note: Receive FIFO read
+  - layout: i2s
+    name: FIFO_STATUS
+    offset: 0x0110
+    access: RO
+    note: FIFO fill levels and flags
+  - layout: i2s
+    name: DMA_CTRL
+    offset: 0x0114
+    access: RW
+    note: DMA request enables
+  - layout: dma
+    name: CHANNEL_ENABLE
+    offset: 0x0100
+    access: RW
+    note: One bit per channel
+  - layout: dma
+    name: CHANNEL_BUSY
+    offset: 0x0104
+    access: RO
+    note: One bit per channel
+  - layout: dma
+    name: ERROR_STATUS
+    offset: 0x0108
+    access: W1C
+    note: One bit per channel
+  - layout: dma
+    name: CH0_SRC_LO
+    offset: 0x0200
+    access: RW
+    note: Channel n at an offset of 0x40 times n
+  - layout: dma
+    name: CH0_SRC_HI
+    offset: 0x0204
+    access: RW
+    note: Source address bits 39 to 32
+  - layout: dma
+    name: CH0_DST_LO
+    offset: 0x0208
+    access: RW
+    note: Destination address, low word
+  - layout: dma
+    name: CH0_DST_HI
+    offset: 0x020C
+    access: RW
+    note: Destination address bits 39 to 32
+  - layout: dma
+    name: CH0_LENGTH
+    offset: 0x0210
+    access: RW
+    note: Transfer length in bytes
+  - layout: dma
+    name: CH0_CTRL
+    offset: 0x0214
+    access: RW
+    note: Direction, width, burst and request selection
+  - layout: dma
+    name: CH0_STATUS
+    offset: 0x0218
+    access: RO
+    note: Remaining length and state
+  - layout: nor_ctrl
+    name: COMMAND
+    offset: 0x0100
+    access: WO
+    note: Read, program, erase and status commands
+  - layout: nor_ctrl
+    name: ADDRESS
+    offset: 0x0104
+    access: RW
+    note: Flash address for a command
+  - layout: nor_ctrl
+    name: DATA
+    offset: 0x0108
+    access: RW
+    note: Data for a command
+  - layout: nor_ctrl
+    name: XIP_CTRL
+    offset: 0x010C
+    access: RW
+    note: Enable the read-only memory window
+  - layout: nor_ctrl
+    name: TIMING
+    offset: 0x0110
+    access: RW
+    note: Clock divisor and dummy cycles
+  - layout: nor_ctrl
+    name: FLASH_STATUS
+    offset: 0x0114
+    access: RO
+    note: Busy and write-enable flags
+  - layout: psram_ctrl
+    name: TIMING
+    offset: 0x0100
+    access: RW
+    note: Clock divisor and read and write latency
+  - layout: psram_ctrl
+    name: MODE
+    offset: 0x0104
+    access: RW
+    note: Device mode registers access
+  - layout: psram_ctrl
+    name: CAL_CTRL
+    offset: 0x0108
+    access: RW
+    note: Calibration control
+  - layout: psram_ctrl
+    name: CAL_STATUS
+    offset: 0x010C
+    access: RO
+    note: Calibration result
+  - layout: ddr_ctrl
+    name: INIT_CTRL
+    offset: 0x0100
+    access: RW
+    note: Start initialisation
+  - layout: ddr_ctrl
+    name: INIT_STATUS
+    offset: 0x0104
+    access: RO
+    note: Initialisation done and error flags
+  - layout: ddr_ctrl
+    name: TIMING0
+    offset: 0x0108
+    access: RW
+    note: Device timing parameters
+  - layout: ddr_ctrl
+    name: REFRESH
+    offset: 0x010C
+    access: RW
+    note: Refresh interval
+  - layout: ddr_ctrl
+    name: TRAIN_CTRL
+    offset: 0x0110
+    access: RW
+    note: Start training
+  - layout: ddr_ctrl
+    name: TRAIN_STATUS
+    offset: 0x0114
+    access: RO
+    note: Training result
+  - layout: sysctl
+    name: CLOCK_ENABLE
+    offset: 0x0100
+    access: RW
+    note: One bit per clock gate
+  - layout: sysctl
+    name: CLOCK_DIV
+    offset: 0x0104
+    access: RW
+    note: Divider selection
+  - layout: sysctl
+    name: PLL_CTRL
+    offset: 0x0108
+    access: RW
+    note: PLL enable and settings
+  - layout: sysctl
+    name: PLL_STATUS
+    offset: 0x010C
+    access: RO
+    note: PLL lock flags
+  - layout: sysctl
+    name: RESET_CTRL
+    offset: 0x0110
+    access: RW
+    note: One bit per reset domain
+  - layout: sysctl
+    name: RESET_STATUS
+    offset: 0x0114
+    access: RO
+    note: Reset state per domain
+  - layout: sysctl
+    name: POWER_CTRL
+    offset: 0x0118
+    access: RW
+    note: Power domain requests
+  - layout: sysctl
+    name: POWER_STATUS
+    offset: 0x011C
+    access: RO
+    note: Power domain state
+  - layout: sysctl
+    name: DVFS_CTRL
+    offset: 0x0120
+    access: RW
+    note: Operating point request
+  - layout: sysctl
+    name: DVFS_STATUS
+    offset: 0x0124
+    access: RO
+    note: Operating point state
+  - layout: media_ctrl
+    name: BUFFER_BASE_LO
+    offset: 0x0100
+    access: RW
+    note: Buffer address, low word
+  - layout: media_ctrl
+    name: BUFFER_BASE_HI
+    offset: 0x0104
+    access: RW
+    note: Buffer address bits 39 to 32
+  - layout: media_ctrl
+    name: STRIDE
+    offset: 0x0108
+    access: RW
+    note: Line stride in bytes
+  - layout: media_ctrl
+    name: FRAME_SIZE
+    offset: 0x010C
+    access: RW
+    note: Width and height
+  - layout: media_ctrl
+    name: FORMAT
+    offset: 0x0110
+    access: RW
+    note: Pixel or data format
+  - layout: media_ctrl
+    name: FRAME_CTRL
+    offset: 0x0114
+    access: RW
+    note: Start, stop and continuous mode
+  - layout: media_ctrl
+    name: FRAME_STATUS
+    offset: 0x0118
+    access: RO
+    note: Frame counter and error flags
+  - layout: ai_ctrl
+    name: CMD_BASE_LO
+    offset: 0x0100
+    access: RW
+    note: Command buffer address, low word
+  - layout: ai_ctrl
+    name: CMD_BASE_HI
+    offset: 0x0104
+    access: RW
+    note: Command buffer address bits 39 to 32
+  - layout: ai_ctrl
+    name: CMD_LENGTH
+    offset: 0x0108
+    access: RW
+    note: Command buffer length in bytes
+  - layout: ai_ctrl
+    name: KICK
+    offset: 0x010C
+    access: WO
+    note: Start the command buffer
+  - layout: ai_ctrl
+    name: NPU_STATUS
+    offset: 0x0110
+    access: RO
+    note: Busy and error flags
+  - layout: ai_ctrl
+    name: PERF_COUNT
+    offset: 0x0114
+    access: RO
+    note: Active cycle count
+  - layout: ai_ctrl
+    name: DVFS_REQ
+    offset: 0x0118
+    access: RW
+    note: Operating point request
+  - layout: eth_ctrl
+    name: MAC_ADDR_LO
+    offset: 0x0100
+    access: RW
+    note: Station address, low word
+  - layout: eth_ctrl
+    name: MAC_ADDR_HI
+    offset: 0x0104
+    access: RW
+    note: Station address, high half
+  - layout: eth_ctrl
+    name: MAC_CONFIG
+    offset: 0x0108
+    access: RW
+    note: Speed, duplex and filtering
+  - layout: eth_ctrl
+    name: TX_RING_LO
+    offset: 0x010C
+    access: RW
+    note: Transmit ring address, low word
+  - layout: eth_ctrl
+    name: TX_RING_HI
+    offset: 0x0110
+    access: RW
+    note: Transmit ring address bits 39 to 32
+  - layout: eth_ctrl
+    name: RX_RING_LO
+    offset: 0x0114
+    access: RW
+    note: Receive ring address, low word
+  - layout: eth_ctrl
+    name: RX_RING_HI
+    offset: 0x0118
+    access: RW
+    note: Receive ring address bits 39 to 32
+  - layout: eth_ctrl
+    name: TX_TAIL
+    offset: 0x011C
+    access: RW
+    note: Transmit ring tail pointer
+  - layout: eth_ctrl
+    name: RX_TAIL
+    offset: 0x0120
+    access: RW
+    note: Receive ring tail pointer
+  - layout: eth_ctrl
+    name: MDIO_CTRL
+    offset: 0x0124
+    access: RW
+    note: Management bus command
+  - layout: eth_ctrl
+    name: MDIO_DATA
+    offset: 0x0128
+    access: RW
+    note: Management bus data
+  - layout: plic
+    name: SOURCE_PRIORITY
+    offset: 0x0000
+    access: RW
+    note: Source n at an offset of 4 times n
+  - layout: plic
+    name: PENDING
+    offset: 0x1000
+    access: RO
+    note: One bit per source, 4 words
+  - layout: plic
+    name: ENABLE_CTX0
+    offset: 0x2000
+    access: RW
+    note: Context n at an offset of 0x80 times n
+  - layout: plic
+    name: THRESHOLD_CTX0
+    offset: 0x200000
+    access: RW
+    note: Context n at an offset of 0x1000 times n
+  - layout: plic
+    name: CLAIM_COMPLETE_CTX0
+    offset: 0x200004
+    access: RW
+    note: Read to claim, write to complete
+  - layout: clint
+    name: MSIP0
+    offset: 0x0000
+    access: RW
+    note: Hart n at an offset of 4 times n
+  - layout: clint
+    name: MTIMECMP0_LO
+    offset: 0x4000
+    access: RW
+    note: Hart n at an offset of 8 times n
+  - layout: clint
+    name: MTIMECMP0_HI
+    offset: 0x4004
+    access: RW
+    note: Compare value, high word
+  - layout: clint
+    name: MTIME_LO
+    offset: 0xBFF8
+    access: RW
+    note: Shared timebase, low word
+  - layout: clint
+    name: MTIME_HI
+    offset: 0xBFFC
+    access: RW
+    note: Shared timebase, high word
+  - layout: mailbox_app
+    name: ID_VERSION
+    offset: 0x0000
+    access: RO
+    note: ID and version
+  - layout: mailbox_app
+    name: STATUS
+    offset: 0x0004
+    access: RO
+    note: Request pending, response ready, busy, error
+  - layout: mailbox_app
+    name: REQUEST_DOORBELL
+    offset: 0x0008
+    access: W1S
+    note: Ignored while a request is pending
+  - layout: mailbox_app
+    name: APP_INT_STATUS
+    offset: 0x0010
+    access: W1C
+    note: Application interrupt status
+  - layout: mailbox_app
+    name: APP_INT_ENABLE
+    offset: 0x0014
+    access: RW
+    note: Application interrupt enable
+  - layout: mailbox_app
+    name: SEC_INT_STATUS
+    offset: 0x0018
+    access: RO
+    note: Security interrupt status
+  - layout: mailbox_app
+    name: ERROR_CODE
+    offset: 0x0020
+    access: RO
+    note: Error code
+  - layout: mailbox_app
+    name: REQUEST_BUFFER
+    offset: 0x0100
+    access: RW
+    note: 256 bytes to 0x1FF; write only while no request is pending
+  - layout: mailbox_app
+    name: RESPONSE_BUFFER
+    offset: 0x0200
+    access: RO
+    note: 256 bytes to 0x2FF
+  - layout: mailbox_sec
+    name: ID_VERSION
+    offset: 0x0000
+    access: RO
+    note: ID and version
+  - layout: mailbox_sec
+    name: STATUS
+    offset: 0x0004
+    access: RO
+    note: Request pending, response ready, busy, error
+  - layout: mailbox_sec
+    name: REQUEST_DOORBELL
+    offset: 0x0008
+    access: RO
+    note: Request doorbell state
+  - layout: mailbox_sec
+    name: RESPONSE_DOORBELL
+    offset: 0x000C
+    access: W1S
+    note: Sets the response doorbell
+  - layout: mailbox_sec
+    name: APP_INT_STATUS
+    offset: 0x0010
+    access: RO
+    note: Application interrupt status
+  - layout: mailbox_sec
+    name: SEC_INT_STATUS
+    offset: 0x0018
+    access: W1C
+    note: Security interrupt status
+  - layout: mailbox_sec
+    name: SEC_INT_ENABLE
+    offset: 0x001C
+    access: RW
+    note: Security interrupt enable
+  - layout: mailbox_sec
+    name: ERROR_CODE
+    offset: 0x0020
+    access: RW
+    note: Error code
+  - layout: mailbox_sec
+    name: REQUEST_BUFFER
+    offset: 0x0100
+    access: RO
+    note: 256 bytes to 0x1FF
+  - layout: mailbox_sec
+    name: RESPONSE_BUFFER
+    offset: 0x0200
+    access: WO
+    note: 256 bytes to 0x2FF
+  - layout: aes
+    name: MODE
+    offset: 0x0100
+    access: RW
+    note: Algorithm mode and direction
+  - layout: aes
+    name: KEY_SELECT
+    offset: 0x0104
+    access: RW
+    note: Key slot index
+  - layout: aes
+    name: IV0
+    offset: 0x0108
+    access: WO
+    note: Initial value word 0 (words 1 to 3 follow)
+  - layout: aes
+    name: DATA_IN0
+    offset: 0x0120
+    access: WO
+    note: Input block word 0 (words 1 to 3 follow)
+  - layout: aes
+    name: DATA_OUT0
+    offset: 0x0140
+    access: RO
+    note: Output block word 0 (words 1 to 3 follow)
+  - layout: aes
+    name: START
+    offset: 0x0160
+    access: WO
+    note: Start one block operation
+  - layout: sha
+    name: MODE
+    offset: 0x0100
+    access: RW
+    note: Initialise or continue
+  - layout: sha
+    name: DATA_IN
+    offset: 0x0104
+    access: WO
+    note: Message word
+  - layout: sha
+    name: MSG_LENGTH
+    offset: 0x0108
+    access: RW
+    note: Message length in bytes
+  - layout: sha
+    name: START
+    offset: 0x010C
+    access: WO
+    note: Process the buffered block
+  - layout: sha
+    name: DIGEST0
+    offset: 0x0120
+    access: RO
+    note: Digest word 0 (words 1 to 7 follow)
+  - layout: pka
+    name: COMMAND
+    offset: 0x0100
+    access: WO
+    note: Operation command
+  - layout: pka
+    name: OPERAND_A
+    offset: 0x0200
+    access: RW
+    note: Operand area, 256 bytes
+  - layout: pka
+    name: RESULT
+    offset: 0x0300
+    access: RO
+    note: Result area, 256 bytes
+  - layout: efuse
+    name: READ_ADDR
+    offset: 0x0100
+    access: RW
+    note: Fuse word to read
+  - layout: efuse
+    name: READ_DATA
+    offset: 0x0104
+    access: RO
+    note: Fuse word value
+  - layout: efuse
+    name: PROG_ADDR
+    offset: 0x0108
+    access: RW
+    note: Fuse word to program
+  - layout: efuse
+    name: PROG_DATA
+    offset: 0x010C
+    access: WO
+    note: Value to program
+  - layout: efuse
+    name: PROG_CTRL
+    offset: 0x0110
+    access: WO
+    note: Start a program cycle
+  - layout: efuse
+    name: LOCK_STATUS
+    offset: 0x0114
+    access: RO
+    note: Programmed and locked flags
+  - layout: keymgmt
+    name: SLOT_SELECT
+    offset: 0x0100
+    access: RW
+    note: Key slot index
+  - layout: keymgmt
+    name: KEY_CTRL
+    offset: 0x0104
+    access: WO
+    note: Load, derive and clear commands
+  - layout: keymgmt
+    name: SLOT_STATUS
+    offset: 0x0108
+    access: RO
+    note: Slot valid and usage flags
+  - layout: keymgmt
+    name: SLOT_LOCK
+    offset: 0x010C
+    access: W1S
+    note: Lock a slot until reset
+  - layout: secctrl
+    name: LIFECYCLE_STATE
+    offset: 0x0100
+    access: RO
+    note: Lifecycle state
+  - layout: secctrl
+    name: BOOT_CTRL
+    offset: 0x0104
+    access: RW
+    note: Boot source and boot-image controls
+  - layout: secctrl
+    name: APP_RESET_CTRL
+    offset: 0x0108
+    access: RW
+    note: Hold or release the C910 reset
+  - layout: secctrl
+    name: FAULT_STATUS
+    offset: 0x010C
+    access: W1C
+    note: Fault flags
+  - layout: secctrl
+    name: DEBUG_CTRL
+    offset: 0x0110
+    access: RW
+    note: Debug enable requests
+  - layout: sectimer
+    name: COUNT
+    offset: 0x0100
+    access: RO
+    note: Timer count
+  - layout: sectimer
+    name: COMPARE
+    offset: 0x0104
+    access: RW
+    note: Timer compare value
+  - layout: sectimer
+    name: WDOG_TIMEOUT
+    offset: 0x0108
+    access: RW
+    note: Watchdog timeout
+  - layout: sectimer
+    name: WDOG_KICK
+    offset: 0x010C
+    access: WO
+    note: Restart the watchdog
+  - layout: sectimer
+    name: WDOG_STATUS
+    offset: 0x0110
+    access: RO
+    note: Watchdog state
+blocks:
+  - name: PWM controller
+    space: application
+    layout: pwm
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: GPIO controller
+    space: application
+    layout: gpio
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: General-purpose timers
+    space: application
+    layout: timer
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: UART0
+    space: application
+    layout: uart
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: UART1
+    space: application
+    layout: uart
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: UART2
+    space: application
+    layout: uart
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: UART3
+    space: application
+    layout: uart
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2C0
+    space: application
+    layout: i2c
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2C1
+    space: application
+    layout: i2c
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2C2
+    space: application
+    layout: i2c
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2C3
+    space: application
+    layout: i2c
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: SPI master
+    space: application
+    layout: spi
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: SPI slave
+    space: application
+    layout: spi
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2S0
+    space: application
+    layout: i2s
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: I2S1
+    space: application
+    layout: i2s
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: DMA controller
+    space: application
+    layout: dma
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: OSPI NOR controller
+    space: application
+    layout: nor_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: OSPI PSRAM controller
+    space: application
+    layout: psram_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: DDR4 controller
+    space: application
+    layout: ddr_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Clock, reset and power control
+    space: application
+    layout: sysctl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Mailbox (application side)
+    space: application
+    layout: mailbox_app
+    label: SELECTED
+    records: [NX-REQ-114]
+  - name: ISP
+    space: application
+    layout: media_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: NPU
+    space: application
+    layout: ai_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Camera interface and DMA
+    space: application
+    layout: media_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Display controller
+    space: application
+    layout: media_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Ethernet MAC0
+    space: application
+    layout: eth_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Ethernet MAC1
+    space: application
+    layout: eth_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Storage DMA
+    space: application
+    layout: media_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Application interrupt controller (PLIC)
+    space: application
+    layout: plic
+    label: PROPOSED
+    records: [NX-REQ-116]
+  - name: Application timer and software interrupt (CLINT)
+    space: application
+    layout: clint
+    label: PROPOSED
+    records: [NX-REQ-116]
+  - name: AES
+    space: secure
+    layout: aes
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: SHA
+    space: secure
+    layout: sha
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Asymmetric cryptography
+    space: secure
+    layout: pka
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: eFuse
+    space: secure
+    layout: efuse
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Key management
+    space: secure
+    layout: keymgmt
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Security control
+    space: secure
+    layout: secctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Security interrupt controller
+    space: secure
+    layout: none
+    label: OPEN
+    records: [NX-REQ-057]
+  - name: Security timer and watchdog
+    space: secure
+    layout: sectimer
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: OSPI registers
+    space: secure
+    layout: nor_ctrl
+    label: PROPOSED
+    records: [NX-REQ-118]
+  - name: Mailbox (secure side)
+    space: secure
+    layout: mailbox_sec
+    label: SELECTED
+    records: [NX-REQ-114]

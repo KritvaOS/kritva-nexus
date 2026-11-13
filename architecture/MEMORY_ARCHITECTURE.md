@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; the owner approved the proposals in NX-DEC-030; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.9.0-draft |
+| Version | 0.10.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -167,6 +167,10 @@ No requirement asks for an IOMMU, so this baseline has none (NX-REQ-103). A mast
 
 The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-104). An access to an unmapped or reserved address returns DECERR (NX-REQ-079). An access that a window forbids returns SLVERR, as on the C910-to-APB path (NX-REQ-068). A reserved region of the map is treated as unmapped. Reads of an unmapped address return no valid data and writes have no effect. The error response reaches the master as a bus error; a DMA channel stops on it (NX-REQ-099).
 
+### 6.4 Secure space attributes (PROPOSED, NX-REQ-119)
+
+The secure address space has no cache. The security ROM and the OSPI NOR secure aperture are read and execute, the security SRAM is read and write, the security peripheral windows are device memory with read and write, and the application boot window is read and write without execute. An unmapped secure address returns DECERR and a forbidden access returns SLVERR. The values are held in secure_map.yaml and listed in ADDRESS_MAP.md sections 3 and 3.1. Execute permission of the security SRAM, privilege levels and lock states are OPEN (NX-ARCH-OI-021).
+
 ## 7. Open items and owners
 
 | Item | Label | Records | Owner |
@@ -193,3 +197,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.7.0-draft | 2026-11-13 | NX-DEC-031: the owner confirmed the 40-bit width for every application master; section 4.3 records the statement and NX-REQ-029 and NX-ARCH-GAP-003 are closed |
 | 0.8.0-draft | 2026-11-13 | Sections 5.4 and 5.5: the bridge attachment, the mailbox register layout, message format, validation rule and interrupts are proposed (NX-REQ-113 to NX-REQ-115); the application interrupt controller baseline is proposed (NX-REQ-116) |
 | 0.9.0-draft | 2026-11-13 | NX-DEC-033: the bridge attachment, the mailbox layout, messages, validation rule and interrupts, the peripheral register windows and the application interrupt controller baseline are SELECTED |
+| 0.10.0-draft | 2026-11-13 | Section 6.4: the access attributes of the secure space are PROPOSED (NX-REQ-119) |

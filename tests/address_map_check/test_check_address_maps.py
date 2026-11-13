@@ -17,7 +17,7 @@ C = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(C)
 
 FILES = ["architecture/maps/application_map.yaml", "architecture/maps/secure_map.yaml",
-         "architecture/maps/peripheral_windows.yaml",
+         "architecture/maps/peripheral_windows.yaml", "architecture/maps/register_layouts.yaml",
          "architecture/ADDRESS_MAP.md", "requirements/REQUIREMENTS.md"]
 
 
@@ -162,6 +162,69 @@ class AddressMapChecker(unittest.TestCase):
     def test_missing_file(self):
         (self.t.root / "architecture/maps/secure_map.yaml").unlink()
         self.has("secure_map.yaml not found")
+
+    def test_secure_region_without_perm(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "    perm: r-x\n", "", 1)
+        self.has("missing perm")
+
+    def test_secure_rom_writable(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "perm: r-x", "perm: rwx", 1)
+        self.has("must not be writable")
+
+    def test_boot_window_executable(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "    class: crossing_alias\n    cacheable: false\n    perm: rw-",
+                    "    class: crossing_alias\n    cacheable: false\n    perm: rwx")
+        self.has("must not be executable")
+
+    def test_secure_table_attribute_drift(self):
+        self.t.edit("architecture/ADDRESS_MAP.md", "| Security ROM | 0x0000_0000 | 0x0000_FFFF | 64 KiB | No | r-x |",
+                    "| Security ROM | 0x0000_0000 | 0x0000_FFFF | 64 KiB | Yes | r-x |")
+        self.has("secure row 'Security ROM' differs")
+
+    def test_secure_attributes_label_missing(self):
+        self.t.edit("architecture/maps/secure_map.yaml", "attributes_label: PROPOSED\n", "")
+        self.has("missing key attributes_label")
+
+    def test_layout_misaligned_offset(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "offset: 0x0104", "offset: 0x0105", 1)
+        self.has("4-byte aligned")
+
+    def test_layout_duplicate_offset(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "offset: 0x0108\n    access: RW\n    note: Baud-rate divisor",
+                    "offset: 0x0104\n    access: RW\n    note: Baud-rate divisor")
+        self.has("duplicate offset")
+
+    def test_layout_bad_access(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "access: W1C", "access: RWC", 1)
+        self.has("is not one of")
+
+    def test_layout_below_header(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "offset: 0x0100", "offset: 0x0000", 1)
+        self.has("is below")
+
+    def test_layout_unknown_layout_for_block(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "    layout: pwm\n    label: PROPOSED", "    layout: nothing\n    label: PROPOSED")
+        self.has("is not defined")
+
+    def test_block_missing_for_window(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "  - name: GPIO controller\n    space: application\n    layout: gpio\n    label: PROPOSED\n    records: [NX-REQ-118]\n", "")
+        self.has("has no block entry")
+
+    def test_layout_none_needs_open(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "    layout: none\n    label: OPEN", "    layout: none\n    label: PROPOSED")
+        self.has("layout none needs the label OPEN")
+
+    def test_layout_table_drift(self):
+        self.t.edit("architecture/ADDRESS_MAP.md", "| BAUD_DIV | 0x0108 | RW |", "| BAUD_DIV | 0x0108 | RO |")
+        self.has("layout uart row 'BAUD_DIV' differs")
+
+    def test_layout_window_too_small(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "offset: 0x200004", "offset: 0x20000004", 1)
+        self.has("does not fit the smallest window")
+
+    def test_layout_unknown_record(self):
+        self.t.edit("architecture/maps/register_layouts.yaml", "layout_records: [NX-REQ-117, NX-REQ-118]", "layout_records: [NX-REQ-117, NX-REQ-998]")
+        self.has("NX-REQ-998 is not in the requirements register")
 
 
 class Parser(unittest.TestCase):
