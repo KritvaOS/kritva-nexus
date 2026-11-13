@@ -182,7 +182,7 @@ class AddressMapChecker(unittest.TestCase):
         self.has("secure row 'Security ROM' differs")
 
     def test_secure_attributes_label_missing(self):
-        self.t.edit("architecture/maps/secure_map.yaml", "attributes_label: PROPOSED\n", "")
+        self.t.edit("architecture/maps/secure_map.yaml", "attributes_label: SELECTED\n", "")
         self.has("missing key attributes_label")
 
     def test_layout_misaligned_offset(self):

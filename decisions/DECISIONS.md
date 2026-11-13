@@ -44,3 +44,4 @@ Rules:
 | [NX-DEC-031](NX-DEC-031.md) | 40-bit width confirmed for every application master | SELECTED | NX-REQ-029, NX-REQ-101 |
 | [NX-DEC-032](NX-DEC-032.md) | address-map-check is a required check | SELECTED | None (repository working rule) |
 | [NX-DEC-033](NX-DEC-033.md) | Approval of the peripheral register windows, crossing details and interrupt controller baseline | SELECTED | NX-REQ-112 to NX-REQ-116 |
+| [NX-DEC-034](NX-DEC-034.md) | Secure interconnect parameters and secure address-space attributes | SELECTED | NX-REQ-033, NX-REQ-119 |

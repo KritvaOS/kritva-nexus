@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.21.0-draft |
+| Version | 0.22.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -49,7 +49,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | AI and vision | Camera inputs, 6 MiB frame pool, ISP, NPU, NPU DVFS | SELECTED frame-pool capacity and NPU DVFS; PROPOSED the rest | NX-DEC-004, NX-DEC-017; NX-REQ-042 to 047 | Section 3 |
 | Multimedia and connectivity | 720p60 parallel DPI display, three composition layers, two Ethernet MACs, EtherCAT MainDevice, peripherals | SELECTED display mode, layers, MAC count, peripheral counts; PROPOSED EtherCAT, RGMII, compositor | NX-DEC-005 to 007, NX-DEC-020; NX-REQ-040, 041, 048 | Sections 5, 6 and 8 |
 | DMA | General-purpose DMA controller with 32 channels on AXI-3 | SELECTED controller and channel count; PROPOSED placement and features | NX-DEC-025; NX-REQ-092 to 100 | Not in the A0 draft |
-| Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED, including the secure map and the address-space separation; PROPOSED accelerator, boot sequence | NX-DEC-008 to 013, NX-DEC-019, NX-DEC-030; NX-REQ-033 to 039, 054; NX-REQ-028 | Section 7 |
+| Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED, including the secure map and the address-space separation; PROPOSED accelerator, boot sequence | NX-DEC-008 to 013, NX-DEC-019, NX-DEC-030, NX-DEC-034; NX-REQ-033 to 039, 054; NX-REQ-028 | Section 7 |
 | Always-on, clock, reset, power, interrupt | Always-on domain, PLLs, power and reset domains, interrupts, CDC and RDC, DVFS | SELECTED DVFS; PROPOSED PLL, domains and targets; OPEN always-on definition and interrupt architecture | NX-DEC-016, NX-DEC-017; NX-REQ-031, 057 to 063, 066 | Section 10 |
 
 ## 5. Application CPU
@@ -148,7 +148,7 @@ The display, Ethernet and storage DMA masters are proposed on AXI-2, and the per
 | eFuse | A dedicated security eFuse resource; programming and access control are not defined. | SELECTED | NX-REQ-012, NX-DEC-011 |
 | Cryptography | AES-128 and AES-256, and SHA-256. | SELECTED | NX-REQ-013, NX-REQ-014, NX-DEC-012, NX-DEC-013 |
 | Asymmetric accelerator | An asymmetric cryptography accelerator; its algorithms, signature and hash formats are not defined. | PROPOSED | NX-REQ-035 |
-| Secure interconnect | A dedicated, separate secure AXI interconnect. Its 32-bit data and address widths and 2 outstanding reads and writes are proposals. | SELECTED concept; PROPOSED parameters | NX-REQ-032, NX-DEC-019; NX-REQ-033 |
+| Secure interconnect | A dedicated, separate secure AXI interconnect. Its 32-bit data and address widths and 2 outstanding reads and writes are SELECTED (NX-REQ-033, NX-DEC-034). | SELECTED | NX-REQ-032, NX-DEC-019; NX-REQ-033, NX-DEC-034 |
 | Application exclusion | The application AXI interconnect gives no access to the security ROM, security SRAM, eFuse, key management or security interrupt controller. | PROPOSED | NX-REQ-034 |
 | Secure boot | The security core starts first, authenticates the boot image from OSPI NOR using the immutable ROM and authorises C910 reset release before the application subsystems are initialised; an authorised NOR access path is usable before the application fabrics and the C910 are active. | PROPOSED | NX-REQ-036, NX-REQ-038 |
 | Reset control | C910 reset release is hardware-controlled by the security domain, and a C910 warm reset does not reset the security domain. | PROPOSED | NX-REQ-037 |
@@ -212,7 +212,7 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-008 | Display DMA from DDR4 framebuffers on AXI-2 and the parallel DPI output | Display compositor, AXI-2, DDR4, DPI pins | PROPOSED (display mode SELECTED) | NX-REQ-006; NX-REQ-048; NX-REQ-051 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-013, NX-ARCH-OI-014 |
 | NX-INT-009 | Ethernet MAC DMA on AXI-2 and the RGMII interface to external PHYs | Ethernet MACs, AXI-2, external PHYs | PROPOSED (MAC count SELECTED) | NX-REQ-008; NX-REQ-040; NX-REQ-041 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-015, NX-ARCH-OI-016 |
 | NX-INT-010 | Peripheral and I2S DMA on AXI-3 and the peripheral register access through APB | Peripherals, AXI-3, APB-0 and APB-1 | PROPOSED (counts SELECTED) | NX-REQ-019 to NX-REQ-026; NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-022 |
-| NX-INT-011 | Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED concept; PROPOSED parameters | NX-REQ-032; NX-REQ-033 | KOS-NEXUS-007 and 008 | Dinesh | NX-ARCH-OI-021 |
+| NX-INT-011 | Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED | NX-REQ-032; NX-REQ-033 | KOS-NEXUS-007 and 008 | Dinesh | NX-ARCH-OI-021 |
 | NX-INT-012 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | SELECTED | NX-REQ-028; NX-REQ-034; NX-REQ-108; NX-ARCH-GAP-002 | KOS-NEXUS-008 | Dinesh | NX-ARCH-GAP-002 |
 | NX-INT-013 | Security core access to OSPI NOR before the application fabrics are active | Security core, OSPI NOR controller | PROPOSED | NX-REQ-036; NX-REQ-038 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-006, NX-ARCH-OI-019 |
 | NX-INT-014 | Hardware control of C910 reset release by the security domain | Security domain, C910 reset | PROPOSED | NX-REQ-037 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-019 |
@@ -269,7 +269,7 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-018 | Signature and hash formats; asymmetric cryptographic algorithms | Security | None | Dinesh | OPEN |
 | NX-ARCH-OI-019 | Root-key provisioning; anti-rollback policy; recovery behaviour; secure boot failure handling | Security | None | Dinesh | OPEN |
 | NX-ARCH-OI-020 | Debug lifecycle and authorisation; eFuse programming and access control | Security | None | Dinesh | OPEN |
-| NX-ARCH-OI-021 | Secure address-map finalisation: the secure width (NX-REQ-033) and the access attributes (NX-REQ-119) are proposed for selection; privilege levels, lock states, the security interrupt and the fault response stay open | Security | NX-REQ-033; NX-REQ-119 | Dinesh | PROPOSED |
+| NX-ARCH-OI-021 | Secure address-map finalisation: the secure width (NX-REQ-033) and the access attributes (NX-REQ-119) are SELECTED in NX-DEC-034; privilege levels, lock states, per-register policy, the security interrupt and the fault response stay open | Security | NX-REQ-033; NX-REQ-119 | Dinesh | OPEN |
 | NX-ARCH-OI-022 | PWM, GPIO, timer, UART, I2C, SPI and I2S capabilities and timing; pinmux and package pin assignment | Peripherals | None | Dinesh | OPEN |
 | NX-ARCH-OI-023 | PLL allocation and feasibility; clock source and clock-tree architecture; jitter requirements | Clock, reset and power | None | Dinesh | OPEN |
 | NX-ARCH-OI-024 | DVFS operating points and voltage sequencing; PMIC and rail selection; power-domain implementation | Clock, reset and power | None | Dinesh | OPEN |

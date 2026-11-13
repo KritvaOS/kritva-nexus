@@ -8,13 +8,14 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.11-draft |
+| Version | 0.3.12-draft |
 | 0.3.6-draft | 2026-11-13 | NX-DEC-030: the proposed address maps, access policy, boundary rules and the secure map are SELECTED (NX-REQ-028, NX-REQ-053, NX-REQ-054, NX-REQ-102 to NX-REQ-104, NX-REQ-106 to NX-REQ-108); the row for NX-ARCH-GAP-002 is removed from the open items because the gap is closed; NX-INT-012, NX-INT-024 and NX-INT-025 are SELECTED |
 | 0.3.7-draft | 2026-11-13 | NX-REQ-112 (PROPOSED): the peripheral register space is divided into APB-0 and APB-1 windows and per-instance windows; the open-item row for NX-ARCH-OI-036 is PROPOSED; Appendix B updated |
 | 0.3.8-draft | 2026-11-13 | NX-DEC-031: NX-REQ-029 is SELECTED (the owner confirmed the 40-bit width for every application master) and the open-item row for NX-ARCH-GAP-003 is removed; the decision range is NX-DEC-001 to NX-DEC-032 |
 | 0.3.9-draft | 2026-11-13 | NX-REQ-113 to NX-REQ-116 (PROPOSED): the bridge attachment, mailbox layout, messages and interrupts, and the application interrupt controller baseline (PLIC and CLINT); NX-INT-016, NX-INT-024 and NX-INT-025 updated; two open-item rows; Appendix B updated |
 | 0.3.10-draft | 2026-11-13 | NX-DEC-033: NX-REQ-112 to NX-REQ-116 are SELECTED (peripheral register windows, crossing details, application interrupt controller baseline); NX-INT-016, NX-INT-024 and NX-INT-025 labels updated; the open-item rows for NX-ARCH-OI-036 and NX-ARCH-OI-037 are replaced by one row for NX-ARCH-OI-038; the decision range is NX-DEC-001 to NX-DEC-033 |
 | 0.3.11-draft | 2026-11-13 | NX-REQ-117 to NX-REQ-119 (PROPOSED): register conventions, block register layouts and secure address-space attributes, with the proposed secure width (NX-REQ-033); rows and open items added; Appendix B updated |
+| 0.3.12-draft | 2026-11-13 | NX-DEC-034: NX-REQ-033 (secure interconnect parameters) and NX-REQ-119 (secure address-space attributes) are SELECTED; the rows for the secure interconnect and the secure address space and NX-INT-011 updated; the decision range is NX-DEC-001 to NX-DEC-034 |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -22,7 +23,7 @@
 
 ## Purpose
 
-**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-116), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-033) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
+**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-116), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-034) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
 
 No RTL, FPGA image or silicon exists, and no figure here is measured. "Planned" means required by the register; it does not mean built. Every row names the requirements it restates and their label: **SELECTED** (an owner decision is recorded), **PROPOSED** (recommended, not approved, shown as preliminary and not committed) or **OPEN** (not yet defined). Where the requirements of one row carry different labels, the label column gives each label with its requirement numbers. A frequency, bandwidth, TOPS or power figure is a target or a planning figure, never an achieved result.
 
@@ -69,7 +70,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Ethernet MACs (two) | Network and EtherCAT | SELECTED (008); PROPOSED (040, 041) | 008, 040, 041 |
 | Peripheral subsystem | PWM, GPIO, timers, UART, I2C, SPI, I2S | SELECTED | 019 to 026 |
 | Security core, memories and crypto | Secure boot and cryptography | SELECTED (009 to 014); PROPOSED (035 to 039) | 009 to 014, 035 to 039 |
-| Secure AXI interconnect | Interconnect inside the security domain | SELECTED (032, 054); PROPOSED (033, 034) | 032, 033, 034, 054 |
+| Secure AXI interconnect | Interconnect inside the security domain | SELECTED (032, 033, 054); PROPOSED (034) | 032, 033, 034, 054 |
 | Interrupt controllers | Application, security and always-on controllers; the application controller is selected as a PLIC with 128 sources and a CLINT | OPEN (057); SELECTED (116) | 057, 116 |
 | Always-on domain | Wake-up, reset, security and power control | OPEN | 031 |
 | Clock, reset and power control | PLLs, DVFS, power and reset domains, critical faults | SELECTED (017, 018); PROPOSED (058 to 063, 066) | 017, 018, 058 to 063, 066 |
@@ -119,7 +120,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Boot medium | OSPI NOR | SELECTED | 004 |
 | Application address width | 40 bits | SELECTED | 101 |
 | Application address map | Address map (held in two machine-readable files, one per address space); memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access; the NOR window is cacheable and read-only with program and erase only through the NOR controller registers; the peripheral register space is divided into per-instance windows | SELECTED (053, 102 to 104, 111, 112) | 053, 102 to 104, 111, 112 |
-| Secure address space | The secure address width of 32 bits and the non-cacheable access attributes of every secure region are proposed, and the whole secure map fits in 32 bits | PROPOSED | 033, 119 |
+| Secure address space | The secure address width of 32 bits and the non-cacheable access attributes of every secure region are selected, and the whole secure map fits in 32 bits | SELECTED | 033, 119 |
 | Register layouts | Common register conventions and the registers of each block class are proposed (bit fields are not defined) | PROPOSED | 117, 118 |
 | Width confirmation | The owner confirmed the 40-bit width for the C910 and every application master; the RTL evidence source is not recorded | SELECTED | 029 |
 | Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM only, never DDR4 (selected), and an application-to-security mailbox that keeps the C910-to-APB rule that secure resources are unreachable (selected), both default-deny; bridge attachment, mailbox layout, messages and interrupts defined | SELECTED (028, 105 to 110, 113 to 115) | 028, 105 to 110, 113 to 115 |
@@ -140,7 +141,7 @@ The internal connectivity is shown in Appendix A (Figure 2). The interface regis
 | Display DMA from DDR4 framebuffers on AXI-2 and the parallel DPI output | Display compositor, AXI-2, DDR4, DPI pins | PROPOSED (display mode SELECTED) | 008 | 006, 048, 051 |
 | Ethernet MAC DMA on AXI-2 and the RGMII interface to external PHYs | Ethernet MACs, AXI-2, external PHYs | PROPOSED (MAC count SELECTED) | 009 | 008, 040, 041 |
 | Peripheral and I2S DMA on AXI-3 and the peripheral register access through APB | Peripherals, AXI-3, APB-0 and APB-1 | PROPOSED (counts SELECTED) | 010 | 019 to 026, 051 |
-| Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED concept; PROPOSED parameters | 011 | 032, 033 |
+| Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED | 011 | 032, 033 |
 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | SELECTED | 012 | 028, 034, 108 |
 | Security core access to OSPI NOR before the application fabrics are active | Security core, OSPI NOR controller | PROPOSED | 013 | 036, 038 |
 | Hardware control of C910 reset release by the security domain | Security domain, C910 reset | PROPOSED | 014 | 037 |
@@ -215,7 +216,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Security core | Dedicated, isolated 32-bit RISC-V core; target clock 200 to 400 MHz | SELECTED (009); PROPOSED (059) | 009, 059 |
 | Security memories | 64 KiB ROM and 64 KiB SRAM for the security core; dedicated eFuse | SELECTED | 010, 011, 012 |
 | Cryptography | AES-128 and AES-256; SHA-256; an asymmetric accelerator whose algorithms are not yet defined | SELECTED (013, 014); PROPOSED (035) | 013, 014, 035 |
-| Secure interconnect | Dedicated, separate secure AXI interconnect; 32-bit data and address, 2 outstanding reads and 2 writes | SELECTED (032); PROPOSED (033) | 032, 033 |
+| Secure interconnect | Dedicated, separate secure AXI interconnect; 32-bit data and address, 2 outstanding reads and 2 writes | SELECTED (032, 033) | 032, 033 |
 | Application exclusion | The application AXI is planned not to reach security ROM, SRAM, eFuse, key management or the security interrupt controller; raw secrets are not to be exposed through application interfaces | PROPOSED | 034, 039 |
 | Secure boot | Proposed sequence: the security core is to start first, authenticate the OSPI NOR image from immutable ROM and authorise C910 reset release; C910 reset is hardware-controlled by the security domain; a C910 warm reset does not reset it | PROPOSED | 036, 037, 038 |
 | Secure address map | Separate secure address space | SELECTED | 054 |
