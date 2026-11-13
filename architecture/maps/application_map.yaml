@@ -1,20 +1,20 @@
 # Kritva Nexus application address map (KOS-NEXUS-008, part 2).
 # Single machine-readable source of the application address space.
-# Label: PROPOSED (NX-REQ-053). The address width is SELECTED (NX-DEC-026, NX-REQ-101).
+# Label: SELECTED (NX-REQ-053, NX-DEC-030). The address width is SELECTED (NX-DEC-026, NX-REQ-101).
 # Bases and apertures are proposals from A0 draft section 9.6; an aperture is not a capacity.
 # Any address not listed is unmapped and returns DECERR (NX-REQ-079, NX-REQ-104).
-# Access attributes follow NX-REQ-102 (PROPOSED).
+# Access attributes follow NX-REQ-102 (SELECTED). A region label covers its base, aperture and attributes.
 # Separate address space: the secure map is secure_map.yaml (NX-REQ-028, NX-REQ-108).
 # Two controlled crossings exist (NX-DEC-027, NX-REQ-105): the security core reaches System SRAM through
 # the boot window and the application reaches the mailbox window in the peripheral register space.
 space: application
 document: KOS-NEXUS-ADDRMAP-001
-version: 0.2.1-draft
+version: 0.3.0-draft
 address_width_bits: 40
 address_width_label: SELECTED
 address_width_records: [NX-DEC-026, NX-REQ-101]
-width_confirmation: OPEN   # NX-REQ-029, NX-ARCH-GAP-003
-map_label: PROPOSED
+width_confirmation: OPEN   # NX-REQ-029, NX-ARCH-GAP-003; the owner confirmed the C910 only (NX-DEC-030)
+map_label: SELECTED
 map_records: [NX-REQ-053, NX-REQ-102]
 regions:
   - name: System SRAM
@@ -23,7 +23,7 @@ regions:
     class: system_sram
     cacheable: false
     perm: rwx
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-053, NX-REQ-102, NX-REQ-109]
     note: Capacity of the physical SRAM is not selected; the aperture is 1 MiB. Reachable by the security core through the boot window (NX-REQ-106), and by no other security path.
   - name: Camera frame pool
@@ -32,7 +32,7 @@ regions:
     class: local_sram
     cacheable: false
     perm: rw-
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-005, NX-REQ-047, NX-REQ-053, NX-REQ-102]
     note: Aperture 16 MiB; the usable capacity of 6 MiB is SELECTED (NX-REQ-005, NX-DEC-004).
   - name: ISP SRAM
@@ -41,7 +41,7 @@ regions:
     class: local_sram
     cacheable: false
     perm: rw-
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-047, NX-REQ-053, NX-REQ-102]
     note: Aperture 16 MiB, not a capacity.
   - name: NPU SRAM
@@ -50,7 +50,7 @@ regions:
     class: local_sram
     cacheable: false
     perm: rw-
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-047, NX-REQ-053, NX-REQ-102]
     note: Aperture 32 MiB, not a capacity.
   - name: Reserved
@@ -59,7 +59,7 @@ regions:
     class: reserved
     cacheable: false
     perm: "---"
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-053, NX-REQ-104]
     note: Treated as unmapped (DECERR).
   - name: Peripheral register space
@@ -68,7 +68,7 @@ regions:
     class: peripheral
     cacheable: false
     perm: rw-
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-053, NX-REQ-072, NX-REQ-102, NX-REQ-110]
     note: Window allocation per peripheral instance, including the DMA controller registers and the application-side mailbox window (NX-REQ-107), is OPEN (NX-ARCH-OI-036).
   - name: OSPI NOR window
@@ -77,7 +77,7 @@ regions:
     class: nor
     cacheable: true
     perm: r-x
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-004, NX-REQ-053, NX-REQ-102, NX-REQ-111]
     note: Cacheable and read-only, program and erase only through the NOR controller registers (SELECTED, NX-REQ-111). Aperture 256 MiB; the NOR device and capacity are not selected (NX-ARCH-OI-006).
   - name: OSPI PSRAM
@@ -86,7 +86,7 @@ regions:
     class: psram
     cacheable: true
     perm: rwx
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-003, NX-REQ-053, NX-REQ-102]
     note: Aperture 256 MiB; the PSRAM capacity is not selected (NX-ARCH-OI-006).
   - name: DDR4
@@ -95,6 +95,6 @@ regions:
     class: ddr4
     cacheable: true
     perm: rwx
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-002, NX-REQ-053, NX-REQ-076, NX-REQ-102]
     note: Window of 64 GiB; it does not select a 64 GiB device. Capacity is chosen at board level.

@@ -40,3 +40,4 @@ Rules:
 | [NX-DEC-027](NX-DEC-027.md) | Two controlled crossings between the security and application domains | SELECTED | NX-REQ-105 |
 | [NX-DEC-028](NX-DEC-028.md) | One file for the Claude session identifiers, updated by every commit | SELECTED | None (repository working rule) |
 | [NX-DEC-029](NX-DEC-029.md) | Boot window scope, mailbox rule and NOR window access | SELECTED | NX-REQ-109, NX-REQ-110, NX-REQ-111 |
+| [NX-DEC-030](NX-DEC-030.md) | Approval of the memory architecture proposals of KOS-NEXUS-008 | SELECTED | NX-REQ-028, NX-REQ-053, NX-REQ-054, NX-REQ-102 to NX-REQ-104, NX-REQ-106 to NX-REQ-108 |
