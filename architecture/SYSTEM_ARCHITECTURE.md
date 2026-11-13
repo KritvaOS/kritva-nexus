@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.14.1-draft |
+| Version | 0.15.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -156,6 +156,7 @@ The display, Ethernet and storage DMA masters are proposed on AXI-2, and the per
 | Secure address map | A separate secure address space with the proposed map held in architecture/maps/secure_map.yaml (derived from A0 draft section 7.4). | PROPOSED | NX-REQ-054 |
 | Address-space separation | The secure and application address spaces are separate address spaces on separate interconnects, with independent decode and access control. This is the architectural statement; the proposed secure map is NX-REQ-054 and the application exclusion is NX-REQ-034. | PROPOSED | NX-REQ-054, NX-REQ-034 |
 | Controlled crossings | The boundary between the security and application domains has exactly two controlled crossings: a security-core access path into one application window and one application-to-security mailbox. | SELECTED | NX-REQ-105, NX-DEC-027 |
+| Boot window scope and mailbox rule | The security core reaches System SRAM only and never DDR4; the mailbox window keeps the C910-to-APB rule that secure resources are unreachable and is the only security-related window on that path. | SELECTED | NX-REQ-109, NX-REQ-110, NX-DEC-029 |
 | Boot window and mailbox | The window is the System SRAM region reached through a secure-to-application bridge; the mailbox has a window in each address space. Both are default-deny, every other security resource is unreachable, overlapping ranges are not conflicts, and the application-side attachment is not defined. | PROPOSED | NX-REQ-106, NX-REQ-107, NX-REQ-108, NX-REQ-028, NX-ARCH-GAP-002 |
 
 The security domain is described here as an architecture direction. Root-key provisioning, anti-rollback policy, recovery behaviour, debug lifecycle and authorisation, eFuse programming and access control, secure boot failure handling and the security interrupt and fault-response details are OPEN. No security claim is made from this document: it contains no threat model, no verification result and no hardware validation.
@@ -222,8 +223,8 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-021 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | NX-REQ-003; NX-REQ-065 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-022 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | NX-REQ-004 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-023 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | NX-REQ-093; NX-REQ-094 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-035 |
-| NX-INT-024 | Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing; PROPOSED window and bridge | NX-REQ-105; NX-REQ-106 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
-| NX-INT-025 | Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing; PROPOSED mailbox | NX-REQ-105; NX-REQ-107 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
+| NX-INT-024 | Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing and window scope; PROPOSED bridge | NX-REQ-105; NX-REQ-106; NX-REQ-109 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
+| NX-INT-025 | Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing and mailbox rule; PROPOSED mailbox | NX-REQ-105; NX-REQ-107; NX-REQ-110 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
 
 Assumptions that the interfaces and sections above rest on:
 

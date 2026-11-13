@@ -9,7 +9,7 @@
 # Any address not listed is unmapped.
 space: secure
 document: KOS-NEXUS-ADDRMAP-002
-version: 0.2.0-draft
+version: 0.2.1-draft
 address_width_bits: 32
 address_width_label: PROPOSED
 address_width_records: [NX-REQ-033]
@@ -105,14 +105,14 @@ regions:
     size: 0x00010000
     class: security_peripheral
     label: PROPOSED
-    records: [NX-REQ-105, NX-REQ-107, NX-REQ-054]
+    records: [NX-REQ-105, NX-REQ-107, NX-REQ-110, NX-REQ-054]
     note: Secure-side register window of the mailbox crossing; the application side window is in the application peripheral register space (NX-ARCH-OI-036, NX-ARCH-OI-037). Window size proposed.
   - name: Application boot window
     base: 0x30000000
     size: 0x00100000
     class: crossing_alias
     label: PROPOSED
-    records: [NX-REQ-105, NX-REQ-106, NX-REQ-054]
+    records: [NX-REQ-105, NX-REQ-106, NX-REQ-109, NX-REQ-054]
     target_space: application
     target_region: System SRAM
     target_base: 0x0000000000

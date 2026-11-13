@@ -8,7 +8,7 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.4-draft |
+| Version | 0.3.5-draft |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -16,7 +16,7 @@
 
 ## Purpose
 
-**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-108), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-027) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
+**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-111), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-029) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
 
 No RTL, FPGA image or silicon exists, and no figure here is measured. "Planned" means required by the register; it does not mean built. Every row names the requirements it restates and their label: **SELECTED** (an owner decision is recorded), **PROPOSED** (recommended, not approved, shown as preliminary and not committed) or **OPEN** (not yet defined). Where the requirements of one row carry different labels, the label column gives each label with its requirement numbers. A frequency, bandwidth, TOPS or power figure is a target or a planning figure, never an achieved result.
 
@@ -41,7 +41,7 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED | 009 to 014, 032 |
 | Clock and power | DVFS planned for the C910 and the NPU | SELECTED | 017, 018 |
 | Always-on, interrupts | Always-on domain and interrupt architecture | OPEN | 031, 057 |
-| Address spaces | 40-bit application address width (selected); its confirmation against the C910 configuration, the secure and application address-space separation with two controlled crossings, and the memory access policy (cacheability, coherency, unmapped access) | SELECTED (101, 105); PROPOSED (028, 102 to 104, 106 to 108); OPEN (029) | 028, 029, 101 to 108 |
+| Address spaces | 40-bit application address width (selected); its confirmation against the C910 configuration, the secure and application address-space separation with two controlled crossings, and the memory access policy (cacheability, coherency, unmapped access) | SELECTED (101, 105, 109 to 111); PROPOSED (028, 102 to 104, 106 to 108); OPEN (029) | 028, 029, 101 to 111 |
 | Engineering baseline | RTL design standard KNX-RTL-STD-001 required for all design RTL | SELECTED | 082 to 089 |
 
 ## 2. Block list
@@ -112,9 +112,9 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Secondary memory | Octal SPI PSRAM; controller target 200 to 400 MHz | SELECTED (003); PROPOSED (065) | 003, 065 |
 | Boot medium | OSPI NOR | SELECTED | 004 |
 | Application address width | 40 bits | SELECTED | 101 |
-| Application address map | Address map proposed (held in two machine-readable files, one per address space); memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access proposed | PROPOSED | 053, 102, 103, 104 |
+| Application address map | Address map proposed (held in two machine-readable files, one per address space); memory-class access attributes, no hardware coherency with the C910 caches and default-deny unmapped access proposed; the NOR window is cacheable and read-only with program and erase only through the NOR controller registers (selected) | SELECTED (111); PROPOSED (053, 102 to 104) | 053, 102 to 104, 111 |
 | Width confirmation | The 40-bit width is not yet confirmed against the selected C910 configuration and every application master | OPEN | 029 |
-| Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM and an application-to-security mailbox, both default-deny; application-side attachment and mailbox layout not defined | SELECTED (105); PROPOSED (028, 106 to 108) | 028, 105 to 108 |
+| Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM only, never DDR4 (selected), and an application-to-security mailbox that keeps the C910-to-APB rule that secure resources are unreachable (selected), both default-deny; application-side attachment and mailbox layout not defined | SELECTED (105, 109, 110); PROPOSED (028, 106 to 108) | 028, 105 to 110 |
 
 ## 5. Internal connectivity
 
@@ -142,8 +142,8 @@ The internal connectivity is shown in Appendix A (Figure 2). The interface regis
 | Power-domain and reset-domain boundaries and their crossings | Power and reset domains | PROPOSED | 018 | 060, 061, 062 |
 | Critical fault signals to a hardware response | Thermal, power and tamper sources, always-on domain | PROPOSED | 019 | 063 |
 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | 023 | 093, 094 |
-| Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing; PROPOSED window and bridge | 024 | 105, 106 |
-| Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing; PROPOSED mailbox | 025 | 105, 107 |
+| Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing and window scope; PROPOSED bridge | 024 | 105, 106, 109 |
+| Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing and mailbox rule; PROPOSED mailbox | 025 | 105, 107, 110 |
 | DDR4 controller and PHY to the DDR4 device | DDR4 controller, DDR4 PHY, DDR4 device | SELECTED role; PROPOSED target and width | 020 | 002, 064, 076 |
 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | 021 | 003, 065 |
 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | 022 | 004 |
@@ -211,7 +211,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Application exclusion | The application AXI is planned not to reach security ROM, SRAM, eFuse, key management or the security interrupt controller; raw secrets are not to be exposed through application interfaces | PROPOSED | 034, 039 |
 | Secure boot | Proposed sequence: the security core is to start first, authenticate the OSPI NOR image from immutable ROM and authorise C910 reset release; C910 reset is hardware-controlled by the security domain; a C910 warm reset does not reset it | PROPOSED | 036, 037, 038 |
 | Secure address map | Separate secure address space proposed | PROPOSED | 054 |
-| Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM and an application-to-security mailbox, both default-deny; application-side attachment and mailbox layout not defined | SELECTED (105); PROPOSED (028, 106 to 108) | 028, 105 to 108 |
+| Secure and application address spaces | Separate spaces on separate interconnects; the boundary has exactly two controlled crossings, a security-core boot window into System SRAM only, never DDR4 (selected), and an application-to-security mailbox that keeps the C910-to-APB rule that secure resources are unreachable (selected), both default-deny; application-side attachment and mailbox layout not defined | SELECTED (105, 109, 110); PROPOSED (028, 106 to 108) | 028, 105 to 110 |
 | Always-on domain | Responsibilities and interfaces not yet defined | OPEN | 031 |
 | Critical faults | Proposed requirement: thermal, power and tamper faults get a hardware response independent of application CPU execution | PROPOSED | 063 |
 | PLLs | Four integer and two fractional PLLs | PROPOSED | 058 |
@@ -227,7 +227,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Open or provisional item | Label | NX-REQ |
 |---|---|---|
 | Application address width against the selected C910 configuration (NX-ARCH-GAP-003) | OPEN | 029 |
-| Boundary between the security and application domains (NX-ARCH-GAP-002): two controlled crossings selected, window and mailbox proposed | PROPOSED | 028, 106, 107, 108 |
+| Boundary between the security and application domains (NX-ARCH-GAP-002): two controlled crossings, the System SRAM-only window scope and the mailbox rule selected; bridge, alias and mailbox details proposed | PROPOSED | 028, 106, 107, 108 |
 | Domain crossings: attachment, mailbox layout, message format and validation rule (NX-ARCH-OI-037, no requirement yet) | OPEN | none (NX-ARCH-OI-037) |
 | Always-on domain definition | OPEN | 031 |
 | Interrupt architecture | OPEN | 057 |
@@ -253,6 +253,7 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | 0.3.2-draft | 2026-11-12 | Memory architecture part 1 (NX-DEC-026, NX-REQ-101 to NX-REQ-104): the 40-bit application address width is SELECTED and its confirmation stays OPEN; memory access policy rows added; Appendix B updated |
 | 0.3.3-draft | 2026-11-12 | Memory architecture part 2 (address maps in two machine-readable files, NX-ARCH-OI-036): application map row notes the map files; open-item row for the peripheral register space added. Labels unchanged |
 | 0.3.4-draft | 2026-11-12 | Memory architecture part 3 (NX-DEC-027, NX-REQ-105 to NX-REQ-108, NX-INT-024 and NX-INT-025, NX-ARCH-OI-037): the boundary has two controlled crossings; NX-REQ-028 and NX-INT-012 move from OPEN to PROPOSED; section 5 restates the two new interfaces; Appendix A draws the crossings |
+| 0.3.5-draft | 2026-11-13 | Owner review of the memory architecture (NX-DEC-029, NX-REQ-109 to NX-REQ-111): boot window scope, mailbox rule and NOR window access are SELECTED; rows and NX-INT-024 and NX-INT-025 updated; Appendix B updated |
 
 ## Appendix A. Internal connectivity view
 
@@ -273,6 +274,6 @@ This table shows where each group of requirements is restated. NX-REQ-027 is SUP
 | 008, 019 to 026, 040, 041 | 1, 2, 3, 5, 8 |
 | 009 to 014, 032 to 039 | 1, 2, 9 |
 | 017, 018, 031, 057 to 063, 066 | 1, 2, 3, 5, 9, 10 |
-| 028, 029, 053, 054, 101 to 108 | 1, 4, 5, 9, 10 |
+| 028, 029, 053, 054, 101 to 111 | 1, 4, 5, 9, 10 |
 | 082 to 091 | 1, 10 |
 | 092 to 100 | 1, 2, 5, 7, 10 |

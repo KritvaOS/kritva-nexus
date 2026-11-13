@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.3.1-draft |
+| Version | 0.4.0-draft |
 | Last Updated | 2026-11-12 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -90,15 +90,15 @@ The master placement is PROPOSED (NX-REQ-051). The DMA controller is NX-REQ-092 
 
 The application address space and the secure address space are two separate address spaces on two separate interconnects (NX-REQ-028, NX-REQ-033, NX-REQ-034). The numerical ranges of the two proposed maps overlap in places, and an overlap is not a conflict because an address is interpreted in the space of the interconnect it arrives on (NX-REQ-108). The two maps are in [maps/application_map.yaml](maps/application_map.yaml) and [maps/secure_map.yaml](maps/secure_map.yaml).
 
-The boundary between the security domain and the application domain has exactly two controlled crossings (NX-DEC-027, NX-REQ-105): SELECTED. Everything else in the security domain stays unreachable from the application domain (NX-REQ-034, PROPOSED). The remaining statements of this section are PROPOSED.
+The boundary between the security domain and the application domain has exactly two controlled crossings (NX-DEC-027, NX-REQ-105): SELECTED. Everything else in the security domain stays unreachable from the application domain (NX-REQ-034, PROPOSED). Three further points were confirmed by the owner in review and are SELECTED (NX-DEC-029): the boot window reaches System SRAM only and never DDR4 (NX-REQ-109), the mailbox window keeps NX-REQ-072 intact (NX-REQ-110), and the NOR window access of section 6 (NX-REQ-111). The remaining statements of this section are PROPOSED.
 
 ### 5.1 Boot window: security core to application (NX-INT-024)
 
-The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core, because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is OPEN (NX-ARCH-OI-037); whatever the attachment, the window must be usable after the security core starts and before C910 reset release, so that the boot image can be verified and placed before the application subsystems are initialised.
+The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036); this scope is SELECTED (NX-REQ-109, NX-DEC-029). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core (SELECTED, NX-REQ-109), because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is OPEN (NX-ARCH-OI-037); whatever the attachment, the window must be usable after the security core starts and before C910 reset release, so that the boot image can be verified and placed before the application subsystems are initialised.
 
 ### 5.2 Mailbox: application to security (NX-INT-025)
 
-The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this proposal.
+The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. This rule is SELECTED (NX-REQ-110, NX-DEC-029); the rest of the mailbox is PROPOSED. The register layout, the message format and the validation rule are OPEN (NX-ARCH-OI-037); the application side window base is OPEN (NX-ARCH-OI-036). No security claim is made from this proposal.
 
 ### 5.3 Isolation rules
 
@@ -115,7 +115,7 @@ The access attributes below are the defaults the application address map carries
 | Memory class | C910 cacheability | Application permissions | Notes |
 |---|---|---|---|
 | DDR4, PSRAM | Cacheable, normal memory | Read, write and execute | DDR4 holds Linux and application code and data |
-| OSPI NOR window | Cacheable, read-only | Read and execute; no write | Program and erase are not done through the window; they use the NOR controller registers on the peripheral path under NX-REQ-072 |
+| OSPI NOR window | Cacheable, read-only | Read and execute; no write | SELECTED (NX-REQ-111, NX-DEC-029): program and erase are not done through the window; they use the NOR controller registers on the peripheral path under NX-REQ-072. The execute permission is PROPOSED (NX-REQ-102) |
 | System SRAM | Non-cacheable by default | Read, write and execute | Shared with other masters |
 | Camera frame pool, ISP SRAM, NPU SRAM | Non-cacheable | Read and write; no execute | Shared with the camera, ISP and NPU masters; the CPU does not keep a cached copy |
 | Peripheral registers | Non-cacheable, device memory, no speculative access | Read and write; no execute | Window policy as in NX-REQ-072 for the C910-to-APB path |
@@ -153,3 +153,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.2.0-draft | 2026-11-12 | The address maps moved to ADDRESS_MAP.md and the two map files (part 2) |
 | 0.3.0-draft | 2026-11-12 | Part 3: section 5 defines the two controlled crossings of NX-DEC-027 and the isolation rules |
 | 0.3.1-draft | 2026-11-12 | After review 4: the mailbox application-side window is stated as an application-domain window under NX-REQ-072 and the boot window must be usable before C910 reset release |
+| 0.4.0-draft | 2026-11-13 | Three owner-confirmed points are SELECTED by NX-DEC-029: boot window scope, mailbox rule and NOR window access |
