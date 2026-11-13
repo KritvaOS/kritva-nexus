@@ -8,8 +8,8 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.15.0-draft |
-| Last Updated | 2026-11-12 |
+| Version | 0.16.0-draft |
+| Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
 | Related Documents | [A0 integration draft](A0_INTEGRATION_DRAFT.md); [requirements](../requirements/REQUIREMENTS.md); [decisions](../decisions/DECISIONS.md); [ACCEPTANCE_CRITERIA.md](../ACCEPTANCE_CRITERIA.md) |
@@ -49,7 +49,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | AI and vision | Camera inputs, 6 MiB frame pool, ISP, NPU, NPU DVFS | SELECTED frame-pool capacity and NPU DVFS; PROPOSED the rest | NX-DEC-004, NX-DEC-017; NX-REQ-042 to 047 | Section 3 |
 | Multimedia and connectivity | 720p60 parallel DPI display, three composition layers, two Ethernet MACs, EtherCAT MainDevice, peripherals | SELECTED display mode, layers, MAC count, peripheral counts; PROPOSED EtherCAT, RGMII, compositor | NX-DEC-005 to 007, NX-DEC-020; NX-REQ-040, 041, 048 | Sections 5, 6 and 8 |
 | DMA | General-purpose DMA controller with 32 channels on AXI-3 | SELECTED controller and channel count; PROPOSED placement and features | NX-DEC-025; NX-REQ-092 to 100 | Not in the A0 draft |
-| Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED; PROPOSED accelerator, boot sequence, secure map; OPEN address-space separation | NX-DEC-008 to 013, NX-DEC-019; NX-REQ-033 to 039, 054; NX-REQ-028 | Section 7 |
+| Security | Isolated 32-bit RISC-V core, 64 KiB ROM and SRAM, eFuse, AES, SHA-256, separate secure AXI | SELECTED, including the secure map and the address-space separation; PROPOSED accelerator, boot sequence | NX-DEC-008 to 013, NX-DEC-019, NX-DEC-030; NX-REQ-033 to 039, 054; NX-REQ-028 | Section 7 |
 | Always-on, clock, reset, power, interrupt | Always-on domain, PLLs, power and reset domains, interrupts, CDC and RDC, DVFS | SELECTED DVFS; PROPOSED PLL, domains and targets; OPEN always-on definition and interrupt architecture | NX-DEC-016, NX-DEC-017; NX-REQ-031, 057 to 063, 066 | Section 10 |
 
 ## 5. Application CPU
@@ -60,7 +60,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | Cluster | One cluster of four cores with 64 KB L1 instruction and data caches per core and a shared 1 MB L2; 1.0 to 1.2 GHz is a target, not a timing result. | PROPOSED | NX-REQ-055 |
 | CPU interface | AXI4, 128-bit data, 8 outstanding reads and 8 outstanding writes; the 40-bit application address width is SELECTED (NX-DEC-026) and its confirmation against the C910 configuration is OPEN. | PROPOSED | NX-REQ-056 |
 | Address width | The application address width is 40 bits. | SELECTED | NX-REQ-101, NX-DEC-026 |
-| Address width confirmation | The 40-bit width is confirmed against the selected C910 configuration and every application master before the address map is marked SELECTED; the procedure is in section 4 of MEMORY_ARCHITECTURE. | OPEN | NX-REQ-029, NX-ARCH-GAP-003 |
+| Address width confirmation | The 40-bit width is confirmed against the selected C910 configuration and every application master; the owner confirmed the C910 and approved the address map ahead of the check for the other masters (NX-DEC-030), and that check stays OPEN; the procedure is in section 4 of MEMORY_ARCHITECTURE. | OPEN | NX-REQ-029, NX-ARCH-GAP-003 |
 | DVFS | The clock and power subsystem supports DVFS for the C910 subsystem. | SELECTED | NX-REQ-017, NX-DEC-016 |
 | Interrupts and timers | 128 external sources, 16 inter-processor interrupts, a shared 64-bit timebase, a 32.768 kHz RTC, per-hart timer compare and TAP debug; PLIC/CLINT versus AIA is undecided. | PROPOSED, with the controller choice OPEN | NX-REQ-057 |
 | Power and test support | Clock gating, power gating, hardware performance counters, scan test and MBIST for applicable memories are expected; the implementation is not frozen. | PROPOSED | A0 draft 2.4 |
@@ -153,11 +153,11 @@ The display, Ethernet and storage DMA masters are proposed on AXI-2, and the per
 | Secure boot | The security core starts first, authenticates the boot image from OSPI NOR using the immutable ROM and authorises C910 reset release before the application subsystems are initialised; an authorised NOR access path is usable before the application fabrics and the C910 are active. | PROPOSED | NX-REQ-036, NX-REQ-038 |
 | Reset control | C910 reset release is hardware-controlled by the security domain, and a C910 warm reset does not reset the security domain. | PROPOSED | NX-REQ-037 |
 | Secret exposure | Raw secrets are not exposed through ordinary application interfaces. | PROPOSED | NX-REQ-039 |
-| Secure address map | A separate secure address space with the proposed map held in architecture/maps/secure_map.yaml (derived from A0 draft section 7.4). | PROPOSED | NX-REQ-054 |
-| Address-space separation | The secure and application address spaces are separate address spaces on separate interconnects, with independent decode and access control. This is the architectural statement; the proposed secure map is NX-REQ-054 and the application exclusion is NX-REQ-034. | PROPOSED | NX-REQ-054, NX-REQ-034 |
+| Secure address map | A separate secure address space with the map held in architecture/maps/secure_map.yaml (derived from A0 draft section 7.4). | SELECTED | NX-REQ-054, NX-DEC-030 |
+| Address-space separation | The secure and application address spaces are separate address spaces on separate interconnects, with independent decode and access control. This is the architectural statement; the secure map is NX-REQ-054, the separation is NX-REQ-028 and the application exclusion is NX-REQ-034. | SELECTED | NX-REQ-054, NX-REQ-028, NX-DEC-030 |
 | Controlled crossings | The boundary between the security and application domains has exactly two controlled crossings: a security-core access path into one application window and one application-to-security mailbox. | SELECTED | NX-REQ-105, NX-DEC-027 |
 | Boot window scope and mailbox rule | The security core reaches System SRAM only and never DDR4; the mailbox window keeps the C910-to-APB rule that secure resources are unreachable and is the only security-related window on that path. | SELECTED | NX-REQ-109, NX-REQ-110, NX-DEC-029 |
-| Boot window and mailbox | The window is the System SRAM region reached through a secure-to-application bridge; the mailbox has a window in each address space. Both are default-deny, every other security resource is unreachable, overlapping ranges are not conflicts, and the application-side attachment is not defined. | PROPOSED | NX-REQ-106, NX-REQ-107, NX-REQ-108, NX-REQ-028, NX-ARCH-GAP-002 |
+| Boot window and mailbox | The window is the System SRAM region reached through a secure-to-application bridge; the mailbox has a window in each address space. Both are default-deny, every other security resource is unreachable, overlapping ranges are not conflicts, and the application-side attachment is OPEN (NX-ARCH-OI-037). | SELECTED | NX-REQ-106, NX-REQ-107, NX-REQ-108, NX-DEC-030 |
 
 The security domain is described here as an architecture direction. Root-key provisioning, anti-rollback policy, recovery behaviour, debug lifecycle and authorisation, eFuse programming and access control, secure boot failure handling and the security interrupt and fault-response details are OPEN. No security claim is made from this document: it contains no threat model, no verification result and no hardware validation.
 
@@ -211,7 +211,7 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-009 | Ethernet MAC DMA on AXI-2 and the RGMII interface to external PHYs | Ethernet MACs, AXI-2, external PHYs | PROPOSED (MAC count SELECTED) | NX-REQ-008; NX-REQ-040; NX-REQ-041 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-015, NX-ARCH-OI-016 |
 | NX-INT-010 | Peripheral and I2S DMA on AXI-3 and the peripheral register access through APB | Peripherals, AXI-3, APB-0 and APB-1 | PROPOSED (counts SELECTED) | NX-REQ-019 to NX-REQ-026; NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-022 |
 | NX-INT-011 | Secure AXI interconnect between the security core and its local resources | Security core, security ROM, SRAM, eFuse, crypto, secure interrupt controller | SELECTED concept; PROPOSED parameters | NX-REQ-032; NX-REQ-033 | KOS-NEXUS-007 and 008 | Dinesh | NX-ARCH-OI-021 |
-| NX-INT-012 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | PROPOSED | NX-REQ-028; NX-REQ-034; NX-REQ-108; NX-ARCH-GAP-002 | KOS-NEXUS-008 | Dinesh | NX-ARCH-GAP-002 |
+| NX-INT-012 | Isolation boundary between the security domain and the application domain | Secure AXI, application AXI | SELECTED | NX-REQ-028; NX-REQ-034; NX-REQ-108; NX-ARCH-GAP-002 | KOS-NEXUS-008 | Dinesh | NX-ARCH-GAP-002 |
 | NX-INT-013 | Security core access to OSPI NOR before the application fabrics are active | Security core, OSPI NOR controller | PROPOSED | NX-REQ-036; NX-REQ-038 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-006, NX-ARCH-OI-019 |
 | NX-INT-014 | Hardware control of C910 reset release by the security domain | Security domain, C910 reset | PROPOSED | NX-REQ-037 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-019 |
 | NX-INT-015 | Always-on domain to reset, wake-up, security and power control | Always-on domain, reset, security, power control | OPEN | NX-REQ-031 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-031 |
@@ -223,14 +223,14 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-021 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | NX-REQ-003; NX-REQ-065 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-022 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | NX-REQ-004 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-023 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | NX-REQ-093; NX-REQ-094 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-035 |
-| NX-INT-024 | Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED crossing and window scope; PROPOSED bridge | NX-REQ-105; NX-REQ-106; NX-REQ-109 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
-| NX-INT-025 | Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED crossing and mailbox rule; PROPOSED mailbox | NX-REQ-105; NX-REQ-107; NX-REQ-110 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
+| NX-INT-024 | Security core access path into the application boot window through a secure-to-application bridge | Security core, secure AXI, application System SRAM | SELECTED | NX-REQ-105; NX-REQ-106; NX-REQ-109 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
+| NX-INT-025 | Mailbox between the application domain and the security domain | Mailbox, secure AXI, APB-0 and APB-1 | SELECTED | NX-REQ-105; NX-REQ-107; NX-REQ-110 | KOS-NEXUS-008 | Dinesh | NX-ARCH-OI-037 |
 
 Assumptions that the interfaces and sections above rest on:
 
 | ID | Assumption | Records | Open issue |
 |---|---|---|---|
-| NX-ASM-001 | The application address width is 40 bits (SELECTED, NX-DEC-026); the C910 configuration and the application masters are assumed to generate 40-bit addresses and this has not been confirmed. | NX-REQ-101; NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
+| NX-ASM-001 | The application address width is 40 bits (SELECTED, NX-DEC-026); the owner confirmed the C910 at 40 bits (NX-DEC-030); the application masters are assumed to generate 40-bit addresses and this has not been confirmed. | NX-REQ-101; NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
 | NX-ASM-002 | The C910 RTL release and configuration meet the cluster and interface parameters proposed in section 5; neither is confirmed. | NX-REQ-055; NX-REQ-056 | NX-ARCH-OI-001 |
 | NX-ASM-003 | The DDR4 interface is one x32 channel at DDR4-3200 with a sustained fraction of 70%; the DDR4 address window is not a device size. | NX-REQ-064; NX-REQ-076; NX-REQ-077 | NX-ARCH-OI-005 |
 | NX-ASM-004 | Ethernet PHYs are external to the SoC and the PHY is selected at board level. | NX-REQ-040 | NX-ARCH-OI-015 |
@@ -244,12 +244,12 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | ID | Issue | Domain | Requirement | Owner | Status |
 |---|---|---|---|---|---|---|---|
 | NX-ARCH-GAP-001 | C910 to APB access path: closed by NX-DEC-021 (route) and NX-DEC-022 (behaviour); residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 proposed | AXI fabrics | NX-REQ-067 to NX-REQ-075 (NX-REQ-027 superseded) | Dinesh | CLOSED |
-| NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths: defined by NX-DEC-027 (two controlled crossings) and proposed in section 5 of MEMORY_ARCHITECTURE | Security | NX-REQ-028; NX-REQ-105; NX-REQ-106; NX-REQ-107; NX-REQ-108 | Dinesh | PROPOSED |
-| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is unconfirmed against the C910 configuration and the application masters | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
+| NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths: closed by NX-DEC-027 (two controlled crossings) and NX-DEC-030 (boundary rules, section 5 of MEMORY_ARCHITECTURE); the attachment stays OPEN as NX-ARCH-OI-037 | Security | NX-REQ-028; NX-REQ-105; NX-REQ-106; NX-REQ-107; NX-REQ-108 | Dinesh | CLOSED |
+| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is confirmed by the owner for the C910 (NX-DEC-030) and unconfirmed against the other application masters | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
 | NX-ARCH-GAP-004 | DDR4 controller ingress: resolved by proposal, one 256-bit port for x32 DDR4-3200 | Memory | NX-REQ-030; NX-REQ-076 to NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-001 | Exact C910 RTL release and configuration; cache sizes and cluster configuration; AXI interface parameters against the C910 RTL | CPU and interconnect | None | Dinesh | OPEN |
 | NX-ARCH-OI-002 | PLIC/CLINT versus AIA integration | CPU and interconnect | None | Dinesh | OPEN |
-| NX-ARCH-OI-003 | Application address-map attributes (cacheability, coherency, security, read/write/execute permissions) and IOMMU requirements: proposed in section 6 of MEMORY_ARCHITECTURE | CPU and interconnect | NX-REQ-102; NX-REQ-103; NX-REQ-104 | Dinesh | PROPOSED |
+| NX-ARCH-OI-003 | Application address-map attributes (cacheability, coherency, security, read/write/execute permissions) and IOMMU requirements: closed by NX-DEC-030 (section 6 of MEMORY_ARCHITECTURE) | CPU and interconnect | NX-REQ-102; NX-REQ-103; NX-REQ-104 | Dinesh | CLOSED |
 | NX-ARCH-OI-004 | AXI routing, decode, QoS, outstanding transactions and error behaviour: proposed in the interconnect specification section 6 | CPU and interconnect | NX-REQ-078; NX-REQ-079 | Dinesh | PROPOSED |
 | NX-ARCH-OI-005 | DDR4 width and capacity; memory arbitration and bandwidth allocation: proposed in the interconnect specification section 4 | Memory | NX-REQ-076; NX-REQ-077; NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-006 | PSRAM protocol, mode, capacity and bandwidth; OSPI NOR device and controller details | Memory | None | Dinesh | OPEN |

@@ -76,7 +76,7 @@ class AddressMapChecker(unittest.TestCase):
         self.has("duplicate region name AES")
 
     def test_bad_label(self):
-        self.t.edit("architecture/maps/application_map.yaml", "label: PROPOSED\n    records: [NX-REQ-053, NX-REQ-102, NX-REQ-109]",
+        self.t.edit("architecture/maps/application_map.yaml", "label: SELECTED\n    records: [NX-REQ-053, NX-REQ-102, NX-REQ-109]",
                     "label: DONE\n    records: [NX-REQ-053, NX-REQ-102, NX-REQ-109]")
         self.has("is not SELECTED, PROPOSED or OPEN")
 
