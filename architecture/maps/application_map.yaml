@@ -9,11 +9,11 @@
 # the boot window and the application reaches the mailbox window in the peripheral register space.
 space: application
 document: KOS-NEXUS-ADDRMAP-001
-version: 0.3.1-draft
+version: 0.3.2-draft
 address_width_bits: 40
 address_width_label: SELECTED
 address_width_records: [NX-DEC-026, NX-REQ-101]
-width_confirmation: OPEN   # NX-REQ-029, NX-ARCH-GAP-003; the owner confirmed the C910 only (NX-DEC-030)
+width_confirmation: SELECTED   # NX-REQ-029, NX-DEC-031; owner statement for the C910 and every application master
 map_label: SELECTED
 map_records: [NX-REQ-053, NX-REQ-102]
 regions:

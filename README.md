@@ -186,7 +186,7 @@ A target not yet implemented exits with code 3 (NOT_IMPLEMENTED) and is never a 
 
 ## 12. Git Workflow and Review
 
-The Kritva commit standard (`type(scope): summary` with one `Task:` or `Tasks:` footer, merge-commit method) applies, as set out in [planning/GIT_COMMIT_STEP.md](planning/GIT_COMMIT_STEP.md). The `commit-message-check`, `secret-scan`, `pr-acceptance-gate` and `readme-check` workflows are defined in `.github/workflows/`; that they are enabled and required in the GitHub settings is not verified. Work on a branch and open a pull request; no push to `main`. Commit messages carry no AI-session trailers or session links. Review is by Dinesh (interim, not independent); see [planning/REVIEW_CHECKLIST.md](planning/REVIEW_CHECKLIST.md).
+The Kritva commit standard (`type(scope): summary` with one `Task:` or `Tasks:` footer, merge-commit method) applies, as set out in [planning/GIT_COMMIT_STEP.md](planning/GIT_COMMIT_STEP.md). The `commit-message-check`, `secret-scan`, `pr-acceptance-gate` and `readme-check` workflows are defined in `.github/workflows/`; that they are enabled and required in the GitHub settings is not verified; NX-DEC-032 requires the `address-map-check` workflow as well. Work on a branch and open a pull request; no push to `main`. Commit messages carry no AI-session trailers or session links. Review is by Dinesh (interim, not independent); see [planning/REVIEW_CHECKLIST.md](planning/REVIEW_CHECKLIST.md).
 
 ## 13. Safety and Security
 

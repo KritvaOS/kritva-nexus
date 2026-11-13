@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.17.0-draft |
+| Version | 0.18.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -60,7 +60,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | Cluster | One cluster of four cores with 64 KB L1 instruction and data caches per core and a shared 1 MB L2; 1.0 to 1.2 GHz is a target, not a timing result. | PROPOSED | NX-REQ-055 |
 | CPU interface | AXI4, 128-bit data, 8 outstanding reads and 8 outstanding writes; the 40-bit application address width is SELECTED (NX-DEC-026) and its confirmation against the C910 configuration is OPEN. | PROPOSED | NX-REQ-056 |
 | Address width | The application address width is 40 bits. | SELECTED | NX-REQ-101, NX-DEC-026 |
-| Address width confirmation | The 40-bit width is confirmed against the selected C910 configuration and every application master; the owner confirmed the C910 and approved the address map ahead of the check for the other masters (NX-DEC-030), and that check stays OPEN; the procedure is in section 4 of MEMORY_ARCHITECTURE. | OPEN | NX-REQ-029, NX-ARCH-GAP-003 |
+| Address width confirmation | The owner confirmed the 40-bit width for the C910 (NX-DEC-030) and for every other application master (NX-DEC-031); the RTL evidence source is not recorded (NX-ARCH-OI-001), and the procedure is in section 4 of MEMORY_ARCHITECTURE. | SELECTED | NX-REQ-029, NX-DEC-031 |
 | DVFS | The clock and power subsystem supports DVFS for the C910 subsystem. | SELECTED | NX-REQ-017, NX-DEC-016 |
 | Interrupts and timers | 128 external sources, 16 inter-processor interrupts, a shared 64-bit timebase, a 32.768 kHz RTC, per-hart timer compare and TAP debug; PLIC/CLINT versus AIA is undecided. | PROPOSED, with the controller choice OPEN | NX-REQ-057 |
 | Power and test support | Clock gating, power gating, hardware performance counters, scan test and MBIST for applicable memories are expected; the implementation is not frozen. | PROPOSED | A0 draft 2.4 |
@@ -230,7 +230,7 @@ Assumptions that the interfaces and sections above rest on:
 
 | ID | Assumption | Records | Open issue |
 |---|---|---|---|
-| NX-ASM-001 | The application address width is 40 bits (SELECTED, NX-DEC-026); the owner confirmed the C910 at 40 bits (NX-DEC-030); the application masters are assumed to generate 40-bit addresses and this has not been confirmed. | NX-REQ-101; NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
+| NX-ASM-001 | The application address width is 40 bits (SELECTED, NX-DEC-026); the owner confirmed the C910 (NX-DEC-030) and every other application master (NX-DEC-031) at 40 bits; the RTL evidence is not recorded. | NX-REQ-101; NX-REQ-029; NX-ARCH-GAP-003 | NX-ARCH-GAP-003 |
 | NX-ASM-002 | The C910 RTL release and configuration meet the cluster and interface parameters proposed in section 5; neither is confirmed. | NX-REQ-055; NX-REQ-056 | NX-ARCH-OI-001 |
 | NX-ASM-003 | The DDR4 interface is one x32 channel at DDR4-3200 with a sustained fraction of 70%; the DDR4 address window is not a device size. | NX-REQ-064; NX-REQ-076; NX-REQ-077 | NX-ARCH-OI-005 |
 | NX-ASM-004 | Ethernet PHYs are external to the SoC and the PHY is selected at board level. | NX-REQ-040 | NX-ARCH-OI-015 |
@@ -245,7 +245,7 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 |---|---|---|---|---|---|---|---|
 | NX-ARCH-GAP-001 | C910 to APB access path: closed by NX-DEC-021 (route) and NX-DEC-022 (behaviour); residual items NX-ARCH-OI-033 and NX-ARCH-OI-034 proposed | AXI fabrics | NX-REQ-067 to NX-REQ-075 (NX-REQ-027 superseded) | Dinesh | CLOSED |
 | NX-ARCH-GAP-002 | Secure and application address spaces: separate spaces on separate interconnects, isolation boundary and permitted access paths: closed by NX-DEC-027 (two controlled crossings) and NX-DEC-030 (boundary rules, section 5 of MEMORY_ARCHITECTURE); the attachment stays OPEN as NX-ARCH-OI-037 | Security | NX-REQ-028; NX-REQ-105; NX-REQ-106; NX-REQ-107; NX-REQ-108 | Dinesh | CLOSED |
-| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is confirmed by the owner for the C910 (NX-DEC-030) and unconfirmed against the other application masters | AXI fabrics | NX-REQ-029 | Dinesh | OPEN |
+| NX-ARCH-GAP-003 | C910 application address width: the 40-bit width (SELECTED, NX-DEC-026) is confirmed by the owner for the C910 (NX-DEC-030) and for every other application master (NX-DEC-031); closed, with the RTL evidence source not recorded (NX-ARCH-OI-001) | AXI fabrics | NX-REQ-029 | Dinesh | CLOSED |
 | NX-ARCH-GAP-004 | DDR4 controller ingress: resolved by proposal, one 256-bit port for x32 DDR4-3200 | Memory | NX-REQ-030; NX-REQ-076 to NX-REQ-078 | Dinesh | PROPOSED |
 | NX-ARCH-OI-001 | Exact C910 RTL release and configuration; cache sizes and cluster configuration; AXI interface parameters against the C910 RTL | CPU and interconnect | None | Dinesh | OPEN |
 | NX-ARCH-OI-002 | PLIC/CLINT versus AIA integration | CPU and interconnect | None | Dinesh | OPEN |

@@ -24,7 +24,7 @@ Kritva Nexus owns the engineering of the Nexus SoC: architecture, requirements, 
 - Merge method is a merge commit. PRs use `.github/PULL_REQUEST_TEMPLATE.md`.
 - Never add a `Claude-Session:` trailer or a claude.ai session link to a commit or PR description. `commit-message-check` blocks them.
 - A commit that Claude helped write also updates [CLAUDE_SESSIONS.md](planning/CLAUDE_SESSIONS.md) in the same commit (a new row for a new session and date, otherwise the Work cell of that row), and ends with `Co-Authored-By: Claude Sonnet 5.5 <noreply@anthropic.com>` after the single `Task:` footer (NX-DEC-024, NX-DEC-028). The session identifier is plain text in that file only.
-- Open a PR; do not push to `main`; do not force-push shared branches. Required checks: secret-scan, commit-message-check and pr-acceptance-gate. With one owner, the author cannot independently approve: say so in the PR.
+- Open a PR; do not push to `main`; do not force-push shared branches. Required checks: secret-scan, commit-message-check, pr-acceptance-gate and address-map-check (NX-DEC-032). With one owner, the author cannot independently approve: say so in the PR.
 
 ## 4. Secrets
 

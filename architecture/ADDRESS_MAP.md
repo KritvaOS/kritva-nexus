@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 2 and 3 of KOS-NEXUS-008: the application and secure address maps and the two domain crossings, approved by the owner in NX-DEC-030; the peripheral register windows are PROPOSED; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.4.0-draft |
+| Version | 0.5.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | DERIVED (the machine-readable files are the source; not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -20,8 +20,8 @@ This document shows the application address map and the secure address map for t
 
 ## 1. Status and rules
 
-1. Both maps are SELECTED by the owner's approval (NX-DEC-030, NX-REQ-053 and NX-REQ-054). The bases and apertures come from sections 9.6 and 7.4 of the [A0 integration draft](A0_INTEGRATION_DRAFT.md); the secure window sizes come from this part. A region label covers its base, size and attributes; a capacity keeps the label of its own requirement. AC-015 requires the application address width to be confirmed against the C910 and every application master before the application map is SELECTED. The owner approved the map ahead of that: the C910 is confirmed at 40 bits and the other masters are still to be confirmed (NX-REQ-029), so a master that cannot generate 40-bit addresses leads to a new decision record.
-2. The application address width is 40 bits, SELECTED (NX-DEC-026, NX-REQ-101); its confirmation is OPEN (NX-REQ-029, NX-ARCH-GAP-003). The secure address width is 32 bits, PROPOSED (NX-REQ-033), and the secure access attributes are OPEN (NX-ARCH-OI-021).
+1. Both maps are SELECTED by the owner's approval (NX-DEC-030, NX-REQ-053 and NX-REQ-054). The bases and apertures come from sections 9.6 and 7.4 of the [A0 integration draft](A0_INTEGRATION_DRAFT.md); the secure window sizes come from this part. A region label covers its base, size and attributes; a capacity keeps the label of its own requirement. AC-015 requires the application address width to be confirmed against the C910 and every application master before the application map is SELECTED. The owner approved the map first (NX-DEC-030) and then confirmed the 40-bit width for the C910 and every other application master (NX-DEC-031, NX-REQ-029), which meets AC-015; the confirmation is an owner statement and the RTL evidence is not recorded (NX-ARCH-OI-001), so a master that cannot generate 40-bit addresses leads to a new decision record.
+2. The application address width is 40 bits, SELECTED (NX-DEC-026, NX-REQ-101); its confirmation for every application master is the owner's statement (NX-DEC-031, NX-REQ-029). The secure address width is 32 bits, PROPOSED (NX-REQ-033), and the secure access attributes are OPEN (NX-ARCH-OI-021).
 3. An aperture is a range of addresses, not a memory capacity. The selected capacities are those of the register: the 6 MiB camera frame pool and the 64 KiB security ROM and SRAM. The DDR4, PSRAM and NOR capacities are not selected.
 4. Any address that no region lists is unmapped. An access to an unmapped or reserved address returns DECERR, and an access that a region forbids returns SLVERR (NX-REQ-079, NX-REQ-104).
 5. A SELECTED region changes only by a new decision record. A region added later as PROPOSED changes by a change request: a pull request that edits the file with a changelog entry.
@@ -124,7 +124,6 @@ The application side attachment of the bridge to an application fabric, the mail
 
 | Item | Label | Records | Owner |
 |---|---|---|---|
-| Confirmation of the 40-bit width against the C910 and every application master | OPEN | NX-REQ-029, NX-ARCH-GAP-003 | Dinesh |
 | Attachment of the two crossings, mailbox layout and validation rule | OPEN | NX-ARCH-OI-037 | Dinesh |
 | Owner review and selection of the peripheral register windows (section 2.1) | PROPOSED | NX-REQ-112, NX-ARCH-OI-036 | Dinesh |
 | Application interrupt controller window and the register layout of every block | OPEN | NX-REQ-057, NX-ARCH-OI-032 | Dinesh |
@@ -141,3 +140,4 @@ The application side attachment of the bridge to an application fabric, the mail
 | 0.2.2-draft | 2026-11-13 | Records of NX-DEC-029 added to the System SRAM, peripheral space and NOR regions and to the two crossing regions |
 | 0.3.0-draft | 2026-11-13 | NX-DEC-030: both maps and every region are SELECTED; the width confirmation is OPEN for every master except the C910 |
 | 0.4.0-draft | 2026-11-13 | Section 2.1: the peripheral register space is divided into APB-0 and APB-1 windows and per-instance windows (PROPOSED, NX-REQ-112) |
+| 0.5.0-draft | 2026-11-13 | NX-DEC-031: the width confirmation is closed by the owner's statement for every application master |
