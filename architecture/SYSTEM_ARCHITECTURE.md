@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.16.0-draft |
+| Version | 0.17.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -282,5 +282,5 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-033 | C910-to-APB timeout value, recovery and late completion: proposed as 1024 bridge-clock cycles | AXI fabrics | NX-REQ-080 | Dinesh | PROPOSED |
 | NX-ARCH-OI-034 | AXI fabric bridge buffering limits, backpressure, ID handling and APB version: proposed | AXI fabrics | NX-REQ-081 | Dinesh | PROPOSED |
 | NX-ARCH-OI-035 | DMA controller details: peripheral request and handshake mapping, descriptor format, memory coherency, DMA power domain and wake-up; decided in the DMA specification by PROPOSED defaults, changed by change request | DMA | NX-REQ-093 to NX-REQ-100 | Dinesh | OPEN |
-| NX-ARCH-OI-036 | Division of the application peripheral register space (0x00_4000_0000 to 0x00_4FFF_FFFF) among the peripheral instances, including the DMA controller register window and the APB-0 and APB-1 split; proposed in ADDRESS_MAP once the instance counts and the APB split are defined | Memory | NX-REQ-053 | Dinesh | OPEN |
+| NX-ARCH-OI-036 | Division of the application peripheral register space (0x00_4000_0000 to 0x00_4FFF_FFFF) among the peripheral instances, including the DMA controller register window and the APB-0 and APB-1 split; proposed in ADDRESS_MAP section 2.1 and peripheral_windows.yaml (NX-REQ-112); the owner's review and the register layouts are open | Memory | NX-REQ-053; NX-REQ-112 | Dinesh | PROPOSED |
 | NX-ARCH-OI-037 | Domain crossings: the application-fabric attachment of the secure-to-application bridge (usable before C910 reset release), the mailbox register layout, message format, interrupt directions and secure-side validation rule; whether the security core may later reach DDR4 | Security | NX-REQ-106; NX-REQ-107 | Dinesh | OPEN |

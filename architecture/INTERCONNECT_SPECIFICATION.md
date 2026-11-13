@@ -8,7 +8,7 @@
 | Status | DRAFT (NX-ARCH-GAP-001 decided by the owner; NX-ARCH-GAP-004 and the interconnect details proposed; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.1.2-draft |
+| Version | 0.1.3-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-007; NX-M1 |
@@ -34,7 +34,7 @@ Later parts of KOS-NEXUS-007 add the secure fabric, the APB bridge details, QoS 
 | IN-4 | A Memory Access Crossbar (MAX) with four fabric ingress ports provides arbitration, QoS, address decode and protection toward memory. | NX-REQ-049 | PROPOSED |
 | IN-5 | DDR4 is the primary system memory, targeting DDR4-3200 (3200 MT/s per pin). Data width and capacity are proposed in NX-REQ-076. | NX-REQ-002, NX-DEC-001; NX-REQ-064, NX-REQ-076 | SELECTED role; PROPOSED target, width and capacity |
 | IN-6 | The normal camera, ISP and NPU path does not use DDR4 for intermediates. | NX-REQ-047 | PROPOSED |
-| IN-7 | Peripheral register windows are proposed near 0x40000000 (APB-0 peripherals) and 0x41000000 (APB-1 control). The application address map is held by KOS-NEXUS-008. | NX-REQ-052, NX-REQ-053 | PROPOSED |
+| IN-7 | Peripheral register windows are proposed at 0x40000000 (APB-0 peripherals) and 0x41000000 (APB-1 control) in architecture/maps/peripheral_windows.yaml. The application address map is held by KOS-NEXUS-008. | NX-REQ-052, NX-REQ-053, NX-REQ-112 | PROPOSED |
 
 ## 3. C910 to APB path (NX-ARCH-GAP-001, AC-014)
 

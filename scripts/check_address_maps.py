@@ -20,6 +20,12 @@ Implemented checks, and nothing more:
   5. Every NX-REQ identifier named in a map file exists in the requirements register.
   6. The two tables of ADDRESS_MAP.md agree with the files, row by row: name, first and last address, size,
      cacheability, permissions, label and requirement numbers.
+  7. architecture/maps/peripheral_windows.yaml (the division of the peripheral register space): the parent
+     region exists in the application map; each APB window and each peripheral window has its keys, a 4 KiB
+     aligned base and size, a label and records, a unique name, lies inside its parent (the APB window inside
+     the parent region, the peripheral window inside the APB window it names), is listed in ascending order
+     and overlaps no other; the DMA controller, OSPI NOR controller and application-side mailbox windows
+     exist; the NX-REQ identifiers exist; and the table of section 2.1 of ADDRESS_MAP.md agrees row by row.
 A PASS does not show that a base, size or attribute is right, that the width fits the C910 or any master,
 or that anything is approved; that is review work (NX-REQ-029, NX-ARCH-GAP-003). Exit 0 if it passes, 1 if not.
 Stdlib only.
@@ -30,6 +36,11 @@ import sys
 from pathlib import Path
 
 MAPS = {"application": "architecture/maps/application_map.yaml", "secure": "architecture/maps/secure_map.yaml"}
+PERIPH = "architecture/maps/peripheral_windows.yaml"
+PERIPH_KEYS = ["space", "document", "version", "parent_region", "map_label", "map_records", "apb_windows", "windows"]
+APB_KEYS = ["name", "base", "size", "label", "records", "note"]
+WINDOW_KEYS = ["name", "apb", "base", "size", "class", "label", "records", "note"]
+REQUIRED_WINDOWS = ["DMA controller", "OSPI NOR controller", "Mailbox (application side)"]
 HEADER_KEYS = ["space", "document", "version", "address_width_bits", "address_width_label",
                "address_width_records", "map_label", "map_records", "regions"]
 REGION_KEYS = ["name", "base", "size", "class", "label", "records", "note"]
@@ -56,18 +67,15 @@ def scalar(v):
 
 
 def parse(text, errs, where):
-    """Read the small YAML subset the map files use: top-level scalars, one `regions:` list of flat mappings."""
-    top, regions, cur, in_regions = {}, [], None, False
+    """Read the small YAML subset the map files use: top-level scalars and lists of flat mappings."""
+    top, cur, cur_list = {}, None, None
     for n, raw in enumerate(text.splitlines(), 1):
         if not raw.strip() or raw.lstrip().startswith("#"):
             continue
         indent = len(raw) - len(raw.lstrip())
         line = raw.strip()
         if indent == 0:
-            in_regions = line == "regions:"
-            if in_regions:
-                top["regions"] = regions
-                continue
+            cur_list = None
             m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
             if not m:
                 errs.append(f"{where}:{n}: cannot read line")
@@ -75,11 +83,15 @@ def parse(text, errs, where):
             val = m.group(2)
             if not val.startswith(("\"", "'")) and " #" in val:
                 val = val.split(" #", 1)[0]
+            if val.strip() == "":
+                cur_list = []
+                top[m.group(1)] = cur_list
+                continue
             top[m.group(1)] = scalar(val)
-        elif in_regions:
+        elif cur_list is not None:
             if line.startswith("- "):
                 cur = {}
-                regions.append(cur)
+                cur_list.append(cur)
                 line = line[2:].strip()
             m = re.match(r"^([A-Za-z_][A-Za-z0-9_]*):\s*(.*)$", line)
             if not m or cur is None:
@@ -121,6 +133,19 @@ def expected_rows(m, app):
             cells += ["Yes" if r["cacheable"] else "No", r["perm"]]
         cells += [r["label"], ids_text(r["records"])]
         rows.append(cells)
+    return rows
+
+
+def periph_rows(pw):
+    rows = []
+    for r in pw["apb_windows"]:
+        end = r["base"] + r["size"] - 1
+        rows.append([r["name"] + " (bridge window)", "-", hexs(r["base"], 40), hexs(end, 40), size_text(r["size"]),
+                     r["label"], ids_text(r["records"])])
+    for r in pw["windows"]:
+        end = r["base"] + r["size"] - 1
+        rows.append([r["name"], r["apb"], hexs(r["base"], 40), hexs(end, 40), size_text(r["size"]), r["label"],
+                     ids_text(r["records"])])
     return rows
 
 
@@ -227,6 +252,80 @@ def check_crossings(app, sec, errs):
                         f"{tgt['name']} ({size_text(tgt.get('size', 0))})")
 
 
+def check_periph(app, pw, errs):
+    w = "peripheral windows"
+    for k in PERIPH_KEYS:
+        if k not in pw:
+            errs.append(f"{w}: missing key {k}")
+    if pw.get("space") != "application_peripheral":
+        errs.append(f"{w}: space is {pw.get('space')!r}, expected 'application_peripheral'")
+    if pw.get("map_label") not in LABELS:
+        errs.append(f"{w}: map_label must be one of {sorted(LABELS)}")
+    parent = next((r for r in app.get("regions", []) if r.get("name") == pw.get("parent_region")), None)
+    if parent is None:
+        errs.append(f"{w}: parent_region {pw.get('parent_region')!r} is not a region of the application map")
+        return False
+    p_lo, p_hi = parent["base"], parent["base"] + parent["size"] - 1
+    apbs, ok = {}, True
+
+    def scan(items, keys, label, lo_hi=None):
+        nonlocal ok
+        names, prev_base, prev_end, prev_name = set(), -1, -1, None
+        for r in items:
+            name = r.get("name", "?")
+            miss = [k for k in keys if k not in r]
+            if miss:
+                errs.append(f"{w}: {label} {name}: missing {', '.join(miss)}")
+                ok = False
+                continue
+            if name in names:
+                errs.append(f"{w}: duplicate {label} name {name}")
+            names.add(name)
+            base, size = r["base"], r["size"]
+            if not isinstance(base, int) or not isinstance(size, int) or size <= 0:
+                errs.append(f"{w}: {label} {name}: base and size must be integers and size positive")
+                ok = False
+                continue
+            if base % ALIGN or size % ALIGN:
+                errs.append(f"{w}: {label} {name}: base and size must be multiples of 4 KiB")
+            end = base + size - 1
+            lo, hi = lo_hi(r) if lo_hi else (p_lo, p_hi)
+            if lo is None:
+                errs.append(f"{w}: {label} {name}: apb {r.get('apb')!r} is not an APB window")
+            elif base < lo or end > hi:
+                errs.append(f"{w}: {label} {name}: {hex(base)} to {hex(end)} is outside {hex(lo)} to {hex(hi)}")
+            if base < prev_base:
+                errs.append(f"{w}: {label} {name} is listed out of ascending order after {prev_name}")
+            elif base <= prev_end:
+                errs.append(f"{w}: {label} {name} overlaps {prev_name}")
+            prev_base, prev_end, prev_name = base, max(prev_end, end), name
+            if r["label"] not in LABELS:
+                errs.append(f"{w}: {label} {name}: label {r['label']!r} is not SELECTED, PROPOSED or OPEN")
+            recs = r["records"]
+            if not isinstance(recs, list) or not recs or not all(RECORD_RE.match(str(x)) for x in recs):
+                errs.append(f"{w}: {label} {name}: records must be a non-empty list of NX identifiers")
+
+    scan(pw.get("apb_windows") or [], APB_KEYS, "APB window")
+    for r in pw.get("apb_windows") or []:
+        if isinstance(r.get("base"), int) and isinstance(r.get("size"), int):
+            apbs[r.get("name")] = (r["base"], r["base"] + r["size"] - 1)
+
+    def window_range(r):
+        a = apbs.get(r.get("apb"))
+        return a if a else (None, None)
+
+    wins = pw.get("windows") or []
+    if not wins:
+        errs.append(f"{w}: no windows")
+        return False
+    scan(wins, WINDOW_KEYS, "window", window_range)
+    have = {r.get("name") for r in wins}
+    for need in REQUIRED_WINDOWS:
+        if need not in have:
+            errs.append(f"{w}: window {need} is missing")
+    return ok
+
+
 def check_records(maps, root, errs):
     req = root / "requirements" / "REQUIREMENTS.md"
     if not req.exists():
@@ -237,6 +336,10 @@ def check_records(maps, root, errs):
         used = set(m.get("map_records", [])) | set(m.get("address_width_records", []))
         for r in m.get("regions", []):
             used |= set(r.get("records", []))
+        if space == "peripheral":
+            used |= set(m.get("map_records", []))
+            for r in m.get("apb_windows", []) + m.get("windows", []):
+                used |= set(r.get("records", []))
         for rid in sorted(x for x in used if str(x).startswith("NX-REQ-")):
             if rid not in known:
                 errs.append(f"{space} map: {rid} is not in the requirements register")
@@ -260,6 +363,19 @@ def check_tables(maps, root, errs):
         for g, w in zip(got, want):
             if g != w:
                 errs.append(f"ADDRESS_MAP.md: {space} row {w[0]!r} differs from the file: table {g} / file {w}")
+    pw = maps.get("peripheral")
+    if pw:
+        heading = "## 2.1 Peripheral register windows"
+        got = table_after(lines, heading)
+        if got is None:
+            errs.append(f"ADDRESS_MAP.md: no table under '{heading}'")
+            return
+        want = periph_rows(pw)
+        if len(got) != len(want):
+            errs.append(f"ADDRESS_MAP.md: peripheral table has {len(got)} rows, the file has {len(want)} windows")
+        for g, w in zip(got, want):
+            if g != w:
+                errs.append(f"ADDRESS_MAP.md: peripheral row {w[0]!r} differs from the file: table {g} / file {w}")
 
 
 def run(root):
@@ -274,7 +390,14 @@ def run(root):
             maps[space] = m
         if Path(rel).stem != f"{m.get('space')}_map":
             errs.append(f"{rel}: file name does not match space {m.get('space')!r}")
-    if len(maps) == 2:
+    pp = root / PERIPH
+    if not pp.exists():
+        errs.append(f"{PERIPH} not found")
+    else:
+        pw = parse(pp.read_text(encoding="utf-8"), errs, PERIPH)
+        if "application" in maps and check_periph(maps["application"], pw, errs):
+            maps["peripheral"] = pw
+    if "application" in maps and "secure" in maps:
         check_crossings(maps["application"], maps["secure"], errs)
         check_records(maps, root, errs)
         check_tables(maps, root, errs)
@@ -290,7 +413,9 @@ def main():
     if errs:
         print(f"check_address_maps: {len(errs)} problem(s)")
         return 1
-    print("check_address_maps ok: " + ", ".join(f"{k} {len(v['regions'])} regions" for k, v in maps.items()))
+    print("check_address_maps ok: " + ", ".join(
+        f"{k} {len(v['windows']) if k == 'peripheral' else len(v['regions'])} "
+        f"{'windows' if k == 'peripheral' else 'regions'}" for k, v in maps.items()))
     return 0
 
 
