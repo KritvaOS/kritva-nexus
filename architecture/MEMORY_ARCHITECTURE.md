@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; the owner approved the proposals in NX-DEC-030; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.8.0-draft |
+| Version | 0.9.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -94,11 +94,11 @@ The boundary between the security domain and the application domain has exactly 
 
 ### 5.1 Boot window: security core to application (NX-INT-024)
 
-The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036); the bridge and this scope are SELECTED (NX-REQ-109, NX-DEC-029). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core (SELECTED, NX-REQ-109), because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is proposed in section 5.4 (NX-REQ-113); whatever the attachment, the window must be usable after the security core starts and before C910 reset release, so that the boot image can be verified and placed before the application subsystems are initialised.
+The security core reaches the application domain through a secure-to-application bridge (NX-REQ-106). The only reachable application region is System SRAM, so the security core can verify or place the boot image there (NX-REQ-036); the bridge and this scope are SELECTED (NX-REQ-109, NX-DEC-029). In the secure map it appears as the Application boot window, a 1 MiB alias at 0x3000_0000, the size of the System SRAM aperture. DDR4 and every other application region are unreachable from the security core (SELECTED, NX-REQ-109), because DDR4 may not be initialised when the security core runs first. How the bridge attaches to an application fabric is defined in section 5.4 (NX-REQ-113, SELECTED); whatever the attachment, the window must be usable after the security core starts and before C910 reset release, so that the boot image can be verified and placed before the application subsystems are initialised.
 
 ### 5.2 Mailbox: application to security (NX-INT-025)
 
-The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. This rule is SELECTED (NX-REQ-110, NX-DEC-029), and so is the rest of the mailbox (NX-REQ-107, NX-DEC-030), except the details marked OPEN. The register layout, the message format, the validation rule and the interrupts are proposed in section 5.5 (NX-REQ-114, NX-REQ-115, PROPOSED); the application side window is proposed at 0x00_4105_0000 in the peripheral register windows (NX-REQ-112, PROPOSED). No security claim is made from this architecture.
+The mailbox is one block of the security domain with two register windows: one in the secure map and one in the application peripheral register space, reached through the AXI-to-APB interconnects (NX-REQ-107). It carries an interrupt in each direction, with routing as in NX-REQ-057 (OPEN). The security domain validates every request. The application domain reaches the mailbox window and no other security resource. The application-side window is an application-domain peripheral window of the application map, reached by the C910 on the C910-to-APB path like any other allowed window (NX-REQ-072, NX-DEC-022); it is not a security-domain resource, so the rule that secure resources are unreachable on that path is unchanged, and the window gives no route to the secure map or to any other security peripheral. It is the only security-related window on that path. This rule is SELECTED (NX-REQ-110, NX-DEC-029), and so is the rest of the mailbox (NX-REQ-107, NX-DEC-030), except the details marked OPEN. The register layout, the message format, the validation rule and the interrupts are defined in section 5.5 (NX-REQ-114, NX-REQ-115, SELECTED); the application side window is at 0x00_4105_0000 in the peripheral register windows (NX-REQ-112, SELECTED). No security claim is made from this architecture.
 
 ### 5.3 Isolation rules
 
@@ -108,15 +108,15 @@ The mailbox is one block of the security domain with two register windows: one i
 4. C910 reset release stays hardware-controlled by the security domain and is not one of the crossings (NX-REQ-037, NX-INT-014).
 5. Changing either crossing, or adding a third, needs a new decision record (NX-DEC-027).
 
-### 5.4 Bridge attachment (PROPOSED, NX-REQ-113)
+### 5.4 Bridge attachment (SELECTED, NX-REQ-113, NX-DEC-033)
 
 The secure-to-application bridge is one AXI master port of the security domain. It attaches to the application AXI-3 fabric, which is the control fabric of the C910-to-APB path (NX-INT-002) and the fabric of the peripheral and DMA masters. The bridge forwards only transactions that fall in the Application boot window of the secure map, translates them to the System SRAM aperture (0x00_0000_0000 to 0x00_000F_FFFF) and issues them on AXI-3. Every other address is answered inside the bridge with DECERR or SLVERR and is never issued on AXI-3, so the security core cannot reach the APB peripherals, the NOR window or DDR4 through the AXI-3 decode. The bridge is a master only: no application transaction enters the secure side through it.
 
-The boot image has to be placed and verified before the C910 runs (NX-REQ-036, NX-REQ-037), so the bridge, the AXI-3 path to System SRAM and System SRAM itself must be clocked and out of reset while the C910 reset is still held. The reset domain of AXI-3 and of System SRAM is not defined (NX-ARCH-OI-025, OPEN), and that definition is a dependency of this proposal. The System SRAM attachment point on the application fabrics, and the width and clock conversion between the secure AXI and AXI-3, are OPEN.
+The boot image has to be placed and verified before the C910 runs (NX-REQ-036, NX-REQ-037), so the bridge, the AXI-3 path to System SRAM and System SRAM itself must be clocked and out of reset while the C910 reset is still held. The reset domain of AXI-3 and of System SRAM is not defined (NX-ARCH-OI-025, OPEN), and that definition is a dependency of this decision (NX-ARCH-OI-038). The System SRAM attachment point on the application fabrics, and the width and clock conversion between the secure AXI and AXI-3, are OPEN.
 
-### 5.5 Mailbox layout, messages, validation and interrupts (PROPOSED, NX-REQ-114, NX-REQ-115)
+### 5.5 Mailbox layout, messages, validation and interrupts (SELECTED, NX-REQ-114, NX-REQ-115, NX-DEC-033)
 
-The mailbox is one register block. The secure map shows it as a 64 KiB window at 0x2009_0000 and the application peripheral windows show it as a 64 KiB window at 0x00_4105_0000 (ADDRESS_MAP.md section 2.1); both are views of the same block at the same offsets. The sizes are proposals.
+The mailbox is one register block. The secure map shows it as a 64 KiB window at 0x2009_0000 and the application peripheral windows show it as a 64 KiB window at 0x00_4105_0000 (ADDRESS_MAP.md section 2.1); both are views of the same block at the same offsets. The sizes are apertures chosen in the proposal that the owner approved (NX-DEC-033).
 
 | Offset | Register | Application access | Security access |
 |---|---|---|---|
@@ -136,7 +136,7 @@ An access that the table does not permit, to a reserved offset, or to the reques
 
 A message is a 16-byte header followed by a payload of at most 240 bytes: a 32-bit message identifier, a 16-bit command, a 16-bit payload length, a 16-bit flags field, a 16-bit status (response only) and a reserved word. A message carries no address. Data larger than 240 bytes is placed in System SRAM and named by an offset and a length inside the boot window; the security core reaches it only through the boot window of section 5.1.
 
-The security domain checks every request in this order: the command is in an allow-list held in security software, the payload length is at most 240 bytes, any offset and length lie inside the boot window, and the identifier is the one expected for the request. It then writes the response header with a status of OK, DENIED, INVALID or BUSY and sets the response doorbell. The allow-list contents, the authentication of the requester, replay and flood protection and the response to repeated invalid requests are OPEN, and no security claim is made from this proposal.
+The security domain checks every request in this order: the command is in an allow-list held in security software, the payload length is at most 240 bytes, any offset and length lie inside the boot window, and the identifier is the one expected for the request. It then writes the response header with a status of OK, DENIED, INVALID or BUSY and sets the response doorbell. The allow-list contents, the authentication of the requester, replay and flood protection and the response to repeated invalid requests are OPEN, and no security claim is made from this decision.
 
 The request doorbell raises a level-sensitive request interrupt to one source of the security interrupt controller (32 sources, NX-REQ-057), and the response doorbell raises a level-sensitive response interrupt to one source of the application interrupt controller (128 sources). Each is masked by the enable register of the receiving side, cleared by a write to the status register of the receiving side, and carries no data. The application reaches the security interrupt controller only through the request path (NX-REQ-115). The source numbers depend on the interrupt architecture and are OPEN (NX-REQ-057).
 
@@ -172,9 +172,9 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | Item | Label | Records | Owner |
 |---|---|---|---|
 | Confirmation of the 40-bit width against the C910 configuration and every application master (owner statement; RTL evidence source not recorded, NX-ARCH-OI-001) | SELECTED | NX-REQ-029, NX-DEC-031 | Dinesh |
-| Attachment of the two crossings, mailbox layout, message format, validation rule and interrupts (sections 5.4 and 5.5); the allow-list and the AXI-3 reset domain stay OPEN | PROPOSED | NX-REQ-113, NX-REQ-114, NX-REQ-115, NX-ARCH-OI-037 | Dinesh |
-| Application interrupt controller baseline (PLIC and CLINT; the security and always-on controllers and the routing stay OPEN) | PROPOSED | NX-REQ-116, NX-ARCH-OI-032 | Dinesh |
-| Division of the peripheral register space into windows (ADDRESS_MAP.md section 2.1 and peripheral_windows.yaml) | PROPOSED | NX-REQ-112, NX-ARCH-OI-036 | Dinesh |
+| Attachment of the two crossings, mailbox layout, message format, validation rule and interrupts (sections 5.4 and 5.5); the allow-list and the AXI-3 reset domain stay OPEN as NX-ARCH-OI-038 and NX-ARCH-OI-025 | SELECTED | NX-REQ-113, NX-REQ-114, NX-REQ-115, NX-DEC-033 | Dinesh |
+| Application interrupt controller baseline (PLIC and CLINT; the security and always-on controllers and the routing stay OPEN) | SELECTED | NX-REQ-116, NX-DEC-033 | Dinesh |
+| Division of the peripheral register space into windows (ADDRESS_MAP.md section 2.1 and peripheral_windows.yaml) | SELECTED | NX-REQ-112, NX-DEC-033 | Dinesh |
 | Application and secure address maps (in ADDRESS_MAP.md and the two map files), approved by the owner | SELECTED | NX-REQ-053, NX-REQ-054, NX-DEC-030 | Dinesh |
 | PSRAM, NOR and on-chip memory organisation details | OPEN | NX-ARCH-OI-006, NX-ARCH-OI-007 | Dinesh |
 | DMA request mapping, descriptor format, coherency and power domain | OPEN | NX-ARCH-OI-035 | Dinesh |
@@ -192,3 +192,4 @@ The application fabrics and the Memory Access Crossbar deny by default (NX-REQ-1
 | 0.6.0-draft | 2026-11-13 | The peripheral register space is divided into windows by a PROPOSED requirement (NX-REQ-112); the mailbox window base is proposed |
 | 0.7.0-draft | 2026-11-13 | NX-DEC-031: the owner confirmed the 40-bit width for every application master; section 4.3 records the statement and NX-REQ-029 and NX-ARCH-GAP-003 are closed |
 | 0.8.0-draft | 2026-11-13 | Sections 5.4 and 5.5: the bridge attachment, the mailbox register layout, message format, validation rule and interrupts are proposed (NX-REQ-113 to NX-REQ-115); the application interrupt controller baseline is proposed (NX-REQ-116) |
+| 0.9.0-draft | 2026-11-13 | NX-DEC-033: the bridge attachment, the mailbox layout, messages, validation rule and interrupts, the peripheral register windows and the application interrupt controller baseline are SELECTED |

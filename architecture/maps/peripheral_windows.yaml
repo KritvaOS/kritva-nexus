@@ -1,268 +1,268 @@
 # Kritva Nexus application peripheral register windows (KOS-NEXUS-008, NX-ARCH-OI-036).
 # Machine-readable division of the application map region "Peripheral register space" (application_map.yaml)
 # into the two AXI-to-APB windows and one 64 KiB window per peripheral instance or control block.
-# Label: PROPOSED (NX-REQ-112). The parent region and its base and size are SELECTED (NX-REQ-053, NX-DEC-030).
+# Label: SELECTED (NX-REQ-112, NX-DEC-033). The parent region and its base and size are SELECTED (NX-REQ-053, NX-DEC-030).
 # APB-0 holds the peripherals of NX-REQ-019 to NX-REQ-026; APB-1 holds control and block registers.
 # A window size is an aperture, not a register count. Any address in the parent region that no window lists
-# is unmapped and returns DECERR (NX-REQ-104). The PLIC and CLINT windows follow the proposed application
-# interrupt controller baseline (NX-REQ-116); PLIC versus AIA stays undecided as a requirement (NX-REQ-057).
+# is unmapped and returns DECERR (NX-REQ-104). The PLIC and CLINT windows follow the application
+# interrupt controller baseline (NX-REQ-116, SELECTED); the security and always-on controllers stay OPEN (NX-REQ-057).
 space: application_peripheral
 document: KOS-NEXUS-ADDRMAP-003
-version: 0.2.0-draft
+version: 0.3.0-draft
 parent_region: Peripheral register space
-map_label: PROPOSED
+map_label: SELECTED
 map_records: [NX-REQ-112]
 apb_windows:
   - name: APB-0
     base: 0x0040000000
     size: 0x0001000000
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-016, NX-REQ-112]
-    note: AXI-to-APB interconnect 0, peripherals; the 16 MiB aperture is proposed.
+    note: AXI-to-APB interconnect 0, peripherals; the 16 MiB aperture is an aperture, not a size of registers.
   - name: APB-1
     base: 0x0041000000
     size: 0x0001000000
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-016, NX-REQ-112]
-    note: AXI-to-APB interconnect 1, control and block registers; the 16 MiB aperture is proposed.
+    note: AXI-to-APB interconnect 1, control and block registers; the 16 MiB aperture is an aperture, not a size of registers.
 windows:
   - name: PWM controller
     apb: APB-0
     base: 0x0040000000
     size: 0x0000010000
     class: pwm
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-019, NX-REQ-112]
-    note: 16 PWM channels in one block. Window size proposed.
+    note: 16 PWM channels in one block. The window size is an aperture.
   - name: GPIO controller
     apb: APB-0
     base: 0x0040010000
     size: 0x0000010000
     class: gpio
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-020, NX-REQ-112]
-    note: 32 GPIOs in one block. Window size proposed.
+    note: 32 GPIOs in one block. The window size is an aperture.
   - name: General-purpose timers
     apb: APB-0
     base: 0x0040020000
     size: 0x0000010000
     class: timer
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-021, NX-REQ-112]
-    note: Four timers in one block. Window size proposed.
+    note: Four timers in one block. The window size is an aperture.
   - name: UART0
     apb: APB-0
     base: 0x0040030000
     size: 0x0000010000
     class: uart
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-022, NX-REQ-112]
-    note: UART instance 0 of four. Window size proposed.
+    note: UART instance 0 of four. The window size is an aperture.
   - name: UART1
     apb: APB-0
     base: 0x0040040000
     size: 0x0000010000
     class: uart
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-022, NX-REQ-112]
-    note: UART instance 1 of four. Window size proposed.
+    note: UART instance 1 of four. The window size is an aperture.
   - name: UART2
     apb: APB-0
     base: 0x0040050000
     size: 0x0000010000
     class: uart
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-022, NX-REQ-112]
-    note: UART instance 2 of four. Window size proposed.
+    note: UART instance 2 of four. The window size is an aperture.
   - name: UART3
     apb: APB-0
     base: 0x0040060000
     size: 0x0000010000
     class: uart
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-022, NX-REQ-112]
-    note: UART instance 3 of four. Window size proposed.
+    note: UART instance 3 of four. The window size is an aperture.
   - name: I2C0
     apb: APB-0
     base: 0x0040070000
     size: 0x0000010000
     class: i2c
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-023, NX-REQ-112]
-    note: I2C master instance 0 of four. Window size proposed.
+    note: I2C master instance 0 of four. The window size is an aperture.
   - name: I2C1
     apb: APB-0
     base: 0x0040080000
     size: 0x0000010000
     class: i2c
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-023, NX-REQ-112]
-    note: I2C master instance 1 of four. Window size proposed.
+    note: I2C master instance 1 of four. The window size is an aperture.
   - name: I2C2
     apb: APB-0
     base: 0x0040090000
     size: 0x0000010000
     class: i2c
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-023, NX-REQ-112]
-    note: I2C master instance 2 of four. Window size proposed.
+    note: I2C master instance 2 of four. The window size is an aperture.
   - name: I2C3
     apb: APB-0
     base: 0x00400A0000
     size: 0x0000010000
     class: i2c
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-023, NX-REQ-112]
-    note: I2C master instance 3 of four. Window size proposed.
+    note: I2C master instance 3 of four. The window size is an aperture.
   - name: SPI master
     apb: APB-0
     base: 0x00400B0000
     size: 0x0000010000
     class: spi
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-024, NX-REQ-112]
-    note: One SPI master. Window size proposed.
+    note: One SPI master. The window size is an aperture.
   - name: SPI slave
     apb: APB-0
     base: 0x00400C0000
     size: 0x0000010000
     class: spi
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-025, NX-REQ-112]
-    note: One SPI slave. Window size proposed.
+    note: One SPI slave. The window size is an aperture.
   - name: I2S0
     apb: APB-0
     base: 0x00400D0000
     size: 0x0000010000
     class: i2s
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-026, NX-REQ-112]
-    note: I2S master instance 0 of two. Window size proposed.
+    note: I2S master instance 0 of two. The window size is an aperture.
   - name: I2S1
     apb: APB-0
     base: 0x00400E0000
     size: 0x0000010000
     class: i2s
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-026, NX-REQ-112]
-    note: I2S master instance 1 of two. Window size proposed.
+    note: I2S master instance 1 of two. The window size is an aperture.
   - name: DMA controller
     apb: APB-1
     base: 0x0041000000
     size: 0x0000010000
     class: dma
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-092, NX-REQ-093, NX-REQ-112]
-    note: Registers of the 32-channel DMA controller; the descriptor format and request mapping are OPEN (NX-ARCH-OI-035). Window size proposed.
+    note: Registers of the 32-channel DMA controller; the descriptor format and request mapping are OPEN (NX-ARCH-OI-035). The window size is an aperture.
   - name: OSPI NOR controller
     apb: APB-1
     base: 0x0041010000
     size: 0x0000010000
     class: nor_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-004, NX-REQ-111, NX-REQ-112]
-    note: Program and erase of the NOR device go only through these registers (NX-REQ-111). Window size proposed.
+    note: Program and erase of the NOR device go only through these registers (NX-REQ-111). The window size is an aperture.
   - name: OSPI PSRAM controller
     apb: APB-1
     base: 0x0041020000
     size: 0x0000010000
     class: psram_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-003, NX-REQ-112]
-    note: PSRAM controller registers; protocol and mode are OPEN (NX-ARCH-OI-006). Window size proposed.
+    note: PSRAM controller registers; protocol and mode are OPEN (NX-ARCH-OI-006). The window size is an aperture.
   - name: DDR4 controller
     apb: APB-1
     base: 0x0041030000
     size: 0x0000010000
     class: ddr_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-002, NX-REQ-112]
-    note: DDR4 controller and PHY registers; the controller is not selected. Window size proposed.
+    note: DDR4 controller and PHY registers; the controller is not selected. The window size is an aperture.
   - name: Clock, reset and power control
     apb: APB-1
     base: 0x0041040000
     size: 0x0000010000
     class: sysctl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-058, NX-REQ-060, NX-REQ-061, NX-REQ-112]
-    note: Register layout is OPEN. Window size proposed.
+    note: Register layout is OPEN. The window size is an aperture.
   - name: Mailbox (application side)
     apb: APB-1
     base: 0x0041050000
     size: 0x0000010000
     class: mailbox
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-107, NX-REQ-110, NX-REQ-112]
-    note: The only security-related window on the C910-to-APB path (NX-REQ-110); it gives no route to the secure map; register layout is OPEN (NX-ARCH-OI-037). Window size proposed.
+    note: The only security-related window on the C910-to-APB path (NX-REQ-110); it gives no route to the secure map; register layout is OPEN (NX-ARCH-OI-037). The window size is an aperture.
   - name: ISP
     apb: APB-1
     base: 0x0041060000
     size: 0x0000010000
     class: media_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-045, NX-REQ-112]
-    note: ISP control registers. Window size proposed.
+    note: ISP control registers. The window size is an aperture.
   - name: NPU
     apb: APB-1
     base: 0x0041070000
     size: 0x0000010000
     class: ai_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-046, NX-REQ-112]
-    note: NPU control registers. Window size proposed.
+    note: NPU control registers. The window size is an aperture.
   - name: Camera interface and DMA
     apb: APB-1
     base: 0x0041080000
     size: 0x0000010000
     class: media_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-042, NX-REQ-112]
-    note: Camera input and camera DMA control registers. Window size proposed.
+    note: Camera input and camera DMA control registers. The window size is an aperture.
   - name: Display controller
     apb: APB-1
     base: 0x0041090000
     size: 0x0000010000
     class: media_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-006, NX-REQ-112]
-    note: Display and compositor control registers. Window size proposed.
+    note: Display and compositor control registers. The window size is an aperture.
   - name: Ethernet MAC0
     apb: APB-1
     base: 0x00410A0000
     size: 0x0000010000
     class: eth_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-008, NX-REQ-112]
-    note: First of two Ethernet MACs. Window size proposed.
+    note: First of two Ethernet MACs. The window size is an aperture.
   - name: Ethernet MAC1
     apb: APB-1
     base: 0x00410B0000
     size: 0x0000010000
     class: eth_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-008, NX-REQ-112]
-    note: Second of two Ethernet MACs. Window size proposed.
+    note: Second of two Ethernet MACs. The window size is an aperture.
   - name: Storage DMA
     apb: APB-1
     base: 0x00410C0000
     size: 0x0000010000
     class: media_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-051, NX-REQ-112]
-    note: Storage DMA control registers. Window size proposed.
+    note: Storage DMA control registers. The window size is an aperture.
   - name: Application interrupt controller (PLIC)
     apb: APB-1
     base: 0x0041400000
     size: 0x0000400000
     class: interrupt_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-057, NX-REQ-112, NX-REQ-116]
-    note: PLIC with 128 external sources; the 4 MiB aperture covers the priority, pending, enable and per-context registers for the C910 contexts and is not a register count. Window size proposed.
+    note: PLIC with 128 external sources; the 4 MiB aperture covers the priority, pending, enable and per-context registers for the C910 contexts and is not a register count. The window size is an aperture.
   - name: Application timer and software interrupt (CLINT)
     apb: APB-1
     base: 0x0041800000
     size: 0x0000010000
     class: interrupt_ctrl
-    label: PROPOSED
+    label: SELECTED
     records: [NX-REQ-057, NX-REQ-112, NX-REQ-116]
-    note: CLINT for the C910 timer and software interrupts. Window size proposed.
+    note: CLINT for the C910 timer and software interrupts. The window size is an aperture.
