@@ -1,0 +1,216 @@
+# Kritva Nexus application connectivity (KOS-NEXUS-007).
+# Single machine-readable source of the master-to-memory connectivity: fabrics, masters, region attachments and links.
+# Label: PROPOSED (NX-REQ-120); fabric widths and master placement are PROPOSED (NX-REQ-050, NX-REQ-051). The C910 route to the peripheral register space and the boot window bridge are SELECTED.
+# Region names are those of application_map.yaml. A master has no path to a region that no link lists (default deny, NX-REQ-104).
+# Attachment 'open' means the point where the region joins the fabrics is not defined (NX-ARCH-OI-040, NX-ARCH-OI-038).
+space: connectivity
+document: KOS-NEXUS-CONN-001
+version: 0.1.0-draft
+connectivity_label: PROPOSED
+connectivity_records: [NX-REQ-120]
+fabrics:
+  - name: AXI-0
+    width_bits: 128
+    role: Main system, CPU and memory
+    label: PROPOSED
+    records: [NX-REQ-050]
+  - name: AXI-1
+    width_bits: 256
+    role: AI and vision
+    label: PROPOSED
+    records: [NX-REQ-050]
+  - name: AXI-2
+    width_bits: 128
+    role: Multimedia and high-speed IO
+    label: PROPOSED
+    records: [NX-REQ-050]
+  - name: AXI-3
+    width_bits: 64
+    role: General peripherals, control and DMA
+    label: PROPOSED
+    records: [NX-REQ-050]
+masters:
+  - name: C910 cluster
+    fabric: AXI-0
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: ISP
+    fabric: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: NPU
+    fabric: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: Camera DMA
+    fabric: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: Display compositor
+    fabric: AXI-2
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: Ethernet MAC0
+    fabric: AXI-2
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: Ethernet MAC1
+    fabric: AXI-2
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: Storage DMA
+    fabric: AXI-2
+    label: PROPOSED
+    records: [NX-REQ-051]
+  - name: DMA controller
+    fabric: AXI-3
+    label: PROPOSED
+    records: [NX-REQ-093]
+  - name: Boot window bridge
+    fabric: AXI-3
+    label: SELECTED
+    records: [NX-REQ-113]
+attachments:
+  - region: System SRAM
+    attached_to: open
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: Camera frame pool
+    attached_to: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: ISP SRAM
+    attached_to: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: NPU SRAM
+    attached_to: AXI-1
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: Peripheral register space
+    attached_to: apb
+    label: SELECTED
+    records: [NX-REQ-067]
+  - region: OSPI NOR window
+    attached_to: open
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: OSPI PSRAM
+    attached_to: open
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - region: DDR4
+    attached_to: crossbar
+    label: PROPOSED
+    records: [NX-REQ-049]
+links:
+  - master: C910 cluster
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-049]
+  - master: C910 cluster
+    region: System SRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - master: C910 cluster
+    region: OSPI NOR window
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-111]
+  - master: C910 cluster
+    region: OSPI PSRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - master: C910 cluster
+    region: Peripheral register space
+    access: rw
+    label: SELECTED
+    records: [NX-REQ-067]
+  - master: ISP
+    region: Camera frame pool
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: ISP
+    region: ISP SRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: NPU
+    region: NPU SRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: NPU
+    region: ISP SRAM
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: NPU
+    region: Camera frame pool
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: NPU
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-002]
+  - master: Camera DMA
+    region: Camera frame pool
+    access: w
+    label: PROPOSED
+    records: [NX-REQ-047]
+  - master: Display compositor
+    region: DDR4
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-048]
+  - master: Ethernet MAC0
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-077]
+  - master: Ethernet MAC1
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-077]
+  - master: Storage DMA
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-120]
+  - master: DMA controller
+    region: DDR4
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-094]
+  - master: DMA controller
+    region: System SRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-094]
+  - master: DMA controller
+    region: OSPI NOR window
+    access: r
+    label: PROPOSED
+    records: [NX-REQ-094]
+  - master: DMA controller
+    region: OSPI PSRAM
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-094]
+  - master: DMA controller
+    region: Peripheral register space
+    access: rw
+    label: PROPOSED
+    records: [NX-REQ-093]
+  - master: Boot window bridge
+    region: System SRAM
+    access: rw
+    label: SELECTED
+    records: [NX-REQ-109]

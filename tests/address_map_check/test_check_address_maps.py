@@ -18,7 +18,8 @@ _spec.loader.exec_module(C)
 
 FILES = ["architecture/maps/application_map.yaml", "architecture/maps/secure_map.yaml",
          "architecture/maps/peripheral_windows.yaml", "architecture/maps/register_layouts.yaml",
-         "architecture/ADDRESS_MAP.md", "requirements/REQUIREMENTS.md"]
+         "architecture/maps/connectivity.yaml", "architecture/ADDRESS_MAP.md",
+         "architecture/INTERCONNECT_SPECIFICATION.md", "requirements/REQUIREMENTS.md"]
 
 
 class Tree:
@@ -224,6 +225,54 @@ class AddressMapChecker(unittest.TestCase):
 
     def test_layout_unknown_record(self):
         self.t.edit("architecture/maps/register_layouts.yaml", "layout_records: [NX-REQ-117, NX-REQ-118]", "layout_records: [NX-REQ-117, NX-REQ-998]")
+        self.has("NX-REQ-998 is not in the requirements register")
+
+    def test_connectivity_unknown_region(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "region: DDR4\n    access: rw", "region: Nowhere\n    access: rw")
+        self.has("region is not a non-reserved region")
+
+    def test_connectivity_access_beyond_permission(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "region: OSPI NOR window\n    access: r\n", "region: OSPI NOR window\n    access: rw\n")
+        self.has("is not allowed by the region permissions")
+
+    def test_connectivity_master_on_unknown_fabric(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "name: ISP\n    fabric: AXI-1", "name: ISP\n    fabric: AXI-9")
+        self.has("fabric 'AXI-9' is not defined")
+
+    def test_connectivity_region_without_attachment(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "  - region: System SRAM\n    attached_to: open\n    label: PROPOSED\n    records: [NX-REQ-120]\n", "")
+        self.has("region System SRAM has no attachment")
+
+    def test_connectivity_ddr4_not_on_crossbar(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "attached_to: crossbar", "attached_to: AXI-0")
+        self.has("DDR4, and only DDR4, is attached to the crossbar")
+
+    def test_connectivity_master_without_link(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "master: Boot window bridge", "master: Nobody")
+        self.has("master Boot window bridge has no link")
+
+    def test_connectivity_link_to_reserved_region(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "region: DDR4\n    access: rw", "region: Reserved\n    access: rw")
+        self.has("region is not a non-reserved region")
+
+    def test_connectivity_link_on_wrong_fabric(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "region: Camera frame pool\n    attached_to: AXI-1", "region: Camera frame pool\n    attached_to: AXI-2")
+        self.has("the region is attached to AXI-2 and the master is on AXI-1")
+
+    def test_connectivity_apb_link_from_wrong_fabric(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "master: ISP\n    region: Camera frame pool\n    access: r", "master: ISP\n    region: Peripheral register space\n    access: rw")
+        self.has("only masters on AXI-0 or AXI-3 reach the peripheral register space")
+
+    def test_connectivity_matrix_table_drift(self):
+        self.t.edit("architecture/INTERCONNECT_SPECIFICATION.md", "| C910 cluster | AXI-0 | rw | - |", "| C910 cluster | AXI-0 | r | - |")
+        self.has("row 'C910 cluster' differs from the file")
+
+    def test_connectivity_fabric_table_drift(self):
+        self.t.edit("architecture/INTERCONNECT_SPECIFICATION.md", "| AXI-3 | 64 |", "| AXI-3 | 128 |")
+        self.has("differs from the file")
+
+    def test_connectivity_unknown_record(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "connectivity_records: [NX-REQ-120]", "connectivity_records: [NX-REQ-998]")
         self.has("NX-REQ-998 is not in the requirements register")
 
 
