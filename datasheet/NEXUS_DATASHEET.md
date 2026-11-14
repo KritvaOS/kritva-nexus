@@ -8,14 +8,15 @@
 | Status | DRAFT |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent); no approval record exists yet |
-| Version | 0.3.12-draft |
+| Version | 0.3.13-draft |
 | 0.3.6-draft | 2026-11-13 | NX-DEC-030: the proposed address maps, access policy, boundary rules and the secure map are SELECTED (NX-REQ-028, NX-REQ-053, NX-REQ-054, NX-REQ-102 to NX-REQ-104, NX-REQ-106 to NX-REQ-108); the row for NX-ARCH-GAP-002 is removed from the open items because the gap is closed; NX-INT-012, NX-INT-024 and NX-INT-025 are SELECTED |
 | 0.3.7-draft | 2026-11-13 | NX-REQ-112 (PROPOSED): the peripheral register space is divided into APB-0 and APB-1 windows and per-instance windows; the open-item row for NX-ARCH-OI-036 is PROPOSED; Appendix B updated |
 | 0.3.8-draft | 2026-11-13 | NX-DEC-031: NX-REQ-029 is SELECTED (the owner confirmed the 40-bit width for every application master) and the open-item row for NX-ARCH-GAP-003 is removed; the decision range is NX-DEC-001 to NX-DEC-032 |
 | 0.3.9-draft | 2026-11-13 | NX-REQ-113 to NX-REQ-116 (PROPOSED): the bridge attachment, mailbox layout, messages and interrupts, and the application interrupt controller baseline (PLIC and CLINT); NX-INT-016, NX-INT-024 and NX-INT-025 updated; two open-item rows; Appendix B updated |
 | 0.3.10-draft | 2026-11-13 | NX-DEC-033: NX-REQ-112 to NX-REQ-116 are SELECTED (peripheral register windows, crossing details, application interrupt controller baseline); NX-INT-016, NX-INT-024 and NX-INT-025 labels updated; the open-item rows for NX-ARCH-OI-036 and NX-ARCH-OI-037 are replaced by one row for NX-ARCH-OI-038; the decision range is NX-DEC-001 to NX-DEC-033 |
 | 0.3.11-draft | 2026-11-13 | NX-REQ-117 to NX-REQ-119 (PROPOSED): register conventions, block register layouts and secure address-space attributes, with the proposed secure width (NX-REQ-033); rows and open items added; Appendix B updated |
-| 0.3.12-draft | 2026-11-13 | NX-DEC-034: NX-REQ-033 (secure interconnect parameters) and NX-REQ-119 (secure address-space attributes) are SELECTED; the rows for the secure interconnect and the secure address space and NX-INT-011 updated; the decision range is NX-DEC-001 to NX-DEC-034 |
+| 0.3.12-draft | 2026-11-13 | NX-DEC-034: NX-REQ-033 (secure interconnect parameters) and NX-REQ-119 (secure address-space attributes) are SELECTED; the rows for the secure interconnect and the secure address space and NX-INT-011 updated; the decision range is NX-DEC-001 to NX-DEC-035 |
+| 0.3.13-draft | 2026-11-14 | NX-DEC-035: the DDR4 ingress, bandwidth sizing, arbitration classes and fabric behaviour (NX-REQ-030, NX-REQ-076 to NX-REQ-081) are SELECTED; NX-REQ-120 (master-to-memory connectivity matrix, PROPOSED) and the open-item row for NX-ARCH-OI-040 added; the decision range is NX-DEC-001 to NX-DEC-035 |
 | Last Updated | 2026-11-12 |
 | Authority | DERIVED (not AUTHORITATIVE) |
 | Related Tasks / Milestones | KOS-NEXUS-085; NX-M1 |
@@ -23,7 +24,7 @@
 
 ## Purpose
 
-**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-116), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-034) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
+**PRELIMINARY PLANNING DATASHEET, NOT A PRODUCT SPECIFICATION.** This datasheet lists the planned blocks of the Kritva Nexus SoC, a consolidated feature summary, the planned external interfaces, the planned internal connectivity and the individual features of each block. It is a derived, non-authoritative summary of the [requirements register](../requirements/REQUIREMENTS.md) (NX-REQ-001 to NX-REQ-116), the [decision records](../decisions/DECISIONS.md) (NX-DEC-001 to NX-DEC-035) and the interface register in the [system architecture](../architecture/SYSTEM_ARCHITECTURE.md) (NX-INT-001 to NX-INT-025). Where it differs from them, the register and the approved decision records win. It adds no value of its own.
 
 No RTL, FPGA image or silicon exists, and no figure here is measured. "Planned" means required by the register; it does not mean built. Every row names the requirements it restates and their label: **SELECTED** (an owner decision is recorded), **PROPOSED** (recommended, not approved, shown as preliminary and not committed) or **OPEN** (not yet defined). Where the requirements of one row carry different labels, the label column gives each label with its requirement numbers. A frequency, bandwidth, TOPS or power figure is a target or a planning figure, never an achieved result.
 
@@ -56,11 +57,11 @@ Kritva Nexus is planned as an application SoC with a four-core RV64 application 
 | Block | Role (planned) | Label | NX-REQ |
 |---|---|---|---|
 | C910 CPU cluster | Application processing | PROPOSED | 001, 055, 056 |
-| AXI-0, AXI-1, AXI-2, AXI-3 | Application fabrics | SELECTED (015); PROPOSED (050, 051, 079) | 015, 050, 051, 079 |
-| Memory Access Crossbar | Arbitration, QoS, decode and protection toward memory | PROPOSED | 049, 078 |
-| AXI fabric bridge (AXI-0 to AXI-3) | C910 route to peripherals | SELECTED (067, 071); PROPOSED (081) | 067, 071, 081 |
+| AXI-0, AXI-1, AXI-2, AXI-3 | Application fabrics | SELECTED (015, 079); PROPOSED (050, 051) | 015, 050, 051, 079 |
+| Memory Access Crossbar | Arbitration, QoS, decode and protection toward memory | SELECTED (078); PROPOSED (049) | 049, 078 |
+| AXI fabric bridge (AXI-0 to AXI-3) | C910 route to peripherals | SELECTED (067, 071, 081) | 067, 071, 081 |
 | AXI-to-APB-0 and APB-1 | Peripheral register access | SELECTED (016); PROPOSED (052) | 016, 052 |
-| DDR4 controller and PHY | Primary system memory | SELECTED (002); PROPOSED (030, 064, 076, 077) | 002, 030, 064, 076, 077 |
+| DDR4 controller and PHY | Primary system memory | SELECTED (002, 030, 076, 077); PROPOSED (064) | 002, 030, 064, 076, 077 |
 | OSPI PSRAM and OSPI NOR controllers | Secondary memory and boot medium | SELECTED (003, 004); PROPOSED (065) | 003, 004, 065 |
 | DMA controller | Bulk data movement with 32 channels; proposed shared peripheral and I2S DMA master on AXI-3 | SELECTED (092); PROPOSED (093 to 100) | 092 to 100 |
 | Camera inputs and ISP | Image capture and processing | PROPOSED | 042 to 045 |
@@ -82,7 +83,7 @@ This table accompanies Figure 1. It states what the registers say about each ext
 
 | Interface | Planned description | Label | NX-REQ | NX-INT |
 |---|---|---|---|---|
-| DDR4 | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the 40-bit application address width, confirmed by the owner | SELECTED (002, 029); PROPOSED (064, 076) | 002, 029, 064, 076 | 020 |
+| DDR4 | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the 40-bit application address width, confirmed by the owner | SELECTED (002, 029, 076); PROPOSED (064) | 002, 029, 064, 076 | 020 |
 | Octal SPI PSRAM | Secondary memory device; controller target 200 to 400 MHz; protocol, mode and capacity not selected | SELECTED (003); PROPOSED (065) | 003, 065 | 021 |
 | OSPI NOR | Primary boot medium; device and controller details not selected | SELECTED | 004 | 022 |
 | Ethernet | Two ports, 10/100/1000 Mbps over RGMII with external PHYs; EtherCAT MainDevice operation | SELECTED (008); PROPOSED (040, 041) | 008, 040, 041 | 009 |
@@ -105,17 +106,18 @@ This table accompanies Figure 1. It states what the registers say about each ext
 | Application AXI fabrics | Four fabrics | SELECTED | 015 |
 | Fabric roles and widths | AXI-0 main, CPU, memory at 128 bits; AXI-1 AI and vision at 256 bits; AXI-2 multimedia and high-speed IO at 128 bits; AXI-3 peripherals, control and DMA at 64 bits; 400 to 600 MHz each | PROPOSED | 050 |
 | Master placement | C910 on AXI-0; ISP, NPU and camera DMA on AXI-1; display, Ethernet and storage DMA on AXI-2; peripheral and I2S DMA on AXI-3, served by the DMA controller | PROPOSED | 051, 093 |
-| Fabric behaviour | AXI4, address decode, DECERR for an unmapped address, AxQOS carried | PROPOSED | 079 |
+| Master-to-memory connectivity | Which master reaches which region of the application address map, held in architecture/maps/connectivity.yaml and checked structurally; no master reaches DDR4 except through the crossbar, and only the C910 and the DMA controller reach the peripheral register space | PROPOSED | 120 |
+| Fabric behaviour | AXI4, address decode, DECERR for an unmapped address, AxQOS carried | SELECTED | 079 |
 | Memory Access Crossbar | Separate crossbar with four fabric ingress ports: arbitration, QoS, address decode, access protection | PROPOSED | 049 |
-| Arbitration classes | Four classes in priority order: display; Ethernet DMA; C910; NPU and other DMA; no starvation of the lowest | PROPOSED | 078 |
-| AXI-to-APB interconnects | Two; 32-bit APB (APB4) at a 200 to 250 MHz target | SELECTED (016); PROPOSED (052, 081) | 016, 052, 081 |
+| Arbitration classes | Four classes in priority order: display; Ethernet DMA; C910; NPU and other DMA; no starvation of the lowest | SELECTED | 078 |
+| AXI-to-APB interconnects | Two; 32-bit APB (APB4) at a 200 to 250 MHz target | SELECTED (016, 081); PROPOSED (052) | 016, 052, 081 |
 | C910 route to peripherals | C910, AXI-0, AXI fabric bridge, AXI-3 decode, AXI-to-APB | SELECTED | 067, 071 |
 | C910-to-APB behaviour | DECERR unmapped, SLVERR denied or APB error; default-deny address windows checked before issue; strongly ordered, one access per target; single-beat only; in-flight access completes SLVERR at reset; C910 only | SELECTED | 068, 070, 072 to 075 |
-| C910-to-APB timeout | A hung target returns SLVERR; a timeout of 1024 bridge-clock cycles is proposed | SELECTED (069); PROPOSED (080) | 069, 080 |
+| C910-to-APB timeout | A hung target returns SLVERR; a timeout of 1024 bridge-clock cycles is selected | SELECTED (069, 080) | 069, 080 |
 | DDR4 primary memory | DDR4 | SELECTED | 002 |
-| DDR4 interface | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the 40-bit application address width, confirmed by the owner | SELECTED (029); PROPOSED (064, 076) | 029, 064, 076 |
-| DDR4 ingress | One 256-bit AXI4 port at 500 MHz from the crossbar | PROPOSED | 030 |
-| DDR4 planning figures | Theoretical peak 12.8 GB/s; 70% sustained fraction (8.96 GB/s); budgets display 0.664, Ethernet 0.500, optional camera 0.049, C910 2.0, NPU 5.0, headroom 0.747 GB/s. Sizing figures, not measurements | PROPOSED | 077 |
+| DDR4 interface | One x32 data channel at DDR4-3200 (3200 MT/s); capacity chosen at board level up to the 64 GiB window, subject to the 40-bit application address width, confirmed by the owner | SELECTED (029, 076); PROPOSED (064) | 029, 064, 076 |
+| DDR4 ingress | One 256-bit AXI4 port at 500 MHz from the crossbar | SELECTED | 030 |
+| DDR4 planning figures | Theoretical peak 12.8 GB/s; 70% sustained fraction (8.96 GB/s); budgets display 0.664, Ethernet 0.500, optional camera 0.049, C910 2.0, NPU 5.0, headroom 0.747 GB/s. Sizing figures, not measurements | SELECTED | 077 |
 | Secondary memory | Octal SPI PSRAM; controller target 200 to 400 MHz | SELECTED (003); PROPOSED (065) | 003, 065 |
 | Boot medium | OSPI NOR | SELECTED | 004 |
 | Application address width | 40 bits | SELECTED | 101 |
@@ -181,7 +183,7 @@ The internal connectivity is shown in Appendix A (Figure 2). The interface regis
 | Transfer modes | Burst transfers with a configurable burst length and a limit on consecutive bursts, no bus locking; one beat per arbitration; background transfers for the lowest priority level | PROPOSED | 095 |
 | Addressing and width | Increment, decrement and fixed addressing; 8, 16, 32 and 64-bit data widths within the 64-bit AXI-3 | PROPOSED | 096 |
 | Scatter-gather | Chains of descriptors held in memory | PROPOSED | 097 |
-| Arbitration | Configurable per-channel priority, round-robin among equal priorities, the "NPU and other DMA" QoS class on its AXI traffic | PROPOSED | 098, 078 |
+| Arbitration | Configurable per-channel priority, round-robin among equal priorities, the "NPU and other DMA" QoS class on its AXI traffic | SELECTED (078); PROPOSED (098) | 098, 078 |
 | Completion and errors | An interrupt on completion or error only; a DECERR or SLVERR response stops the channel and is reported per channel; interrupt routing follows the interrupt architecture | PROPOSED (099); OPEN (057) | 057, 099 |
 | Low-power operation | Proposed requirement: configured transfers may continue while the C910 cluster is in a low-power state; the DMA power domain and wake-up conditions are not defined | PROPOSED (060, 100); OPEN (031) | 031, 060, 100 |
 | Request mapping and descriptors | Peripheral request mapping, descriptor format, coherency, DMA power domain and wake-up not yet defined; no NX-REQ exists, tracked by NX-ARCH-OI-035 | OPEN | none (NX-ARCH-OI-035) |
@@ -241,10 +243,11 @@ Peripheral rows select the counts only (NX-DEC-020); capabilities, timing and pi
 | Debug lifecycle and authorisation (NX-ARCH-OI-020, no requirement yet) | OPEN | none (NX-ARCH-OI-020) |
 | Privilege levels, lock states, security interrupt and fault response of the secure space (NX-ARCH-OI-021, no requirement yet) | OPEN | none (NX-ARCH-OI-021) |
 | Bit fields of every register (NX-ARCH-OI-039, no requirement yet) | OPEN | none (NX-ARCH-OI-039) |
+| Attachment points of System SRAM, OSPI NOR and OSPI PSRAM on the fabrics and any C910 path to the AXI-1 local memories (NX-ARCH-OI-040, no requirement yet) | OPEN | none (NX-ARCH-OI-040) |
 | DMA request mapping, descriptor format, coherency, power domain and wake-up (NX-ARCH-OI-035, no requirement yet) | OPEN | none (NX-ARCH-OI-035) |
 | C910 CPU selection | PROPOSED | 001 |
-| DDR4 ingress port, width and bandwidth sizing | PROPOSED | 030, 064, 076, 077 |
-| Every frequency, TOPS and power figure is a target or planning figure only | PROPOSED | 046, 059, 066, 077 |
+| DDR4 ingress port, width and bandwidth sizing | SELECTED (030, 076, 077); PROPOSED (064) | 030, 064, 076, 077 |
+| Every frequency, TOPS and power figure is a target or planning figure only | SELECTED (077); PROPOSED (046, 059, 066) | 046, 059, 066, 077 |
 | RTL methodology defaults and automated RTL compliance checks (no checker exists) | PROPOSED | 090, 091 |
 
 **Design baseline.** All Kritva Nexus design RTL is required to follow the RTL Design Standard KNX-RTL-STD-001 (approved as NX-DEC-023; NX-REQ-082 to 089 SELECTED). Its methodology defaults and automated compliance checks are PROPOSED (NX-REQ-090, 091). No checker, library or RTL exists yet, so no compliance result exists.
@@ -282,6 +285,6 @@ This table shows where each group of requirements is restated. NX-REQ-027 is SUP
 | 008, 019 to 026, 040, 041 | 1, 2, 3, 5, 8 |
 | 009 to 014, 032 to 039 | 1, 2, 9 |
 | 017, 018, 031, 057 to 063, 066 | 1, 2, 3, 5, 9, 10 |
-| 028, 029, 053, 054, 101 to 119 | 1, 4, 5, 9, 10 |
+| 028, 029, 053, 054, 101 to 120 | 1, 4, 5, 9, 10 |
 | 082 to 091 | 1, 10 |
 | 092 to 100 | 1, 2, 5, 7, 10 |

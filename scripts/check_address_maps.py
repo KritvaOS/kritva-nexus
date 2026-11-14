@@ -35,6 +35,14 @@ Implemented checks, and nothing more:
      the smallest window of the blocks that use it; every peripheral window and every security peripheral
      region has one block entry with an existing layout (or layout none with the label OPEN); the identifiers
      exist; and the register tables of section 2.2 of ADDRESS_MAP.md agree row by row.
+  10. architecture/maps/connectivity.yaml (NX-REQ-120): fabrics, masters, region attachments and links have their
+     keys, labels and identifiers; each master sits on an existing fabric; each link names an existing master and a
+     region of the application map (never Reserved), appears once and asks for read and write access that the
+     region permissions allow; every region other than Reserved has one attachment (a fabric, crossbar, apb or open);
+     DDR4 is attached to the crossbar and only DDR4 is; the peripheral register space is attached to apb and is
+     linked only from masters on AXI-0 or AXI-3; a link to a region attached to a fabric comes only from a master on
+     that fabric; every master has a link; the identifiers exist; and the four tables of section 7 of
+     INTERCONNECT_SPECIFICATION.md agree row by row.
 A PASS does not show that a base, size or attribute is right, that the width fits the C910 or any master,
 or that anything is approved; that is review work (NX-REQ-029, NX-ARCH-GAP-003). Exit 0 if it passes, 1 if not.
 Stdlib only.
@@ -47,6 +55,11 @@ from pathlib import Path
 MAPS = {"application": "architecture/maps/application_map.yaml", "secure": "architecture/maps/secure_map.yaml"}
 PERIPH = "architecture/maps/peripheral_windows.yaml"
 LAYOUTS = "architecture/maps/register_layouts.yaml"
+CONN = "architecture/maps/connectivity.yaml"
+SPEC = "architecture/INTERCONNECT_SPECIFICATION.md"
+CONN_KEYS = ["space", "document", "version", "connectivity_label", "connectivity_records", "fabrics", "masters",
+             "attachments", "links"]
+APB_FABRICS = {"AXI-0", "AXI-3"}
 LAYOUT_KEYS = ["space", "document", "version", "layout_label", "layout_records", "register_width_bits", "header_size",
                "common_registers", "layouts", "registers", "blocks"]
 REG_KEYS = ["name", "offset", "access", "note"]
@@ -279,6 +292,107 @@ def check_layouts(maps, rl, errs):
     return True
 
 
+def conn_tables(cn, app):
+    regs = [r["name"] for r in app["regions"] if r["class"] != "reserved"]
+    link = {(l["master"], l["region"]): l["access"] for l in cn["links"]}
+    fab = [[f["name"], str(f["width_bits"]), f["role"], f["label"], ids_text(f["records"])] for f in cn["fabrics"]]
+    mas = [[m["name"], m["fabric"], m["label"], ids_text(m["records"])] for m in cn["masters"]]
+    att = [[a["region"], a["attached_to"], a["label"], ids_text(a["records"])] for a in cn["attachments"]]
+    mat = [[m["name"], m["fabric"]] + [link.get((m["name"], r), "-") for r in regs] for m in cn["masters"]]
+    return regs, fab, mas, att, mat
+
+
+def check_connectivity(app, cn, errs):
+    w = "connectivity"
+    for k in CONN_KEYS:
+        if k not in cn:
+            errs.append(f"{w}: missing key {k}")
+    if cn.get("space") != "connectivity":
+        errs.append(f"{w}: space is {cn.get('space')!r}, expected 'connectivity'")
+    if cn.get("connectivity_label") not in LABELS:
+        errs.append(f"{w}: connectivity_label must be one of {sorted(LABELS)}")
+    perms = {r["name"]: r for r in app["regions"]}
+    fabrics, masters, attach = {}, {}, {}
+
+    def common(item, what, name, keys):
+        miss = [k for k in keys if k not in item]
+        if miss:
+            errs.append(f"{w}: {what} {name}: missing {', '.join(miss)}")
+            return False
+        if item["label"] not in LABELS:
+            errs.append(f"{w}: {what} {name}: label {item['label']!r} is not SELECTED, PROPOSED or OPEN")
+        recs = item["records"]
+        if not isinstance(recs, list) or not recs or not all(RECORD_RE.match(str(x)) for x in recs):
+            errs.append(f"{w}: {what} {name}: records must be a non-empty list of NX identifiers")
+        return True
+
+    for f in cn.get("fabrics") or []:
+        n = f.get("name", "?")
+        if common(f, "fabric", n, ["name", "width_bits", "role", "label", "records"]):
+            if n in fabrics:
+                errs.append(f"{w}: duplicate fabric {n}")
+            if not isinstance(f["width_bits"], int) or f["width_bits"] <= 0 or f["width_bits"] & (f["width_bits"] - 1):
+                errs.append(f"{w}: fabric {n}: width_bits must be a power of two")
+            fabrics[n] = f
+    for m in cn.get("masters") or []:
+        n = m.get("name", "?")
+        if common(m, "master", n, ["name", "fabric", "label", "records"]):
+            if n in masters:
+                errs.append(f"{w}: duplicate master {n}")
+            if m["fabric"] not in fabrics:
+                errs.append(f"{w}: master {n}: fabric {m['fabric']!r} is not defined")
+            masters[n] = m
+    for a in cn.get("attachments") or []:
+        n = a.get("region", "?")
+        if common(a, "attachment", n, ["region", "attached_to", "label", "records"]):
+            if n in attach:
+                errs.append(f"{w}: duplicate attachment for {n}")
+            if n not in perms or perms[n]["class"] == "reserved":
+                errs.append(f"{w}: attachment {n}: not a non-reserved region of the application map")
+            if a["attached_to"] not in set(fabrics) | {"crossbar", "apb", "open"}:
+                errs.append(f"{w}: attachment {n}: attached_to {a['attached_to']!r} is not a fabric, crossbar, apb or open")
+            if (a["attached_to"] == "crossbar") != (n == "DDR4"):
+                errs.append(f"{w}: attachment {n}: DDR4, and only DDR4, is attached to the crossbar")
+            if (a["attached_to"] == "apb") != (n == "Peripheral register space"):
+                errs.append(f"{w}: attachment {n}: the peripheral register space, and only it, is attached to apb")
+            attach[n] = a
+    for r in app["regions"]:
+        if r["class"] != "reserved" and r["name"] not in attach:
+            errs.append(f"{w}: region {r['name']} has no attachment")
+    seen, used = set(), set()
+    for l in cn.get("links") or []:
+        n = f"{l.get('master', '?')} to {l.get('region', '?')}"
+        if not common(l, "link", n, ["master", "region", "access", "label", "records"]):
+            continue
+        if n in seen:
+            errs.append(f"{w}: duplicate link {n}")
+        seen.add(n)
+        mm = masters.get(l["master"])
+        if mm is None:
+            errs.append(f"{w}: link {n}: master is not defined")
+            continue
+        used.add(l["master"])
+        rg = perms.get(l["region"])
+        if rg is None or rg["class"] == "reserved":
+            errs.append(f"{w}: link {n}: region is not a non-reserved region of the application map")
+            continue
+        if l["access"] not in ("r", "w", "rw"):
+            errs.append(f"{w}: link {n}: access must be r, w or rw")
+        else:
+            for ch, idx in (("r", 0), ("w", 1)):
+                if ch in l["access"] and rg["perm"][idx] != ch:
+                    errs.append(f"{w}: link {n}: access {l['access']} is not allowed by the region permissions {rg['perm']}")
+        att = attach.get(l["region"], {}).get("attached_to")
+        if att in fabrics and att != mm["fabric"]:
+            errs.append(f"{w}: link {n}: the region is attached to {att} and the master is on {mm['fabric']}")
+        if att == "apb" and mm["fabric"] not in APB_FABRICS:
+            errs.append(f"{w}: link {n}: only masters on AXI-0 or AXI-3 reach the peripheral register space")
+    for n in masters:
+        if n not in used:
+            errs.append(f"{w}: master {n} has no link")
+    return True
+
+
 def layout_block_rows(rl):
     return [[b["name"], b["space"], b["layout"], b["label"], ids_text(b["records"])] for b in rl["blocks"]]
 
@@ -482,6 +596,10 @@ def check_records(maps, root, errs):
             used |= set(r.get("records", []))
         if space == "secure":
             used |= set(m.get("attributes_records", []))
+        if space == "connectivity":
+            used |= set(m.get("connectivity_records", []))
+            for r in m.get("fabrics", []) + m.get("masters", []) + m.get("attachments", []) + m.get("links", []):
+                used |= set(r.get("records", []))
         if space == "layouts":
             used |= set(m.get("layout_records", []))
             for r in m.get("layouts", []) + m.get("blocks", []):
@@ -539,6 +657,25 @@ def check_tables(maps, root, errs):
             for g, w_ in zip(got, want):
                 if g != w_:
                     errs.append(f"ADDRESS_MAP.md: layout {name} row {w_[0]!r} differs from the file: table {g} / file {w_}")
+    cn = maps.get("connectivity")
+    spec = root / SPEC
+    if cn:
+        if not spec.exists():
+            errs.append(f"{SPEC} not found")
+        else:
+            sl = spec.read_text(encoding="utf-8").splitlines()
+            regs, fab, mas, att, mat = conn_tables(cn, maps["application"])
+            for head, want in (("### 7.1 Fabrics", fab), ("### 7.2 Masters", mas), ("### 7.3 Region attachments", att),
+                               ("### 7.4 Connectivity matrix", mat)):
+                got = table_after(sl, head)
+                if got is None:
+                    errs.append(f"{SPEC}: no table under '{head}'")
+                    continue
+                if len(got) != len(want):
+                    errs.append(f"{SPEC}: table '{head}' has {len(got)} rows, the file has {len(want)}")
+                for g, w_ in zip(got, want):
+                    if g != w_:
+                        errs.append(f"{SPEC}: '{head}' row {w_[0]!r} differs from the file: table {g} / file {w_}")
     pw = maps.get("peripheral")
     if pw:
         heading = "## 2.1 Peripheral register windows"
@@ -580,6 +717,13 @@ def run(root):
         rl = parse(lp.read_text(encoding="utf-8"), errs, LAYOUTS)
         if check_layouts(maps, rl, errs):
             maps["layouts"] = rl
+    cp = root / CONN
+    if not cp.exists():
+        errs.append(f"{CONN} not found")
+    elif "application" in maps:
+        cn = parse(cp.read_text(encoding="utf-8"), errs, CONN)
+        if check_connectivity(maps["application"], cn, errs):
+            maps["connectivity"] = cn
     if "application" in maps and "secure" in maps:
         check_crossings(maps["application"], maps["secure"], errs)
         check_records(maps, root, errs)
@@ -596,7 +740,7 @@ def main():
     if errs:
         print(f"check_address_maps: {len(errs)} problem(s)")
         return 1
-    kind = {"peripheral": ("windows", "windows"), "layouts": ("blocks", "blocks")}
+    kind = {"peripheral": ("windows", "windows"), "layouts": ("blocks", "blocks"), "connectivity": ("links", "links")}
     print("check_address_maps ok: " + ", ".join(
         f"{k} {len(v[kind[k][0]]) if k in kind else len(v['regions'])} {kind[k][1] if k in kind else 'regions'}"
         for k, v in maps.items()))
