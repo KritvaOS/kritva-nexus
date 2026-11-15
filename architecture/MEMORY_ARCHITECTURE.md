@@ -8,7 +8,7 @@
 | Status | DRAFT (parts 1 and 3 of KOS-NEXUS-008: memory roles, address width, access policy and the domain boundary; the address maps are in ADDRESS_MAP.md; the owner approved the proposals in NX-DEC-030; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.11.0-draft |
+| Version | 0.12.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-008; NX-M1 |
@@ -84,7 +84,7 @@ The widths in the table below are the owner's statement, not values read from th
 | Storage DMA | AXI-2 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
 | DMA controller (peripheral and I2S DMA) | AXI-3 | 40 bits, owner confirmation (NX-DEC-031) | Owner statement of 2026-11-13; no source recorded | Not yet recorded | SELECTED |
 
-The master placement is PROPOSED (NX-REQ-051). The DMA controller is NX-REQ-092 (SELECTED) with placement PROPOSED (NX-REQ-093).
+The master placement is SELECTED (NX-REQ-051, NX-DEC-036). The DMA controller is NX-REQ-092 (SELECTED) with placement SELECTED (NX-REQ-093, NX-DEC-036). System SRAM is attached to AXI-0 and the OSPI controllers to AXI-3 (NX-DEC-036, interconnect specification section 7).
 
 ## 5. Address spaces and domain crossings
 
@@ -199,3 +199,4 @@ The secure address space has no cache. The security ROM and the OSPI NOR secure 
 | 0.9.0-draft | 2026-11-13 | NX-DEC-033: the bridge attachment, the mailbox layout, messages, validation rule and interrupts, the peripheral register windows and the application interrupt controller baseline are SELECTED |
 | 0.10.0-draft | 2026-11-13 | Section 6.4: the access attributes of the secure space are PROPOSED (NX-REQ-119) |
 | 0.11.0-draft | 2026-11-13 | NX-DEC-034: the secure width and the secure space attributes are SELECTED |
+| 0.12.0-draft | 2026-11-15 | NX-DEC-036: the master placement and the DMA controller placement are SELECTED; the attachment of System SRAM (AXI-0) and the OSPI controllers (AXI-3) is stated |

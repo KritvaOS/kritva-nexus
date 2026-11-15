@@ -240,7 +240,7 @@ class AddressMapChecker(unittest.TestCase):
         self.has("fabric 'AXI-9' is not defined")
 
     def test_connectivity_region_without_attachment(self):
-        self.t.edit("architecture/maps/connectivity.yaml", "  - region: System SRAM\n    attached_to: open\n    label: PROPOSED\n    records: [NX-REQ-120]\n", "")
+        self.t.edit("architecture/maps/connectivity.yaml", "  - region: System SRAM\n    attached_to: AXI-0\n    label: SELECTED\n    records: [NX-REQ-120]\n", "")
         self.has("region System SRAM has no attachment")
 
     def test_connectivity_ddr4_not_on_crossbar(self):
@@ -257,14 +257,14 @@ class AddressMapChecker(unittest.TestCase):
 
     def test_connectivity_link_on_wrong_fabric(self):
         self.t.edit("architecture/maps/connectivity.yaml", "region: Camera frame pool\n    attached_to: AXI-1", "region: Camera frame pool\n    attached_to: AXI-2")
-        self.has("the region is attached to AXI-2 and the master is on AXI-1")
+        self.has("the region is attached to AXI-2 and the master is on AXI-1, and no bridge from AXI-1 to AXI-2 is listed")
 
     def test_connectivity_apb_link_from_wrong_fabric(self):
         self.t.edit("architecture/maps/connectivity.yaml", "master: ISP\n    region: Camera frame pool\n    access: r", "master: ISP\n    region: Peripheral register space\n    access: rw")
         self.has("only masters on AXI-0 or AXI-3 reach the peripheral register space")
 
     def test_connectivity_matrix_table_drift(self):
-        self.t.edit("architecture/INTERCONNECT_SPECIFICATION.md", "| C910 cluster | AXI-0 | rw | - |", "| C910 cluster | AXI-0 | r | - |")
+        self.t.edit("architecture/INTERCONNECT_SPECIFICATION.md", "| C910 cluster | AXI-0 | rw | rw |", "| C910 cluster | AXI-0 | r | rw |")
         self.has("row 'C910 cluster' differs from the file")
 
     def test_connectivity_fabric_table_drift(self):
@@ -274,6 +274,26 @@ class AddressMapChecker(unittest.TestCase):
     def test_connectivity_unknown_record(self):
         self.t.edit("architecture/maps/connectivity.yaml", "connectivity_records: [NX-REQ-120]", "connectivity_records: [NX-REQ-998]")
         self.has("NX-REQ-998 is not in the requirements register")
+
+    def test_connectivity_missing_bridge(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "  - from: AXI-0\n    to: AXI-1\n    label: SELECTED\n    records: [NX-REQ-121]\n", "")
+        self.has("no bridge from AXI-0 to AXI-1 is listed")
+
+    def test_connectivity_bridge_unknown_fabric(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "  - from: AXI-0\n    to: AXI-1\n", "  - from: AXI-0\n    to: AXI-9\n")
+        self.has("both ends must be defined fabrics")
+
+    def test_connectivity_bridge_to_itself(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "  - from: AXI-0\n    to: AXI-1\n", "  - from: AXI-1\n    to: AXI-1\n")
+        self.has("the two ends must differ")
+
+    def test_connectivity_duplicate_bridge(self):
+        self.t.edit("architecture/maps/connectivity.yaml", "  - from: AXI-3\n    to: AXI-0\n", "  - from: AXI-0\n    to: AXI-3\n")
+        self.has("duplicate bridge AXI-0 to AXI-3")
+
+    def test_connectivity_bridge_table_drift(self):
+        self.t.edit("architecture/INTERCONNECT_SPECIFICATION.md", "| AXI-3 | AXI-0 | PROPOSED | 122 |", "| AXI-3 | AXI-0 | SELECTED | 122 |")
+        self.has("row 'AXI-3' differs from the file")
 
 
 class Parser(unittest.TestCase):

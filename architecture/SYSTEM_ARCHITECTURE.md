@@ -8,7 +8,7 @@
 | Status | DRAFT (partial; not reviewed or approved) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.23.0-draft |
+| Version | 0.24.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-006; NX-M1 |
@@ -44,7 +44,7 @@ External interfaces named in the register: DDR4 (SELECTED, NX-DEC-001), Octal SP
 | Domain | Contents | Label | Records | A0 draft |
 |---|---|---|---|---|
 | Application CPU | Xuantie C910 direction; RV64 quad-core cluster; C910 DVFS | PROPOSED CPU (CPU IP and configuration); SELECTED DVFS | NX-REQ-001, 055, 056; NX-DEC-018 (PROPOSED); NX-DEC-016 | Section 2 |
-| Application interconnect | Four AXI fabrics, Memory Access Crossbar, two AXI-to-APB interconnects, application address map | SELECTED counts, C910-to-APB route and behaviour; PROPOSED roles, widths and map | NX-DEC-014, NX-DEC-015, NX-DEC-021, NX-DEC-022; NX-REQ-049 to 053, 067 to 075 | Section 9 |
+| Application interconnect | Four AXI fabrics, Memory Access Crossbar, two AXI-to-APB interconnects, application address map | SELECTED counts, roles, widths, crossbar, C910-to-APB route and behaviour, connectivity; the address map is SELECTED (NX-DEC-030); PROPOSED AXI-3 to AXI-0 bridge | NX-DEC-014, NX-DEC-015, NX-DEC-021, NX-DEC-022, NX-DEC-036; NX-REQ-049 to 053, 067 to 075, 120 to 122 | Section 9 |
 | Memory | DDR4, Octal SPI PSRAM, OSPI NOR boot | SELECTED media, DDR4 ingress and arbitration; PROPOSED controller targets | NX-DEC-001 to 003, NX-DEC-035; NX-REQ-030, 064, 065, 076 to 078 | Section 4 |
 | AI and vision | Camera inputs, 6 MiB frame pool, ISP, NPU, NPU DVFS | SELECTED frame-pool capacity and NPU DVFS; PROPOSED the rest | NX-DEC-004, NX-DEC-017; NX-REQ-042 to 047 | Section 3 |
 | Multimedia and connectivity | 720p60 parallel DPI display, three composition layers, two Ethernet MACs, EtherCAT MainDevice, peripherals | SELECTED display mode, layers, MAC count, peripheral counts; PROPOSED EtherCAT, RGMII, compositor | NX-DEC-005 to 007, NX-DEC-020; NX-REQ-040, 041, 048 | Sections 5, 6 and 8 |
@@ -69,7 +69,7 @@ The C910 is a direction, not a selected IP decision. A substitute CPU used for F
 
 ## 6. Application interconnect
 
-The architecture has four application AXI fabrics (SELECTED, NX-REQ-015, NX-DEC-014) and two AXI-to-APB interconnects (SELECTED, NX-REQ-016, NX-DEC-015). The partition below is PROPOSED (NX-REQ-050, NX-REQ-051); widths and the 400 to 600 MHz range are proposals, and the theoretical bandwidth figures in the A0 draft are interface arithmetic, not sustained throughput.
+The architecture has four application AXI fabrics (SELECTED, NX-REQ-015, NX-DEC-014) and two AXI-to-APB interconnects (SELECTED, NX-REQ-016, NX-DEC-015). The partition below is SELECTED (NX-REQ-050, NX-REQ-051, NX-DEC-036); the widths and the 400 to 600 MHz range are sizing choices, not measurements, and the theoretical bandwidth figures in the A0 draft are interface arithmetic, not sustained throughput.
 
 | Fabric | Role | Proposed width | Proposed masters |
 |---|---|---|---|
@@ -78,18 +78,18 @@ The architecture has four application AXI fabrics (SELECTED, NX-REQ-015, NX-DEC-
 | AXI-2 | Multimedia and high-speed IO | 128-bit | Display, Ethernet and storage DMA |
 | AXI-3 | General peripherals, control and DMA | 64-bit | DMA controller (peripheral and I2S DMA) |
 
-A separate Memory Access Crossbar with four fabric ingress ports is PROPOSED (NX-REQ-049) to avoid serialising memory access through AXI-0; the one 256-bit AXI4 port from the crossbar to the DDR4 controller, derived for a x32 DDR4-3200 interface, is SELECTED (NX-REQ-030, NX-REQ-076 to NX-REQ-078, NX-DEC-035; NX-ARCH-GAP-004 is closed), and the sizing assumptions are changed only by a new decision record. The masters and the regions they reach are held in the connectivity matrix, which is PROPOSED (NX-REQ-120, interconnect specification section 7). The two AXI-to-APB interconnects are proposed at 32-bit APB data width and 200 to 250 MHz (NX-REQ-052).
+A separate Memory Access Crossbar with four fabric ingress ports is SELECTED (NX-REQ-049, NX-DEC-036) to avoid serialising memory access through AXI-0; the one 256-bit AXI4 port from the crossbar to the DDR4 controller, derived for a x32 DDR4-3200 interface, is SELECTED (NX-REQ-030, NX-REQ-076 to NX-REQ-078, NX-DEC-035; NX-ARCH-GAP-004 is closed), and the sizing assumptions are changed only by a new decision record. The masters, the regions they reach and the fabric bridges between the fabrics are held in the connectivity matrix, which is SELECTED (NX-REQ-120, NX-REQ-121, NX-DEC-036; interconnect specification section 7): the C910 reaches the AXI-1 local memories through an AXI-0 to AXI-1 bridge, System SRAM is on AXI-0 and the OSPI controllers are on AXI-3. The AXI-3 to AXI-0 bridge for System SRAM access from AXI-3 is PROPOSED (NX-REQ-122), and the behaviour of memory accesses through the bridges is OPEN (NX-ARCH-OI-041). The two AXI-to-APB interconnects use a 32-bit APB data width at 200 to 250 MHz (SELECTED, NX-REQ-052).
 
 The route from the C910 to the APB peripherals is SELECTED (NX-REQ-067, NX-DEC-021): the C910 reaches APB-0 and APB-1 through AXI-0, an AXI fabric bridge from AXI-0 to AXI-3, AXI-3 decode and the AXI-to-APB interconnects. The behaviour of the path (error response, timeout, masters, bridge structure, access control, ordering, bursts and reset) is also SELECTED (NX-REQ-068 to NX-REQ-075, NX-DEC-022) and is held in the interconnect specification; NX-ARCH-GAP-001 is closed. The timeout value of 1024 bridge-clock cycles and the bridge buffering limits are SELECTED (NX-REQ-080, NX-REQ-081, NX-DEC-035; NX-ARCH-OI-033 and NX-ARCH-OI-034 are closed). The application address map is PROPOSED (NX-REQ-053) and is held by KOS-NEXUS-008, not copied here. Its apertures are not memory capacities: the 16 MiB frame-pool aperture is not the owner-selected 6 MiB capacity, and the DDR4 window does not select a DDR4 device size. Cacheability, coherency, security attributes, permissions and IOMMU needs are OPEN.
 
 ### DMA controller
 
-A general-purpose DMA controller with 32 independent channels is SELECTED (NX-REQ-092, NX-DEC-025). Its placement and features are PROPOSED (NX-REQ-093 to NX-REQ-100); the owner's feature list is adapted to AXI terms, as listed in NX-DEC-025.
+A general-purpose DMA controller with 32 independent channels is SELECTED (NX-REQ-092, NX-DEC-025). Its placement is SELECTED (NX-REQ-093, NX-DEC-036) and its features are PROPOSED (NX-REQ-094 to NX-REQ-100); the owner's feature list is adapted to AXI terms, as listed in NX-DEC-025.
 
 | Item | Statement | Label | Records |
 |---|---|---|---|
 | Controller | A general-purpose DMA controller with 32 independent channels offloads bulk data movement from the C910. | SELECTED | NX-REQ-092, NX-DEC-025 |
-| Placement | The controller is the peripheral and I2S DMA master on AXI-3 and its registers are reached through the AXI-to-APB interconnects; the camera, display, Ethernet and storage DMA masters stay on their own fabrics. | PROPOSED | NX-REQ-093 |
+| Placement | The controller is the peripheral and I2S DMA master on AXI-3 and its registers are reached through the AXI-to-APB interconnects; the camera, display, Ethernet and storage DMA masters stay on their own fabrics. | SELECTED | NX-REQ-093 |
 | Transfer types | Memory-to-memory, memory-to-peripheral, peripheral-to-memory and peripheral-to-peripheral. | PROPOSED | NX-REQ-094 |
 | Transfer modes | Burst transfers with a configurable length and a limit on consecutive bursts, no bus locking; one-beat-per-arbitration transfers; background transfers at the lowest priority level. | PROPOSED | NX-REQ-095 |
 | Addressing and width | Increment, decrement and fixed addressing; 8, 16, 32 and 64-bit data widths within the 64-bit AXI-3. | PROPOSED | NX-REQ-096 |
@@ -108,7 +108,7 @@ Memory-to-memory copies cross AXI-3 (64-bit) and the Memory Access Crossbar; the
 | Octal SPI PSRAM | Secondary memory | SELECTED role | NX-REQ-003, NX-DEC-002 |
 | OSPI NOR | Primary boot medium: boot firmware, bootloader and recovery, configuration and authenticated updates | SELECTED role | NX-REQ-004, NX-DEC-003 |
 
-The NOR and the PSRAM are separate devices with separate controllers. The operating targets are PROPOSED: DDR4-3200 (NX-REQ-064) and a PSRAM controller at 200 to 400 MHz (NX-REQ-065). DDR4 is proposed as one x32 channel with capacity chosen at board level (NX-REQ-076); the PSRAM protocol, mode and capacity, and the NOR device are not selected. The 200 MHz OSPI x8 figure in the A0 draft is an example calculation, not a requirement. The secure boot path must reach the NOR before the application fabrics and the C910 are active (PROPOSED, NX-REQ-038). The DDR4 ingress is one 256-bit port and memory arbitration uses four QoS classes with bandwidth budgets, all PROPOSED (NX-REQ-030, NX-REQ-077, NX-REQ-078).
+The NOR and the PSRAM are separate devices with separate controllers. The DDR4 target is SELECTED (DDR4-3200, NX-REQ-064, NX-DEC-036) and the PSRAM controller target of 200 to 400 MHz is PROPOSED (NX-REQ-065). DDR4 is one x32 channel with capacity chosen at board level (SELECTED, NX-REQ-076, NX-DEC-035); the PSRAM protocol, mode and capacity, and the NOR device are not selected. The 200 MHz OSPI x8 figure in the A0 draft is an example calculation, not a requirement. The secure boot path must reach the NOR before the application fabrics and the C910 are active (PROPOSED, NX-REQ-038). The DDR4 ingress is one 256-bit port and memory arbitration uses four QoS classes with bandwidth budgets, all SELECTED (NX-REQ-030, NX-REQ-077, NX-REQ-078, NX-DEC-035).
 
 ## 8. AI and vision
 
@@ -123,7 +123,7 @@ The NOR and the PSRAM are separate devices with separate controllers. The operat
 | Local memories | The path uses a camera frame pool, an ISP local SRAM and an NPU local SRAM, and its normal path does not need DDR intermediate storage. ISP and NPU SRAM sizes and organisation are not selected. | PROPOSED | NX-REQ-047 |
 | NPU DVFS | The clock and power subsystem supports DVFS for the NPU. | SELECTED | NX-REQ-018, NX-DEC-017 |
 
-On the application interconnect the ISP, NPU and camera DMA are proposed on AXI-1 (NX-REQ-051). Frame-pool, ISP and NPU local-memory transfers are not forced through DDR4, and DDR4 stays available for models, large activations and optional intermediates (the use of DDR for optional intermediates and recording is OPEN). Workload and power figures in the A0 draft are PROPOSED derived calculations, and no performance, power or area result exists for the AI and vision path. The SoC power target is PROPOSED (NX-REQ-066) and is held in the clock, power and reset section.
+On the application interconnect the ISP, NPU and camera DMA are on AXI-1 (SELECTED, NX-REQ-051, NX-DEC-036). Frame-pool, ISP and NPU local-memory transfers are not forced through DDR4, and DDR4 stays available for models, large activations and optional intermediates (the use of DDR for optional intermediates and recording is OPEN). Workload and power figures in the A0 draft are PROPOSED derived calculations, and no performance, power or area result exists for the AI and vision path. The SoC power target is PROPOSED (NX-REQ-066) and is held in the clock, power and reset section.
 
 ## 9. Multimedia and connectivity
 
@@ -137,7 +137,7 @@ On the application interconnect the ISP, NPU and camera DMA are proposed on AXI-
 | EtherCAT | Both MACs support EtherCAT MainDevice operation using raw Ethernet frames, and receive filtering does not reject EtherType 0x88A4. Hardware timestamping, redundancy and the stack are OPEN. | PROPOSED | NX-REQ-041 |
 | Peripherals | 16 PWM channels, 32 GPIO, four general-purpose timers, four UARTs, four I2C masters, one SPI master, one SPI slave and two I2S masters. Only the counts are selected. | SELECTED counts | NX-REQ-019 to NX-REQ-026, NX-DEC-020 |
 
-The display, Ethernet and storage DMA masters are proposed on AXI-2, and the peripheral and I2S DMA masters on AXI-3 (NX-REQ-051). The peripheral features (PWM resolution, GPIO interrupt behaviour, timer width, FIFO depths, speed modes, I2S rates and clocking), the pinmux and the package pin assignment are not selected; dedicated pins were assumed only for the initial counting. The pixel clock and timing totals, and the display and Ethernet traffic figures in the A0 draft, are PROPOSED derived calculations and not requirements. DRM/KMS integration, display DMA coherency and Ethernet DMA buffer coherency are OPEN.
+The display, Ethernet and storage DMA masters are on AXI-2, and the peripheral and I2S DMA masters on AXI-3 (SELECTED, NX-REQ-051, NX-DEC-036). The peripheral features (PWM resolution, GPIO interrupt behaviour, timer width, FIFO depths, speed modes, I2S rates and clocking), the pinmux and the package pin assignment are not selected; dedicated pins were assumed only for the initial counting. The pixel clock and timing totals, and the display and Ethernet traffic figures in the A0 draft, are PROPOSED derived calculations and not requirements. DRM/KMS integration, display DMA coherency and Ethernet DMA buffer coherency are OPEN.
 
 ## 10. Security
 
@@ -204,8 +204,8 @@ This register lists the interfaces between subsystems that the architecture depe
 |---|---|---|---|---|---|---|---|
 | NX-INT-001 | C910 AXI master to AXI-0 | C910, AXI-0 | PROPOSED | NX-REQ-056; NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-001 |
 | NX-INT-002 | C910 access to APB peripherals through AXI-0, an AXI fabric bridge to AXI-3 and the AXI-to-APB interconnects | C910, AXI-0, AXI-3, AXI-to-APB, APB-0 and APB-1 | SELECTED | NX-REQ-067 to NX-REQ-075; NX-DEC-021; NX-DEC-022; NX-ARCH-GAP-001 (closed) | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-033, NX-ARCH-OI-034 |
-| NX-INT-003 | Fabric ingress to the Memory Access Crossbar and the DDR4 controller | AXI-0 to AXI-3, Memory Access Crossbar, DDR4 controller | PROPOSED | NX-REQ-049; NX-REQ-030; NX-REQ-078; NX-ARCH-GAP-004 | KOS-NEXUS-007 | Dinesh | NX-ARCH-GAP-004, NX-ARCH-OI-005 |
-| NX-INT-004 | AI and vision masters on AXI-1 | ISP, NPU, camera DMA, AXI-1 | PROPOSED | NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-004 |
+| NX-INT-003 | Fabric ingress to the Memory Access Crossbar and the DDR4 controller | AXI-0 to AXI-3, Memory Access Crossbar, DDR4 controller | SELECTED | NX-REQ-049; NX-REQ-030; NX-REQ-078; NX-ARCH-GAP-004 | KOS-NEXUS-007 | Dinesh | NX-ARCH-GAP-004, NX-ARCH-OI-005 |
+| NX-INT-004 | AI and vision masters on AXI-1 | ISP, NPU, camera DMA, AXI-1 | SELECTED | NX-REQ-051 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-004 |
 | NX-INT-005 | Camera, frame pool, ISP local SRAM and NPU local SRAM paths that avoid DDR4 | Camera, ISP, NPU, local memories | PROPOSED | NX-REQ-047 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-007 |
 | NX-INT-006 | ISP to NPU data interface | ISP, NPU | OPEN | NX-REQ-045; NX-REQ-046 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-009 |
 | NX-INT-007 | Frame ownership and release between capture, ISP and consumers | Camera path, ISP, consumers | PROPOSED | NX-REQ-043; NX-REQ-044 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-011 |
@@ -221,7 +221,7 @@ This register lists the interfaces between subsystems that the architecture depe
 | NX-INT-017 | Clock distribution from the PLLs to the clock domains and the DVFS interfaces | PLLs, clock and power control, C910 and NPU | PROPOSED (DVFS SELECTED) | NX-REQ-017; NX-REQ-018; NX-REQ-058; NX-REQ-059 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-023, NX-ARCH-OI-024 |
 | NX-INT-018 | Power-domain and reset-domain boundaries and their crossings | Power and reset domains | PROPOSED | NX-REQ-060; NX-REQ-061; NX-REQ-062 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-025 |
 | NX-INT-019 | Critical fault signals to a hardware response | Thermal, power and tamper sources, always-on domain | PROPOSED | NX-REQ-063 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-026 |
-| NX-INT-020 | DDR4 controller and PHY to the DDR4 device | DDR4 controller, DDR4 PHY, DDR4 device | SELECTED role; PROPOSED target and width | NX-REQ-002; NX-REQ-064; NX-REQ-076 | A later IP and subsystem task | Dinesh | NX-ARCH-GAP-004, NX-ARCH-OI-005 |
+| NX-INT-020 | DDR4 controller and PHY to the DDR4 device | DDR4 controller, DDR4 PHY, DDR4 device | SELECTED | NX-REQ-002; NX-REQ-064; NX-REQ-076 | A later IP and subsystem task | Dinesh | NX-ARCH-GAP-004, NX-ARCH-OI-005 |
 | NX-INT-021 | PSRAM controller to the Octal SPI PSRAM device | PSRAM controller, PSRAM device | SELECTED role; PROPOSED target | NX-REQ-003; NX-REQ-065 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-022 | OSPI NOR controller to the NOR device | NOR controller, NOR device | SELECTED role; interface details OPEN | NX-REQ-004 | A later IP and subsystem task | Dinesh | NX-ARCH-OI-006 |
 | NX-INT-023 | DMA controller master on AXI-3 and its register access through APB | DMA controller, AXI-3, APB-0 and APB-1 | PROPOSED | NX-REQ-093; NX-REQ-094 | KOS-NEXUS-007 | Dinesh | NX-ARCH-OI-035 |
@@ -288,4 +288,5 @@ Every unresolved item is listed here with an owner and a status. The owner of ev
 | NX-ARCH-OI-037 | Domain crossings: the application-fabric attachment of the secure-to-application bridge (usable before C910 reset release), the mailbox register layout, message format, interrupt directions and secure-side validation rule; closed by NX-DEC-033 (MEMORY_ARCHITECTURE 5.4 and 5.5); the remaining items are NX-ARCH-OI-038 and NX-ARCH-OI-025, and whether the security core may later reach DDR4 needs a decision record (NX-DEC-027) | Security | NX-REQ-106; NX-REQ-107; NX-REQ-113; NX-REQ-114; NX-REQ-115 | Dinesh | CLOSED |
 | NX-ARCH-OI-038 | Mailbox allow-list contents, requester authentication, replay and flood protection and the response to repeated invalid requests; the reset domain of AXI-3 and System SRAM for the boot window (with NX-ARCH-OI-025); the System SRAM attachment point on the fabrics; the width and clock conversion between the secure AXI and AXI-3 | Security | NX-REQ-113; NX-REQ-114 | Dinesh | OPEN |
 | NX-ARCH-OI-039 | Register layout of every block: the register conventions, the common header and the registers of each block class are proposed; bit fields depend on IP selection and block specifications | Interface | NX-REQ-117; NX-REQ-118 | Dinesh | PROPOSED |
-| NX-ARCH-OI-040 | Attachment points of System SRAM, OSPI NOR and OSPI PSRAM on the fabrics (with NX-ARCH-OI-038) and any fabric-to-fabric path for the C910 to the AXI-1 local memories | AXI fabrics | NX-REQ-120 | Dinesh | OPEN |
+| NX-ARCH-OI-040 | Attachment points of System SRAM, OSPI NOR and OSPI PSRAM on the fabrics and the C910 path to the AXI-1 local memories: closed by NX-DEC-036 (System SRAM on AXI-0, OSPI controllers on AXI-3, AXI-0 to AXI-1 bridge) | AXI fabrics | NX-REQ-120; NX-REQ-121 | Dinesh | CLOSED |
+| NX-ARCH-OI-041 | Behaviour of memory accesses through the fabric bridges (AXI-0 to AXI-1, AXI-0 to AXI-3 for the NOR and PSRAM, AXI-3 to AXI-0): bursts, ordering, width conversion, protection, timeout and reset; the AXI-3 to AXI-0 bridge itself is PROPOSED | AXI fabrics | NX-REQ-121; NX-REQ-122 | Dinesh | OPEN |

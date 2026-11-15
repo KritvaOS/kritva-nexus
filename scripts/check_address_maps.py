@@ -35,13 +35,14 @@ Implemented checks, and nothing more:
      the smallest window of the blocks that use it; every peripheral window and every security peripheral
      region has one block entry with an existing layout (or layout none with the label OPEN); the identifiers
      exist; and the register tables of section 2.2 of ADDRESS_MAP.md agree row by row.
-  10. architecture/maps/connectivity.yaml (NX-REQ-120): fabrics, masters, region attachments and links have their
+  10. architecture/maps/connectivity.yaml (NX-REQ-120): fabrics, masters, region attachments, bridges and links have their
      keys, labels and identifiers; each master sits on an existing fabric; each link names an existing master and a
      region of the application map (never Reserved), appears once and asks for read and write access that the
      region permissions allow; every region other than Reserved has one attachment (a fabric, crossbar, apb or open);
      DDR4 is attached to the crossbar and only DDR4 is; the peripheral register space is attached to apb and is
      linked only from masters on AXI-0 or AXI-3; a link to a region attached to a fabric comes only from a master on
-     that fabric; every master has a link; the identifiers exist; and the four tables of section 7 of
+     that fabric or from a master whose fabric has a listed bridge to it; each bridge joins two different fabrics
+     and appears once; every master has a link; the identifiers exist; and the five tables of section 7 of
      INTERCONNECT_SPECIFICATION.md agree row by row.
 A PASS does not show that a base, size or attribute is right, that the width fits the C910 or any master,
 or that anything is approved; that is review work (NX-REQ-029, NX-ARCH-GAP-003). Exit 0 if it passes, 1 if not.
@@ -58,7 +59,7 @@ LAYOUTS = "architecture/maps/register_layouts.yaml"
 CONN = "architecture/maps/connectivity.yaml"
 SPEC = "architecture/INTERCONNECT_SPECIFICATION.md"
 CONN_KEYS = ["space", "document", "version", "connectivity_label", "connectivity_records", "fabrics", "masters",
-             "attachments", "links"]
+             "attachments", "bridges", "links"]
 APB_FABRICS = {"AXI-0", "AXI-3"}
 LAYOUT_KEYS = ["space", "document", "version", "layout_label", "layout_records", "register_width_bits", "header_size",
                "common_registers", "layouts", "registers", "blocks"]
@@ -298,8 +299,9 @@ def conn_tables(cn, app):
     fab = [[f["name"], str(f["width_bits"]), f["role"], f["label"], ids_text(f["records"])] for f in cn["fabrics"]]
     mas = [[m["name"], m["fabric"], m["label"], ids_text(m["records"])] for m in cn["masters"]]
     att = [[a["region"], a["attached_to"], a["label"], ids_text(a["records"])] for a in cn["attachments"]]
+    brg = [[b["from"], b["to"], b["label"], ids_text(b["records"])] for b in cn["bridges"]]
     mat = [[m["name"], m["fabric"]] + [link.get((m["name"], r), "-") for r in regs] for m in cn["masters"]]
-    return regs, fab, mas, att, mat
+    return regs, fab, mas, att, brg, mat
 
 
 def check_connectivity(app, cn, errs):
@@ -359,6 +361,17 @@ def check_connectivity(app, cn, errs):
     for r in app["regions"]:
         if r["class"] != "reserved" and r["name"] not in attach:
             errs.append(f"{w}: region {r['name']} has no attachment")
+    bridges = set()
+    for b in cn.get("bridges") or []:
+        n = f"{b.get('from', '?')} to {b.get('to', '?')}"
+        if common(b, "bridge", n, ["from", "to", "label", "records"]):
+            if b["from"] not in fabrics or b["to"] not in fabrics:
+                errs.append(f"{w}: bridge {n}: both ends must be defined fabrics")
+            if b["from"] == b["to"]:
+                errs.append(f"{w}: bridge {n}: the two ends must differ")
+            if (b["from"], b["to"]) in bridges:
+                errs.append(f"{w}: duplicate bridge {n}")
+            bridges.add((b["from"], b["to"]))
     seen, used = set(), set()
     for l in cn.get("links") or []:
         n = f"{l.get('master', '?')} to {l.get('region', '?')}"
@@ -383,8 +396,8 @@ def check_connectivity(app, cn, errs):
                 if ch in l["access"] and rg["perm"][idx] != ch:
                     errs.append(f"{w}: link {n}: access {l['access']} is not allowed by the region permissions {rg['perm']}")
         att = attach.get(l["region"], {}).get("attached_to")
-        if att in fabrics and att != mm["fabric"]:
-            errs.append(f"{w}: link {n}: the region is attached to {att} and the master is on {mm['fabric']}")
+        if att in fabrics and att != mm["fabric"] and (mm["fabric"], att) not in bridges:
+            errs.append(f"{w}: link {n}: the region is attached to {att} and the master is on {mm['fabric']}, and no bridge from {mm['fabric']} to {att} is listed")
         if att == "apb" and mm["fabric"] not in APB_FABRICS:
             errs.append(f"{w}: link {n}: only masters on AXI-0 or AXI-3 reach the peripheral register space")
     for n in masters:
@@ -598,7 +611,7 @@ def check_records(maps, root, errs):
             used |= set(m.get("attributes_records", []))
         if space == "connectivity":
             used |= set(m.get("connectivity_records", []))
-            for r in m.get("fabrics", []) + m.get("masters", []) + m.get("attachments", []) + m.get("links", []):
+            for r in m.get("fabrics", []) + m.get("masters", []) + m.get("attachments", []) + m.get("bridges", []) + m.get("links", []):
                 used |= set(r.get("records", []))
         if space == "layouts":
             used |= set(m.get("layout_records", []))
@@ -664,9 +677,9 @@ def check_tables(maps, root, errs):
             errs.append(f"{SPEC} not found")
         else:
             sl = spec.read_text(encoding="utf-8").splitlines()
-            regs, fab, mas, att, mat = conn_tables(cn, maps["application"])
+            regs, fab, mas, att, brg, mat = conn_tables(cn, maps["application"])
             for head, want in (("### 7.1 Fabrics", fab), ("### 7.2 Masters", mas), ("### 7.3 Region attachments", att),
-                               ("### 7.4 Connectivity matrix", mat)):
+                               ("### 7.4 Fabric bridges", brg), ("### 7.5 Connectivity matrix", mat)):
                 got = table_after(sl, head)
                 if got is None:
                     errs.append(f"{SPEC}: no table under '{head}'")
