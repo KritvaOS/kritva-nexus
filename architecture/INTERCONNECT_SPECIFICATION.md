@@ -5,10 +5,10 @@
 | Document ID | KOS-NEXUS-ARCH-002 |
 | Repository | `KritvaOS/kritva-nexus` |
 | Document Type | Specification |
-| Status | DRAFT (NX-ARCH-GAP-001 and NX-ARCH-GAP-004 decided by the owner, sections 3, 4 and 6 SELECTED in NX-DEC-021, NX-DEC-022 and NX-DEC-035; the connectivity matrix of section 7 is PROPOSED; the document itself has no approval record) |
+| Status | DRAFT (NX-ARCH-GAP-001 and NX-ARCH-GAP-004 decided by the owner, sections 3, 4 and 6 SELECTED in NX-DEC-021, NX-DEC-022 and NX-DEC-035; the fabric roles, the master placement and the connectivity matrix of section 7 SELECTED in NX-DEC-036 except the AXI-3 to AXI-0 bridge, which is PROPOSED; the document itself has no approval record) |
 | Owner | Dinesh |
 | Reviewer / Approver | Dinesh (interim, not independent) |
-| Version | 0.2.0-draft |
+| Version | 0.3.0-draft |
 | Last Updated | 2026-11-13 |
 | Authority | INPUT (not AUTHORITATIVE until the owner approves it) |
 | Related Tasks / Milestones | KOS-NEXUS-007; NX-M1 |
@@ -20,7 +20,7 @@ This document specifies the application AXI and memory-access architecture of th
 
 ## 1. Status of this part
 
-Section 3 records the owner's decisions for NX-ARCH-GAP-001 (SELECTED: NX-DEC-021 and NX-DEC-022, NX-REQ-067 to NX-REQ-075); that gap is closed with the residual items listed in 3.4. The resolution of NX-ARCH-GAP-004 and the fabric behaviour of section 6 are SELECTED (NX-DEC-035). The connectivity matrix of section 7 is a PROPOSAL (label PROPOSED). The owner asked that no item stay OPEN; a PROPOSED item is changed later by change request (4.6). After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
+Section 3 records the owner's decisions for NX-ARCH-GAP-001 (SELECTED: NX-DEC-021 and NX-DEC-022, NX-REQ-067 to NX-REQ-075); that gap is closed with the residual items listed in 3.4. The resolution of NX-ARCH-GAP-004 and the fabric behaviour of section 6 are SELECTED (NX-DEC-035). The fabric roles and widths, the master placement, the Memory Access Crossbar and the connectivity matrix of section 7 are SELECTED (NX-DEC-036), except the AXI-3 to AXI-0 bridge, which is PROPOSED (NX-REQ-122). The owner asked that no item stay OPEN; a PROPOSED item is changed later by change request (4.6). After a decision, the owner's wording is recorded as an NX-DEC record, the requirement is updated with a changelog entry, and this document is corrected. A recommendation from an agent or another AI tool does not make a choice SELECTED. Figures are theoretical interface arithmetic or assumptions, not measured results; no timing, bandwidth or latency result exists.
 
 Section 7 adds the connectivity matrix. The secure fabric is described by the secure address map and the two crossings of KOS-NEXUS-008.
 
@@ -28,13 +28,13 @@ Section 7 adds the connectivity matrix. The secure fabric is described by the se
 
 | ID | Item | Source | Label |
 |---|---|---|---|
-| IN-1 | Four application AXI fabrics, AXI-0 (128-bit), AXI-1 (256-bit), AXI-2 (128-bit) and AXI-3 (64-bit), at 400 to 600 MHz. Only the count is SELECTED. | NX-REQ-015, NX-DEC-014; NX-REQ-050 | SELECTED count; PROPOSED widths |
-| IN-2 | Two AXI-to-APB interconnects (APB-0 and APB-1), 32-bit APB, 200 to 250 MHz target. Only the count is SELECTED. | NX-REQ-016, NX-DEC-015; NX-REQ-052 | SELECTED count; PROPOSED parameters |
+| IN-1 | Four application AXI fabrics, AXI-0 (128-bit), AXI-1 (256-bit), AXI-2 (128-bit) and AXI-3 (64-bit), at 400 to 600 MHz. The count is SELECTED (NX-DEC-014); the widths and the frequency range are SELECTED (NX-DEC-036), as sizing choices, not measurements. | NX-REQ-015, NX-DEC-014; NX-REQ-050, NX-DEC-036 | SELECTED |
+| IN-2 | Two AXI-to-APB interconnects (APB-0 and APB-1), 32-bit APB, 200 to 250 MHz target. The count is SELECTED (NX-DEC-015); the width and frequency target are SELECTED (NX-DEC-036). | NX-REQ-016, NX-DEC-015; NX-REQ-052, NX-DEC-036 | SELECTED |
 | IN-3 | The C910 attaches to AXI-0 with a 128-bit AXI4 interface and 8 outstanding reads and writes; the C910 configuration is not confirmed. | NX-REQ-051, NX-REQ-056; NX-ARCH-OI-001 | PROPOSED |
-| IN-4 | A Memory Access Crossbar (MAX) with four fabric ingress ports provides arbitration, QoS, address decode and protection toward memory. | NX-REQ-049 | PROPOSED |
-| IN-5 | DDR4 is the primary system memory, targeting DDR4-3200 (3200 MT/s per pin). Data width and capacity are proposed in NX-REQ-076. | NX-REQ-002, NX-DEC-001; NX-REQ-064, NX-REQ-076 | SELECTED role; PROPOSED target, width and capacity |
+| IN-4 | A Memory Access Crossbar (MAX) with four fabric ingress ports provides arbitration, QoS, address decode and protection toward memory. | NX-REQ-049, NX-DEC-036 | SELECTED |
+| IN-5 | DDR4 is the primary system memory, targeting DDR4-3200 (3200 MT/s per pin). Data width and capacity are set in NX-REQ-076. | NX-REQ-002, NX-DEC-001; NX-REQ-064, NX-REQ-076, NX-DEC-036 | SELECTED |
 | IN-6 | The normal camera, ISP and NPU path does not use DDR4 for intermediates. | NX-REQ-047 | PROPOSED |
-| IN-7 | Peripheral register windows are proposed at 0x40000000 (APB-0 peripherals) and 0x41000000 (APB-1 control) in architecture/maps/peripheral_windows.yaml. The application address map is held by KOS-NEXUS-008. | NX-REQ-052, NX-REQ-053, NX-REQ-112 | PROPOSED |
+| IN-7 | Peripheral register windows are at 0x40000000 (APB-0 peripherals) and 0x41000000 (APB-1 control) in architecture/maps/peripheral_windows.yaml. The application address map is held by KOS-NEXUS-008. | NX-REQ-052, NX-REQ-053, NX-REQ-112 | SELECTED |
 
 ## 3. C910 to APB path (NX-ARCH-GAP-001, AC-014)
 
@@ -73,7 +73,7 @@ Route: the C910 reaches the APB-0 and APB-1 register windows through AXI-0, one 
 | Area | Decision | Requirement |
 |---|---|---|
 | Responses | An unmapped address returns DECERR, a denied access returns SLVERR and an APB PSLVERR returns SLVERR; each reaches the C910 as a bus error | NX-REQ-068 |
-| Timeout | A hung APB target times out and returns SLVERR; the value, recovery and late completion are proposed in section 6 | NX-REQ-069 |
+| Timeout | A hung APB target times out and returns SLVERR; the value, recovery and late completion are decided in section 6 (NX-DEC-035) | NX-REQ-069 |
 | Masters | C910 only | NX-REQ-070 |
 | Bridge structure | One bridge for width conversion and clock crossing, AXI4 both sides | NX-REQ-071 |
 | Access control | Trusted address-window policy with default-deny, checked before any APB access, AxPROT attributes set per window, secure resources unreachable, policy not changeable by the application domain. AxPROT alone is not the security boundary | NX-REQ-072 |
@@ -85,7 +85,7 @@ Access attributes are device-type, non-cacheable, ordered and non-speculative; t
 
 ### 3.4 Residual items
 
-The gap is closed. The residual items are PROPOSED in section 6: the timeout value and recovery (NX-REQ-080, NX-ARCH-OI-033) and the bridge buffering, ID handling and APB version (NX-REQ-081, NX-ARCH-OI-034). The C910 configuration check (NX-ARCH-OI-001) and the address windows are handled with the address-map work (KOS-NEXUS-008).
+The gap is closed. The residual items were decided in section 6 (NX-DEC-035): the timeout value and recovery (NX-REQ-080, NX-ARCH-OI-033) and the bridge buffering, ID handling and APB version (NX-REQ-081, NX-ARCH-OI-034). The C910 configuration check (NX-ARCH-OI-001) and the address windows are handled with the address-map work (KOS-NEXUS-008).
 
 ## 4. DDR4 controller ingress (NX-ARCH-GAP-004, AC-016)
 
@@ -120,13 +120,13 @@ The rule is: ports = ceil(DDR4 peak bandwidth / per-direction bandwidth of one p
 
 | Option | Topology | Advantages | Drawbacks |
 |---|---|---|---|
-| A | The MAX takes the four fabric ingress ports and presents one port to the DDR4 controller | Simplest; one arbitration point; matches the proposed MAX | One port is limited to its per-direction bandwidth, which is enough only for narrow DDR4 widths or a 256-bit port |
+| A | The MAX takes the four fabric ingress ports and presents one port to the DDR4 controller | Simplest; one arbitration point; matches the selected MAX (NX-REQ-049) | One port is limited to its per-direction bandwidth, which is enough only for narrow DDR4 widths or a 256-bit port |
 | B | The MAX presents two ports to the controller, split by address interleave or by traffic class | Covers x32 with 128-bit ports and part of x64; keeps the MAX | Interleave or class split and controller support for multiple ports need specification; extra area and complexity |
-| C | The fabrics connect directly to a multi-port DDR4 controller with no separate MAX | Fewest hops | Conflicts with the proposed MAX (NX-REQ-049) if the MAX is meant to be the sole aggregation point; arbitration, QoS and protection move into the controller IP, which is not selected. A controller with one AXI ingress and internal arbitration is a different topology from a genuinely multi-port controller, and the intended topology must be stated before the options are compared |
+| C | The fabrics connect directly to a multi-port DDR4 controller with no separate MAX | Fewest hops | Conflicts with the selected MAX (NX-REQ-049) if the MAX is meant to be the sole aggregation point; arbitration, QoS and protection move into the controller IP, which is not selected. A controller with one AXI ingress and internal arbitration is a different topology from a genuinely multi-port controller, and the intended topology must be stated before the options are compared |
 
 ### 4.4 Topology and sizing (SELECTED, NX-DEC-035)
 
-The inputs that were missing in 4.1 were proposed here as sizing choices, and the owner approved them as proposed in NX-DEC-035. They are not measurements; a new decision record replaces any of them and the derivation is repeated. The Memory Access Crossbar that feeds the port is still PROPOSED (NX-REQ-049).
+The inputs that were missing in 4.1 were proposed here as sizing choices, and the owner approved them as proposed in NX-DEC-035. They are not measurements; a new decision record replaces any of them and the derivation is repeated. The Memory Access Crossbar that feeds the port is SELECTED (NX-REQ-049, NX-DEC-036).
 
 | Input | Value | Requirement |
 |---|---|---|
@@ -153,14 +153,14 @@ NX-REQ-030 and NX-REQ-076 to NX-REQ-078 are SELECTED (NX-DEC-035), so a change n
 
 | Gap | Requirement | State after this part |
 |---|---|---|
-| NX-ARCH-GAP-001 | NX-REQ-027 | CLOSED: route NX-DEC-021, behaviour NX-DEC-022; residual items proposed in section 6 |
+| NX-ARCH-GAP-001 | NX-REQ-027 | CLOSED: route NX-DEC-021, behaviour NX-DEC-022; residual items decided in section 6 (NX-DEC-035) |
 | NX-ARCH-GAP-004 | NX-REQ-030 | CLOSED: resolved by the selection in section 4 (NX-DEC-035) |
 
 ## 6. Fabric behaviour and bridge details (SELECTED, NX-DEC-035)
 
 These close the open items NX-ARCH-OI-004, NX-ARCH-OI-033 and NX-ARCH-OI-034 (NX-DEC-035).
 
-| Area | Proposal | Requirement |
+| Area | Value | Requirement |
 |---|---|---|
 | Protocol and decode | AXI4 on the four application fabrics and the Memory Access Crossbar; decode by the application address map (held by KOS-NEXUS-008); an unmapped address returns DECERR | NX-REQ-079 |
 | QoS | AxQOS carries the four classes of 4.5 | NX-REQ-078, NX-REQ-079 |
@@ -171,32 +171,32 @@ These close the open items NX-ARCH-OI-004, NX-ARCH-OI-033 and NX-ARCH-OI-034 (NX
 
 The timeout value of 1024 cycles and the other figures are SELECTED (NX-DEC-035); the C910 configuration check (NX-ARCH-OI-001) is handled with the address-map work.
 
-## 7. Connectivity matrix (PROPOSED)
+## 7. Connectivity matrix (SELECTED, NX-DEC-036)
 
-Source: [maps/connectivity.yaml](maps/connectivity.yaml) (NX-REQ-120). The four tables below are generated from that file and checked by `scripts/check_address_maps.py`. They show which master reaches which region of the application address map. A master has no path to a region that the matrix does not list for it; an access to such a region returns SLVERR and an unmapped address returns DECERR (NX-REQ-104). The fabric widths and the master placement are PROPOSED (NX-REQ-050, NX-REQ-051). The matrix is a statement of intended paths, not a measurement: no bandwidth, latency or ordering result exists, and the checker is structural only.
+Source: [maps/connectivity.yaml](maps/connectivity.yaml) (NX-REQ-120, SELECTED in NX-DEC-036). The five tables below are generated from that file and checked by `scripts/check_address_maps.py`. They show which master reaches which region of the application address map. A master has no path to a region that the matrix does not list for it; an access to such a region returns SLVERR and an unmapped address returns DECERR (NX-REQ-104). The matrix is a statement of the intended paths, not a measurement: no bandwidth, latency or ordering result exists, and the checker is structural only. The only PROPOSED row is the AXI-3 to AXI-0 bridge (NX-REQ-122).
 
 ### 7.1 Fabrics
 
 | Fabric | Width (bits) | Role | Label | NX-REQ |
 |---|---|---|---|---|
-| AXI-0 | 128 | Main system, CPU and memory | PROPOSED | 050 |
-| AXI-1 | 256 | AI and vision | PROPOSED | 050 |
-| AXI-2 | 128 | Multimedia and high-speed IO | PROPOSED | 050 |
-| AXI-3 | 64 | General peripherals, control and DMA | PROPOSED | 050 |
+| AXI-0 | 128 | Main system, CPU and memory | SELECTED | 050 |
+| AXI-1 | 256 | AI and vision | SELECTED | 050 |
+| AXI-2 | 128 | Multimedia and high-speed IO | SELECTED | 050 |
+| AXI-3 | 64 | General peripherals, control and DMA | SELECTED | 050 |
 
 ### 7.2 Masters
 
 | Master | Fabric | Label | NX-REQ |
 |---|---|---|---|
-| C910 cluster | AXI-0 | PROPOSED | 051 |
-| ISP | AXI-1 | PROPOSED | 051 |
-| NPU | AXI-1 | PROPOSED | 051 |
-| Camera DMA | AXI-1 | PROPOSED | 051 |
-| Display compositor | AXI-2 | PROPOSED | 051 |
-| Ethernet MAC0 | AXI-2 | PROPOSED | 051 |
-| Ethernet MAC1 | AXI-2 | PROPOSED | 051 |
-| Storage DMA | AXI-2 | PROPOSED | 051 |
-| DMA controller | AXI-3 | PROPOSED | 093 |
+| C910 cluster | AXI-0 | SELECTED | 051 |
+| ISP | AXI-1 | SELECTED | 051 |
+| NPU | AXI-1 | SELECTED | 051 |
+| Camera DMA | AXI-1 | SELECTED | 051 |
+| Display compositor | AXI-2 | SELECTED | 051 |
+| Ethernet MAC0 | AXI-2 | SELECTED | 051 |
+| Ethernet MAC1 | AXI-2 | SELECTED | 051 |
+| Storage DMA | AXI-2 | SELECTED | 051 |
+| DMA controller | AXI-3 | SELECTED | 093 |
 | Boot window bridge | AXI-3 | SELECTED | 113 |
 
 Boot window bridge is the AXI master port that the secure-to-application bridge presents on AXI-3 (NX-REQ-113); it forwards only the boot-window alias and reaches System SRAM only (NX-REQ-109). The camera DMA, ISP, NPU, display, Ethernet and storage masters have no access to the peripheral register space.
@@ -205,22 +205,32 @@ Boot window bridge is the AXI master port that the secure-to-application bridge 
 
 | Region | Attached to | Label | NX-REQ |
 |---|---|---|---|
-| System SRAM | open | PROPOSED | 120 |
-| Camera frame pool | AXI-1 | PROPOSED | 120 |
-| ISP SRAM | AXI-1 | PROPOSED | 120 |
-| NPU SRAM | AXI-1 | PROPOSED | 120 |
+| System SRAM | AXI-0 | SELECTED | 120 |
+| Camera frame pool | AXI-1 | SELECTED | 120 |
+| ISP SRAM | AXI-1 | SELECTED | 120 |
+| NPU SRAM | AXI-1 | SELECTED | 120 |
 | Peripheral register space | apb | SELECTED | 067 |
-| OSPI NOR window | open | PROPOSED | 120 |
-| OSPI PSRAM | open | PROPOSED | 120 |
-| DDR4 | crossbar | PROPOSED | 049 |
+| OSPI NOR window | AXI-3 | SELECTED | 120 |
+| OSPI PSRAM | AXI-3 | SELECTED | 120 |
+| DDR4 | crossbar | SELECTED | 049 |
 
-Attached to a fabric means the region is a slave on that fabric; crossbar means DDR4 is reached only through the Memory Access Crossbar; apb means the peripheral register space is reached through the AXI-to-APB interconnects, from the C910 through the AXI fabric bridge from AXI-0 to AXI-3 (SELECTED, NX-REQ-067) and from the DMA controller on AXI-3; open means the point where the region joins the fabrics is not defined (NX-ARCH-OI-040, NX-ARCH-OI-038).
+Attached to a fabric means the region is a slave on that fabric: System SRAM on AXI-0, the OSPI NOR window and the OSPI PSRAM controllers on AXI-3, and the camera frame pool, ISP SRAM and NPU SRAM on AXI-1 (NX-DEC-036). Crossbar means DDR4 is reached only through the Memory Access Crossbar. Apb means the peripheral register space is reached through the AXI-to-APB interconnects, from the C910 through the AXI fabric bridge from AXI-0 to AXI-3 (NX-REQ-067) and from the DMA controller on AXI-3. No region has an undefined attachment.
 
-### 7.4 Connectivity matrix
+### 7.4 Fabric bridges
+
+| From | To | Label | NX-REQ |
+|---|---|---|---|
+| AXI-0 | AXI-1 | SELECTED | 121 |
+| AXI-0 | AXI-3 | SELECTED | 067 |
+| AXI-3 | AXI-0 | PROPOSED | 122 |
+
+A master reaches a region that is attached to another fabric only through a bridge listed here, from the fabric of the master to the fabric of the region. AXI-0 to AXI-1 gives the C910 access to the AXI-1 local memories (NX-REQ-121). AXI-0 to AXI-3 is the C910 route of NX-REQ-067; it also carries the C910 accesses to the OSPI NOR window and the OSPI PSRAM, which sit on AXI-3. AXI-3 to AXI-0 lets the DMA controller and the boot window bridge on AXI-3 reach System SRAM on AXI-0 and is PROPOSED (NX-REQ-122). The behaviour of NX-REQ-072 to NX-REQ-075 (default deny, ordering, single-beat bursts, reset) is defined for the APB register accesses of the C910; it is not extended to memory accesses. The burst, ordering, width conversion, protection, timeout and reset behaviour of memory accesses through these bridges is OPEN (NX-ARCH-OI-041).
+
+### 7.5 Connectivity matrix
 
 | Master | Fabric | System SRAM | Camera frame pool | ISP SRAM | NPU SRAM | Peripheral register space | OSPI NOR window | OSPI PSRAM | DDR4 |
 |---|---|---|---|---|---|---|---|---|---|
-| C910 cluster | AXI-0 | rw | - | - | - | rw | r | rw | rw |
+| C910 cluster | AXI-0 | rw | rw | rw | rw | rw | r | rw | rw |
 | ISP | AXI-1 | - | r | rw | - | - | - | - | - |
 | NPU | AXI-1 | - | r | r | rw | - | - | - | rw |
 | Camera DMA | AXI-1 | - | w | - | - | - | - | - | - |
@@ -231,4 +241,4 @@ Attached to a fabric means the region is a slave on that fabric; crossbar means 
 | DMA controller | AXI-3 | rw | - | - | - | rw | r | rw | rw |
 | Boot window bridge | AXI-3 | rw | - | - | - | - | - | - | - |
 
-The cell shows the access that the master is proposed to have: r for read, w for write, - for no path. The access never exceeds the permissions of the region in application_map.yaml (the OSPI NOR window is read-only, and program and erase go only through the NOR controller registers, NX-REQ-111). The C910 has no path to the local memories on AXI-1 (frame pool, ISP SRAM, NPU SRAM) in this proposal; any CPU access to them needs a fabric-to-fabric path that is not defined (NX-ARCH-OI-040). The links of the C910 to the peripheral register space and of the boot window bridge to System SRAM are SELECTED; every other link is PROPOSED.
+The cell shows the access that the master has: r for read, w for write, - for no path. The access never exceeds the permissions of the region in application_map.yaml (the OSPI NOR window is read-only, and program and erase go only through the NOR controller registers, NX-REQ-111). The C910 reaches the camera frame pool, the ISP SRAM and the NPU SRAM through the AXI-0 to AXI-1 bridge (NX-REQ-121); no other master crosses a fabric bridge to them. The links of the DMA controller and of the boot window bridge to System SRAM depend on the PROPOSED AXI-3 to AXI-0 bridge (NX-REQ-122).
